@@ -6,8 +6,10 @@ import htmlentitydefs
 import itertools
 import logging
 import operator
+import psycopg2
 import re
 from ast import literal_eval
+from openerp.exceptions import ValidationError
 from openerp.tools import mute_logger
 
 # Validation Library https://pypi.python.org/pypi/validate_email/1.1
@@ -18,6 +20,7 @@ from openerp.osv import osv, orm
 from openerp.osv import fields
 from openerp.osv.orm import browse_record
 from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 pattern = re.compile("&(\w+?);")
 
@@ -186,28 +189,29 @@ class MergePartnerAutomatic(osv.TransientModel):
                 for partner_id in partner_ids:
                     cr.execute(query, (dst_partner.id, partner_id, dst_partner.id))
             else:
-                cr.execute("SAVEPOINT recursive_partner_savepoint")
                 try:
-                    query = 'UPDATE "%(table)s" SET %(column)s = %%s WHERE %(column)s IN %%s' % query_dic
-                    cr.execute(query, (dst_partner.id, partner_ids,))
+                    with mute_logger('openerp.sql_db'), cr.savepoint():
+                        query = 'UPDATE "%(table)s" SET %(column)s = %%s WHERE %(column)s IN %%s' % query_dic
+                        cr.execute(query, (dst_partner.id, partner_ids,))
 
-                    if column == proxy._parent_name and table == 'res_partner':
-                        query = """
-                            WITH RECURSIVE cycle(id, parent_id) AS (
-                                    SELECT id, parent_id FROM res_partner
-                                UNION
-                                    SELECT  cycle.id, res_partner.parent_id
-                                    FROM    res_partner, cycle
-                                    WHERE   res_partner.id = cycle.parent_id AND
-                                            cycle.id != cycle.parent_id
-                            )
-                            SELECT id FROM cycle WHERE id = parent_id AND id = %s
-                        """
-                        cr.execute(query, (dst_partner.id,))
-                        if cr.fetchall():
-                            cr.execute("ROLLBACK TO SAVEPOINT recursive_partner_savepoint")
-                finally:
-                    cr.execute("RELEASE SAVEPOINT recursive_partner_savepoint")
+                        if column == proxy._parent_name and table == 'res_partner':
+                            query = """
+                                WITH RECURSIVE cycle(id, parent_id) AS (
+                                        SELECT id, parent_id FROM res_partner
+                                    UNION
+                                        SELECT  cycle.id, res_partner.parent_id
+                                        FROM    res_partner, cycle
+                                        WHERE   res_partner.id = cycle.parent_id AND
+                                                cycle.id != cycle.parent_id
+                                )
+                                SELECT id FROM cycle WHERE id = parent_id AND id = %s
+                            """
+                            cr.execute(query, (dst_partner.id,))
+                except psycopg2.Error:
+                    # updating fails, most likely due to a violated unique constraint
+                    # keeping record with nonexistent partner_id is useless, better delete it
+                    query = 'DELETE FROM %(table)s WHERE %(column)s = %%s' % query_dic
+                    cr.execute(query, (partner_id,))
 
     def _update_reference_fields(self, cr, uid, src_partners, dst_partner, context=None):
         _logger.debug('_update_reference_fields for dst_partner: %s for src_partners: %r', dst_partner.id, list(map(operator.attrgetter('id'), src_partners)))
@@ -218,7 +222,13 @@ class MergePartnerAutomatic(osv.TransientModel):
                 return
             domain = [(field_model, '=', 'res.partner'), (field_id, '=', src.id)]
             ids = proxy.search(cr, openerp.SUPERUSER_ID, domain, context=context)
-            return proxy.write(cr, openerp.SUPERUSER_ID, ids, {field_id: dst_partner.id}, context=context)
+            try:
+                with mute_logger('openerp.sql_db'), cr.savepoint():
+                    return proxy.write(cr, openerp.SUPERUSER_ID, ids, {field_id: dst_partner.id}, context=context)
+            except psycopg2.Error:
+                # updating fails, most likely due to a violated unique constraint
+                # keeping record with nonexistent partner_id is useless, better delete it
+                return proxy.unlink(cr, openerp.SUPERUSER_ID, ids, context=context)
 
         update_records = functools.partial(update_records, context=context)
 
@@ -237,12 +247,12 @@ class MergePartnerAutomatic(osv.TransientModel):
         for record in proxy.browse(cr, openerp.SUPERUSER_ID, record_ids, context=context):
             try:
                 proxy_model = self.pool[record.model]
-                field_type = proxy_model._columns[record.name].__class__._type
+                column = proxy_model._columns[record.name]
             except KeyError:
                 # unknown model or field => skip
                 continue
 
-            if field_type == 'function':
+            if isinstance(column, fields.function):
                 continue
 
             for partner in src_partners:
@@ -278,7 +288,7 @@ class MergePartnerAutomatic(osv.TransientModel):
         if parent_id and parent_id != dst_partner.id:
             try:
                 dst_partner.write({'parent_id': parent_id})
-            except (osv.except_osv, orm.except_orm):
+            except ValidationError:
                 _logger.info('Skip recursive partner hierarchies for parent_id %s of partner: %s', parent_id, dst_partner.id)
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
@@ -290,10 +300,10 @@ class MergePartnerAutomatic(osv.TransientModel):
             return
 
         if len(partner_ids) > 3:
-            raise osv.except_osv(_('Error'), _("For safety reasons, you cannot merge more than 3 contacts together. You can re-open the wizard several times if needed."))
+            raise UserError(_("For safety reasons, you cannot merge more than 3 contacts together. You can re-open the wizard several times if needed."))
 
         if openerp.SUPERUSER_ID != uid and len(set(partner.email for partner in proxy.browse(cr, uid, partner_ids, context=context))) > 1:
-            raise osv.except_osv(_('Error'), _("All contacts must have the same email. Only the Administrator can merge contacts with different emails."))
+            raise UserError(_("All contacts must have the same email. Only the Administrator can merge contacts with different emails."))
 
         if dst_partner and dst_partner.id in partner_ids:
             src_partners = proxy.browse(cr, uid, [id for id in partner_ids if id != dst_partner.id], context=context)
@@ -305,7 +315,7 @@ class MergePartnerAutomatic(osv.TransientModel):
 
         if openerp.SUPERUSER_ID != uid and self._model_is_installed(cr, uid, 'account.move.line', context=context) and \
                 self.pool.get('account.move.line').search(cr, openerp.SUPERUSER_ID, [('partner_id', 'in', [partner.id for partner in src_partners])], context=context):
-            raise osv.except_osv(_('Error'), _("Only the destination contact may be linked to existing Journal Items. Please ask the Administrator if you need to merge several contacts linked to existing Journal Items."))
+            raise UserError(_("Only the destination contact may be linked to existing Journal Items. Please ask the Administrator if you need to merge several contacts linked to existing Journal Items."))
 
         call_it = lambda function: function(cr, uid, src_partners, dst_partner,
                                             context=context)
@@ -377,11 +387,20 @@ class MergePartnerAutomatic(osv.TransientModel):
         return {'type': 'ir.actions.act_window_close'}
 
     def _generate_query(self, fields, maximum_group=100):
-        group_fields = ', '.join(fields)
+        sql_fields = []
+        for field in fields:
+            if field in ['email', 'name']:
+                sql_fields.append('lower(%s)' % field)
+            elif field in ['vat']:
+                sql_fields.append("replace(%s, ' ', '')" % field)
+            else:
+                sql_fields.append(field)
+
+        group_fields = ', '.join(sql_fields)
 
         filters = []
         for field in fields:
-            if field in ['email', 'name']:
+            if field in ['email', 'name', 'vat']:
                 filters.append((field, 'IS NOT', 'NULL'))
 
         criteria = ' AND '.join('%s %s %s' % (field, operator, value)
@@ -425,8 +444,7 @@ class MergePartnerAutomatic(osv.TransientModel):
         ]
 
         if not groups:
-            raise osv.except_osv(_('Error'),
-                                 _("You have to specify a filter for your selection"))
+            raise UserError(_("You have to specify a filter for your selection"))
 
         return groups
 

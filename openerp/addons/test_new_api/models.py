@@ -1,25 +1,16 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2013-2014 OpenERP (<http://www.openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import datetime
+from openerp.exceptions import AccessError
+
+##############################################################################
+#
+#    OLD API
+#
+##############################################################################
 from openerp.osv import osv, fields
+
 
 class res_partner(osv.Model):
     _inherit = 'res.partner'
@@ -40,6 +31,48 @@ class res_partner(osv.Model):
     }
 
 
+class TestFunctionCounter(osv.Model):
+    _name = 'test_old_api.function_counter'
+
+    def _compute_cnt(self, cr, uid, ids, fname, arg, context=None):
+        res = {}
+        for cnt in self.browse(cr, uid, ids, context=context):
+            res[cnt.id] = cnt.access and cnt.cnt + 1 or 0
+        return res
+
+    _columns = {
+        'access': fields.datetime('Datetime Field'),
+        'cnt': fields.function(
+            _compute_cnt, type='integer', string='Function Field', store=True),
+    }
+
+
+class TestFunctionNoInfiniteRecursion(osv.Model):
+    _name = 'test_old_api.function_noinfiniterecursion'
+
+    def _compute_f1(self, cr, uid, ids, fname, arg, context=None):
+        res = {}
+        for tf in self.browse(cr, uid, ids, context=context):
+            res[tf.id] = 'create' in tf.f0 and 'create' or 'write'
+        cntobj = self.pool['test_old_api.function_counter']
+        cnt_id = self.pool['ir.model.data'].xmlid_to_res_id(
+            cr, uid, 'test_new_api.c1')
+        cntobj.write(
+            cr, uid, cnt_id, {'access': datetime.datetime.now()},
+            context=context)
+        return res
+
+    _columns = {
+        'f0': fields.char('Char Field'),
+        'f1': fields.function(
+            _compute_f1, type='char', string='Function Field', store=True),
+    }
+
+##############################################################################
+#
+#    NEW API
+#
+##############################################################################
 from openerp import models, fields, api, _
 
 
@@ -47,8 +80,12 @@ class Category(models.Model):
     _name = 'test_new_api.category'
 
     name = fields.Char(required=True)
+    color = fields.Integer('Color Index')
     parent = fields.Many2one('test_new_api.category')
     display_name = fields.Char(compute='_compute_display_name', inverse='_inverse_display_name')
+    dummy = fields.Char(store=False)
+    discussions = fields.Many2many('test_new_api.discussion', 'test_new_api_discussion_category',
+                                   'category', 'discussion')
 
     @api.one
     @api.depends('name', 'parent.display_name')     # this definition is recursive
@@ -74,6 +111,11 @@ class Category(models.Model):
         # assign name of last category, and reassign display_name (to normalize it)
         self.name = names[-1].strip()
 
+    @api.multi
+    def read(self, fields=None, load='_classic_read'):
+        if self.search_count([('id', 'in', self._ids), ('name', '=', 'NOACCESS')]):
+            raise AccessError('Sorry')
+        return super(Category, self).read(fields=fields, load=load)
 
 class Discussion(models.Model):
     _name = 'test_new_api.discussion'
@@ -85,10 +127,15 @@ class Discussion(models.Model):
         'test_new_api_discussion_category', 'discussion', 'category')
     participants = fields.Many2many('res.users')
     messages = fields.One2many('test_new_api.message', 'discussion')
+    message_concat = fields.Text(string='Message concatenate')
 
     @api.onchange('moderator')
     def _onchange_moderator(self):
         self.participants |= self.moderator
+
+    @api.onchange('messages')
+    def _onchange_messages(self):
+        self.message_concat = "\n".join(["%s:%s" % (m.name, m.body) for m in self.messages])
 
 
 class Message(models.Model):
@@ -101,7 +148,7 @@ class Message(models.Model):
     display_name = fields.Char(string='Abstract', compute='_compute_display_name')
     size = fields.Integer(compute='_compute_size', search='_search_size')
     double_size = fields.Integer(compute='_compute_double_size')
-    discussion_name = fields.Char(related='discussion.name', readonly=True)
+    discussion_name = fields.Char(related='discussion.name')
 
     @api.one
     @api.constrains('author', 'discussion')
@@ -112,7 +159,7 @@ class Message(models.Model):
     @api.one
     @api.depends('author.name', 'discussion.name')
     def _compute_name(self):
-        self.name = "[%s] %s" % (self.discussion.name or '', self.author.name)
+        self.name = "[%s] %s" % (self.discussion.name or '', self.author.name or '')
 
     @api.one
     @api.depends('author.name', 'discussion.name', 'body')
@@ -146,12 +193,6 @@ class Message(models.Model):
         self.double_size = 0
         size = self.size
         self.double_size = self.double_size + size
-
-
-class Talk(models.Model):
-    _name = 'test_new_api.talk'
-
-    parent = fields.Many2one('test_new_api.discussion', delegate=True, required=True)
 
 
 class MixedModel(models.Model):

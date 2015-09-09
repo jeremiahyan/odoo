@@ -9,13 +9,13 @@
                   <separator string="Change Price"/>
                   <group>
                       <field name="info_field"/>
+                      <div colspan="2">The price is computed from the bill of material lines which are not variant specific</div>
                       <field name="real_time_accounting"/>
                       <field name="recursive"/>
                   </group>
                   <footer>
-                      <button name="compute_from_bom" string="Set price on BoM" type="object" class="oe_highlight"/>
-                      or
-                      <button string="Cancel" class="oe_link" special="cancel" />
+                      <button name="compute_from_bom" string="Set price on BoM" type="object" class="btn-primary"/>
+                      <button string="Cancel" class="btn-default" special="cancel" />
                   </footer>
               </form>
             </field>

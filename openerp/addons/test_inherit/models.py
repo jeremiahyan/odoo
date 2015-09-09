@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
-from openerp import models, fields, api
+from openerp import models, fields, api, osv
 
 # We just create a new model
 class mother(models.Model):
     _name = 'test.inherit.mother'
 
-    name = fields.Char('Name', required=True)
+    _columns = {
+        # check interoperability of field inheritance with old-style fields
+        'name': osv.fields.char('Name'),
+        'state': osv.fields.selection([('a', 'A'), ('b', 'B')], string='State'),
+    }
+    _defaults = {
+        'name': 'Foo',
+    }
+
     surname = fields.Char(compute='_compute_surname')
 
     @api.one
@@ -16,11 +24,10 @@ class mother(models.Model):
 # We want to inherits from the parent model and we add some fields
 # in the child object
 class daughter(models.Model):
-    _name = 'test.inherit.daugther'
-    _inherits = {'test.inherit.mother': 'template_id'}
+    _name = 'test.inherit.daughter'
 
     template_id = fields.Many2one('test.inherit.mother', 'Template',
-                                  required=True, ondelete='cascade')
+                                  delegate=True, required=True, ondelete='cascade')
     field_in_daughter = fields.Char('Field1')
 
 
@@ -32,8 +39,11 @@ class mother(models.Model):
 
     field_in_mother = fields.Char()
 
-    # extend the name field by adding a default value
-    name = fields.Char(default='Unknown')
+    # extend the name field: make it required and change its default value
+    name = fields.Char(required=True, default='Bar')
+
+    # extend the selection of the state field
+    state = fields.Selection(selection_add=[('c', 'C')])
 
     # override the computed field, and extend its dependencies
     @api.one
@@ -44,4 +54,19 @@ class mother(models.Model):
         else:
             super(mother, self)._compute_surname()
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+class mother(models.Model):
+    _inherit = 'test.inherit.mother'
+
+    # extend again the selection of the state field
+    state = fields.Selection(selection_add=[('d', 'D')])
+
+
+class daughter(models.Model):
+    _inherit = 'test.inherit.daughter'
+
+    # simply redeclare the field without adding any option
+    template_id = fields.Many2one()
+
+    # change the default value of an inherited field
+    name = fields.Char(default='Baz')

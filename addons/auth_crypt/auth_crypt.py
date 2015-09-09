@@ -5,6 +5,9 @@ from passlib.context import CryptContext
 import openerp
 from openerp.osv import fields, osv
 
+from openerp.addons.base.res import res_users
+res_users.USER_PRIVATE_FIELDS.append('password_crypt')
+
 _logger = logging.getLogger(__name__)
 
 default_crypt_context = CryptContext(
@@ -92,6 +95,3 @@ class res_users(osv.osv):
         internally
         """
         return default_crypt_context
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 """ Fields:
       - simple
@@ -42,15 +24,35 @@ import logging
 import pytz
 import re
 import xmlrpclib
+from operator import itemgetter
+from contextlib import contextmanager
 from psycopg2 import Binary
 
 import openerp
 import openerp.tools as tools
 from openerp.tools.translate import _
-from openerp.tools import float_round, float_repr
-from openerp.tools import html_sanitize
+from openerp.tools import float_repr, float_round, frozendict, html_sanitize
 import simplejson
-from openerp import SUPERUSER_ID
+from openerp import SUPERUSER_ID, registry
+
+@contextmanager
+def _get_cursor():
+    # yield a valid cursor from any environment or create a new one if none found
+    from openerp.api import Environment
+    from openerp.http import request
+    try:
+        request.env     # force request's env to be computed
+    except RuntimeError:
+        pass    # ignore if not in a request
+    for env in Environment.envs:
+        if not env.cr.closed:
+            yield env.cr
+            break
+    else:
+        with registry().cursor() as cr:
+            yield cr
+
+EMPTY_DICT = frozendict()
 
 _logger = logging.getLogger(__name__)
 
@@ -72,7 +74,6 @@ class _column(object):
     _classic_read = True
     _classic_write = True
     _auto_join = False
-    _prefetch = True
     _properties = False
     _type = 'unknown'
     _obj = None
@@ -82,71 +83,136 @@ class _column(object):
     _symbol_set = (_symbol_c, _symbol_f)
     _symbol_get = None
     _deprecated = False
-    copy = True # whether the field is copied by BaseModel.copy()
 
-    def __init__(self, string='unknown', required=False, readonly=False, domain=None, context=None, states=None, priority=0, change_default=False, size=None, ondelete=None, translate=False, select=False, manual=False, **args):
+    __slots__ = [
+        'copy',                 # whether value is copied by BaseModel.copy()
+        'string',
+        'help',
+        'required',
+        'readonly',
+        '_domain',
+        '_context',
+        'states',
+        'priority',
+        'change_default',
+        'size',
+        'ondelete',
+        'translate',
+        'select',
+        'manual',
+        'write',
+        'read',
+        'selectable',
+        'group_operator',
+        'groups',               # CSV list of ext IDs of groups
+        'deprecated',           # Optional deprecation warning
+        '_args',
+        '_prefetch',
+    ]
+
+    def __init__(self, string='unknown', required=False, readonly=False, domain=[], context={}, states=None, priority=0, change_default=False, size=None, ondelete=None, translate=False, select=False, manual=False, **args):
         """
 
         The 'manual' keyword argument specifies if the field is a custom one.
         It corresponds to the 'state' column in ir_model_fields.
 
         """
-        if domain is None:
-            domain = []
-        if context is None:
-            context = {}
-        self.states = states or {}
-        self.string = string
-        self.readonly = readonly
-        self.required = required
-        self.size = size
-        self.help = args.get('help', '')
-        self.priority = priority
-        self.change_default = change_default
-        self.ondelete = ondelete.lower() if ondelete else None # defaults to 'set null' in ORM
-        self.translate = translate
-        self._domain = domain
-        self._context = context
-        self.write = False
-        self.read = False
-        self.select = select
-        self.manual = manual
-        self.selectable = True
-        self.group_operator = args.get('group_operator', False)
-        self.groups = False  # CSV list of ext IDs of groups that can access this field
-        self.deprecated = False # Optional deprecation warning
-        for a in args:
-            setattr(self, a, args[a])
+        # add parameters and default values
+        args['copy'] = args.get('copy', True)
+        args['string'] = string
+        args['help'] = args.get('help', '')
+        args['required'] = required
+        args['readonly'] = readonly
+        args['_domain'] = domain
+        args['_context'] = context
+        args['states'] = states
+        args['priority'] = priority
+        args['change_default'] = change_default
+        args['size'] = size
+        args['ondelete'] = ondelete.lower() if ondelete else None
+        args['translate'] = translate
+        args['select'] = select
+        args['manual'] = manual
+        args['write'] = args.get('write', False)
+        args['read'] = args.get('read', False)
+        args['selectable'] = args.get('selectable', True)
+        args['group_operator'] = args.get('group_operator', None)
+        args['groups'] = args.get('groups', None)
+        args['deprecated'] = args.get('deprecated', None)
+        args['_prefetch'] = args.get('_prefetch', True)
 
-        # prefetch only if self._classic_write, not self.groups, and not
-        # self.deprecated
-        if not self._classic_write or self.groups or self.deprecated:
+        self._args = EMPTY_DICT
+        for key, val in args.iteritems():
+            setattr(self, key, val)
+
+        # prefetch only if _classic_write, not deprecated and not manual
+        if not self._classic_write or self.deprecated or self.manual:
             self._prefetch = False
+
+    def __getattr__(self, name):
+        """ Access a non-slot attribute. """
+        if name == '_args':
+            raise AttributeError(name)
+        try:
+            return self._args[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        """ Set a slot or non-slot attribute. """
+        try:
+            object.__setattr__(self, name, value)
+        except AttributeError:
+            if self._args:
+                self._args[name] = value
+            else:
+                self._args = {name: value}     # replace EMPTY_DICT
+
+    def __delattr__(self, name):
+        """ Remove a non-slot attribute. """
+        try:
+            del self._args[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def new(self, _computed_field=False, **args):
+        """ Return a column like `self` with the given parameters; the parameter
+            `_computed_field` tells whether the corresponding field is computed.
+        """
+        # memory optimization: reuse self whenever possible; you can reduce the
+        # average memory usage per registry by 10 megabytes!
+        column = type(self)(**args)
+        return self if self.to_field_args() == column.to_field_args() else column
 
     def to_field(self):
         """ convert column `self` to a new-style field """
         from openerp.fields import Field
-        return Field.by_type[self._type](**self.to_field_args())
+        return Field.by_type[self._type](origin=self, **self.to_field_args())
 
     def to_field_args(self):
         """ return a dictionary with all the arguments to pass to the field """
-        items = [
-            ('_origin', self),                  # field interfaces self
+        base_items = [
             ('copy', self.copy),
             ('index', self.select),
+            ('manual', self.manual),
             ('string', self.string),
             ('help', self.help),
             ('readonly', self.readonly),
             ('required', self.required),
             ('states', self.states),
             ('groups', self.groups),
+            ('change_default', self.change_default),
+            ('deprecated', self.deprecated),
+        ]
+        truthy_items = filter(itemgetter(1), [
+            ('group_operator', self.group_operator),
             ('size', self.size),
             ('ondelete', self.ondelete),
             ('translate', self.translate),
             ('domain', self._domain),
             ('context', self._context),
-        ]
-        return dict(item for item in items if items[1])
+        ])
+        return dict(base_items + truthy_items + self._args.items())
 
     def restart(self):
         pass
@@ -186,8 +252,9 @@ class _column(object):
 class boolean(_column):
     _type = 'boolean'
     _symbol_c = '%s'
-    _symbol_f = lambda x: x and 'True' or 'False'
+    _symbol_f = bool
     _symbol_set = (_symbol_c, _symbol_f)
+    __slots__ = []
 
     def __init__(self, string='unknown', required=False, **args):
         super(boolean, self).__init__(string=string, required=required, **args)
@@ -203,6 +270,7 @@ class integer(_column):
     _symbol_f = lambda x: int(x or 0)
     _symbol_set = (_symbol_c, _symbol_f)
     _symbol_get = lambda self,x: x or 0
+    __slots__ = []
 
     def __init__(self, string='unknown', required=False, **args):
         super(integer, self).__init__(string=string, required=required, **args)
@@ -210,6 +278,7 @@ class integer(_column):
 class reference(_column):
     _type = 'reference'
     _classic_read = False # post-process to handle missing target
+    __slots__ = ['selection']
 
     def __init__(self, string, selection, size=None, **args):
         if callable(selection):
@@ -262,6 +331,7 @@ def _symbol_set_char(self, symb):
 
 class char(_column):
     _type = 'char'
+    __slots__ = ['_symbol_f', '_symbol_set', '_symbol_set_char']
 
     def __init__(self, string="unknown", size=None, **args):
         _column.__init__(self, string=string, size=size or None, **args)
@@ -271,57 +341,86 @@ class char(_column):
 
 class text(_column):
     _type = 'text'
+    __slots__ = []
 
 
 class html(text):
     _type = 'html'
     _symbol_c = '%s'
+    __slots__ = ['_sanitize', '_strip_style', '_symbol_f', '_symbol_set']
 
     def _symbol_set_html(self, value):
         if value is None or value is False:
             return None
         if not self._sanitize:
             return value
-        return html_sanitize(value)
+        return html_sanitize(value, strip_style=self._strip_style)
 
-    def __init__(self, string='unknown', sanitize=True, **args):
+    def __init__(self, string='unknown', sanitize=True, strip_style=False, **args):
         super(html, self).__init__(string=string, **args)
         self._sanitize = sanitize
+        self._strip_style = strip_style
         # symbol_set redefinition because of sanitize specific behavior
         self._symbol_f = self._symbol_set_html
         self._symbol_set = (self._symbol_c, self._symbol_f)
 
+    def to_field_args(self):
+        args = super(html, self).to_field_args()
+        args['sanitize'] = self._sanitize
+        return args
+
 import __builtin__
+
+def _symbol_set_float(self, x):
+    result = __builtin__.float(x or 0.0)
+    digits = self.digits
+    if digits:
+        precision, scale = digits
+        result = float_repr(float_round(result, precision_digits=scale), precision_digits=scale)
+    return result
 
 class float(_column):
     _type = 'float'
     _symbol_c = '%s'
-    _symbol_f = lambda x: __builtin__.float(x or 0.0)
-    _symbol_set = (_symbol_c, _symbol_f)
     _symbol_get = lambda self,x: x or 0.0
+    __slots__ = ['_digits', '_digits_compute', '_symbol_f', '_symbol_set']
+
+    @property
+    def digits(self):
+        if self._digits_compute:
+            with _get_cursor() as cr:
+                return self._digits_compute(cr)
+        else:
+            return self._digits
 
     def __init__(self, string='unknown', digits=None, digits_compute=None, required=False, **args):
         _column.__init__(self, string=string, required=required, **args)
-        self.digits = digits
         # synopsis: digits_compute(cr) ->  (precision, scale)
-        self.digits_compute = digits_compute
+        self._digits = digits
+        self._digits_compute = digits_compute
+        self._symbol_f = lambda x: _symbol_set_float(self, x)
+        self._symbol_set = (self._symbol_c, self._symbol_f)
 
     def to_field_args(self):
         args = super(float, self).to_field_args()
-        args['digits'] = self.digits_compute or self.digits
+        args['digits'] = self._digits_compute or self._digits
         return args
 
     def digits_change(self, cr):
-        if self.digits_compute:
-            self.digits = self.digits_compute(cr)
-        if self.digits:
-            precision, scale = self.digits
-            self._symbol_set = ('%s', lambda x: float_repr(float_round(__builtin__.float(x or 0.0),
-                                                                       precision_digits=scale),
-                                                           precision_digits=scale))
+        pass
+
+class monetary(_column):
+    _type = 'monetary'
+    _symbol_set = ('%s', lambda x: __builtin__.float(x or 0.0))
+    _symbol_get = lambda self,x: x or 0.0
+
+    def to_field_args(self):
+        raise NotImplementedError("fields.monetary is only supported in the new API, "
+                                  "but you can use widget='monetary' in client-side views")
 
 class date(_column):
     _type = 'date'
+    __slots__ = []
 
     MONTHS = [
         ('01', 'January'),
@@ -412,6 +511,7 @@ class date(_column):
 
 class datetime(_column):
     _type = 'datetime'
+    __slots__ = []
 
     MONTHS = [
         ('01', 'January'),
@@ -463,21 +563,25 @@ class datetime(_column):
             registry = openerp.modules.registry.RegistryManager.get(cr.dbname)
             user = registry['res.users'].browse(cr, SUPERUSER_ID, uid)
             tz_name = user.tz
+        utc_timestamp = pytz.utc.localize(timestamp, is_dst=False) # UTC = no DST
         if tz_name:
             try:
-                utc = pytz.utc
                 context_tz = pytz.timezone(tz_name)
-                utc_timestamp = utc.localize(timestamp, is_dst=False) # UTC = no DST
                 return utc_timestamp.astimezone(context_tz)
             except Exception:
                 _logger.debug("failed to compute context/client-specific timestamp, "
                               "using the UTC value",
                               exc_info=True)
-        return timestamp
+        return utc_timestamp
+
+    @classmethod
+    def _as_display_name(cls, field, cr, uid, obj, value, context=None):
+        value = datetime.context_timestamp(cr, uid, DT.datetime.strptime(value, tools.DEFAULT_SERVER_DATETIME_FORMAT), context=context)
+        return tools.ustr(value.strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT))
 
 class binary(_column):
     _type = 'binary'
-    _symbol_c = '%s'
+    _classic_read = False
 
     # Binary values may be byte strings (python 2.6 byte array), but
     # the legacy OpenERP convention is to transfer and store binaries
@@ -485,17 +589,16 @@ class binary(_column):
     # unicode in some circumstances, hence the str() cast in symbol_f.
     # This str coercion will only work for pure ASCII unicode strings,
     # on purpose - non base64 data must be passed as a 8bit byte strings.
+    _symbol_c = '%s'
     _symbol_f = lambda symb: symb and Binary(str(symb)) or None
-
     _symbol_set = (_symbol_c, _symbol_f)
     _symbol_get = lambda self, x: x and str(x)
 
-    _classic_read = False
-    _prefetch = False
+    __slots__ = ['filters']
 
     def __init__(self, string='unknown', filters=None, **args):
-        _column.__init__(self, string=string, **args)
-        self.filters = filters
+        args['_prefetch'] = args.get('_prefetch', False)
+        _column.__init__(self, string=string, filters=filters, **args)
 
     def get(self, cr, obj, ids, name, user=None, context=None, values=None):
         if not context:
@@ -523,13 +626,13 @@ class binary(_column):
 
 class selection(_column):
     _type = 'selection'
+    __slots__ = ['selection']
 
     def __init__(self, selection, string='unknown', **args):
         if callable(selection):
             from openerp import api
             selection = api.expected(api.cr_uid_context, selection)
-        _column.__init__(self, string=string, **args)
-        self.selection = selection
+        _column.__init__(self, string=string, selection=selection, **args)
 
     def to_field_args(self):
         args = super(selection, self).to_field_args()
@@ -590,7 +693,10 @@ class many2one(_column):
     _symbol_f = lambda x: x or None
     _symbol_set = (_symbol_c, _symbol_f)
 
+    __slots__ = ['_obj', '_auto_join']
+
     def __init__(self, obj, string='unknown', auto_join=False, **args):
+        args['ondelete'] = args.get('ondelete', 'set null')
         _column.__init__(self, string=string, **args)
         self._obj = obj
         self._auto_join = auto_join
@@ -636,13 +742,14 @@ class many2one(_column):
 class one2many(_column):
     _classic_read = False
     _classic_write = False
-    _prefetch = False
     _type = 'one2many'
 
-    # one2many columns are not copied by default
-    copy = False
+    __slots__ = ['_obj', '_fields_id', '_limit', '_auto_join']
 
     def __init__(self, obj, fields_id, string='unknown', limit=None, auto_join=False, **args):
+        # one2many columns are not copied by default
+        args['copy'] = args.get('copy', False)
+        args['_prefetch'] = args.get('_prefetch', False)
         _column.__init__(self, string=string, **args)
         self._obj = obj
         self._fields_id = fields_id
@@ -664,74 +771,77 @@ class one2many(_column):
             context = dict(context or {})
             context.update(self._context)
 
-        res = dict((id, []) for id in ids)
-
+        # retrieve the records in the comodel
         comodel = obj.pool[self._obj].browse(cr, user, [], context)
         inverse = self._fields_id
         domain = self._domain(obj) if callable(self._domain) else self._domain
         domain = domain + [(inverse, 'in', ids)]
+        records = comodel.search(domain, limit=self._limit)
 
-        for record in comodel.search(domain, limit=self._limit):
-            # Note: record[inverse] can be a record or an integer!
-            assert int(record[inverse]) in res
-            res[int(record[inverse])].append(record.id)
+        result = {id: [] for id in ids}
+        # read the inverse of records without prefetching other fields on them
+        for record in records.with_context(prefetch_fields=False):
+            # record[inverse] may be a record or an integer
+            result[int(record[inverse])].append(record.id)
 
-        return res
+        return result
 
     def set(self, cr, obj, id, field, values, user=None, context=None):
         result = []
         context = dict(context or {})
         context.update(self._context)
-        context['no_store_function'] = True
         if not values:
             return
         obj = obj.pool[self._obj]
-        _table = obj._table
-        for act in values:
-            if act[0] == 0:
-                act[2][self._fields_id] = id
-                id_new = obj.create(cr, user, act[2], context=context)
-                result += obj._store_get_values(cr, user, [id_new], act[2].keys(), context)
-            elif act[0] == 1:
-                obj.write(cr, user, [act[1]], act[2], context=context)
-            elif act[0] == 2:
-                obj.unlink(cr, user, [act[1]], context=context)
-            elif act[0] == 3:
-                reverse_rel = obj._all_columns.get(self._fields_id)
-                assert reverse_rel, 'Trying to unlink the content of a o2m but the pointed model does not have a m2o'
-                # if the model has on delete cascade, just delete the row
-                if reverse_rel.column.ondelete == "cascade":
+        rec = obj.browse(cr, user, [], context=context)
+        with rec.env.norecompute():
+            _table = obj._table
+            for act in values:
+                if act[0] == 0:
+                    act[2][self._fields_id] = id
+                    id_new = obj.create(cr, user, act[2], context=context)
+                    result += obj._store_get_values(cr, user, [id_new], act[2].keys(), context)
+                elif act[0] == 1:
+                    obj.write(cr, user, [act[1]], act[2], context=context)
+                elif act[0] == 2:
                     obj.unlink(cr, user, [act[1]], context=context)
-                else:
-                    cr.execute('update '+_table+' set '+self._fields_id+'=null where id=%s', (act[1],))
-            elif act[0] == 4:
-                # table of the field (parent_model in case of inherit)
-                field_model = self._fields_id in obj.pool[self._obj]._columns and self._obj or obj.pool[self._obj]._all_columns[self._fields_id].parent_model
-                field_table = obj.pool[field_model]._table
-                cr.execute("select 1 from {0} where id=%s and {1}=%s".format(field_table, self._fields_id), (act[1], id))
-                if not cr.fetchone():
-                    # Must use write() to recompute parent_store structure if needed and check access rules
-                    obj.write(cr, user, [act[1]], {self._fields_id:id}, context=context or {})
-            elif act[0] == 5:
-                reverse_rel = obj._all_columns.get(self._fields_id)
-                assert reverse_rel, 'Trying to unlink the content of a o2m but the pointed model does not have a m2o'
-                # if the o2m has a static domain we must respect it when unlinking
-                domain = self._domain(obj) if callable(self._domain) else self._domain
-                extra_domain = domain or []
-                ids_to_unlink = obj.search(cr, user, [(self._fields_id,'=',id)] + extra_domain, context=context)
-                # If the model has cascade deletion, we delete the rows because it is the intended behavior,
-                # otherwise we only nullify the reverse foreign key column.
-                if reverse_rel.column.ondelete == "cascade":
-                    obj.unlink(cr, user, ids_to_unlink, context=context)
-                else:
-                    obj.write(cr, user, ids_to_unlink, {self._fields_id: False}, context=context)
-            elif act[0] == 6:
-                # Must use write() to recompute parent_store structure if needed
-                obj.write(cr, user, act[2], {self._fields_id:id}, context=context or {})
-                ids2 = act[2] or [0]
-                cr.execute('select id from '+_table+' where '+self._fields_id+'=%s and id <> ALL (%s)', (id,ids2))
-                ids3 = map(lambda x:x[0], cr.fetchall())
-                obj.write(cr, user, ids3, {self._fields_id:False}, context=context or {})
+                elif act[0] == 3:
+                    inverse_field = obj._fields.get(self._fields_id)
+                    assert inverse_field, 'Trying to unlink the content of a o2m but the pointed model does not have a m2o'
+                    # if the model has on delete cascade, just delete the row
+                    if inverse_field.ondelete == "cascade":
+                        obj.unlink(cr, user, [act[1]], context=context)
+                    else:
+                        cr.execute('update '+_table+' set '+self._fields_id+'=null where id=%s', (act[1],))
+                elif act[0] == 4:
+                    # table of the field (parent_model in case of inherit)
+                    field = obj.pool[self._obj]._fields[self._fields_id]
+                    field_model = field.base_field.model_name
+                    field_table = obj.pool[field_model]._table
+                    cr.execute("select 1 from {0} where id=%s and {1}=%s".format(field_table, self._fields_id), (act[1], id))
+                    if not cr.fetchone():
+                        # Must use write() to recompute parent_store structure if needed and check access rules
+                        obj.write(cr, user, [act[1]], {self._fields_id:id}, context=context or {})
+                elif act[0] == 5:
+                    inverse_field = obj._fields.get(self._fields_id)
+                    assert inverse_field, 'Trying to unlink the content of a o2m but the pointed model does not have a m2o'
+                    # if the o2m has a static domain we must respect it when unlinking
+                    domain = self._domain(obj) if callable(self._domain) else self._domain
+                    extra_domain = domain or []
+                    ids_to_unlink = obj.search(cr, user, [(self._fields_id,'=',id)] + extra_domain, context=context)
+                    # If the model has cascade deletion, we delete the rows because it is the intended behavior,
+                    # otherwise we only nullify the reverse foreign key column.
+                    if inverse_field.ondelete == "cascade":
+                        obj.unlink(cr, user, ids_to_unlink, context=context)
+                    else:
+                        obj.write(cr, user, ids_to_unlink, {self._fields_id: False}, context=context)
+                elif act[0] == 6:
+                    # Must use write() to recompute parent_store structure if needed
+                    obj.write(cr, user, act[2], {self._fields_id:id}, context=context or {})
+                    ids2 = act[2] or [0]
+                    cr.execute('select id from '+_table+' where '+self._fields_id+'=%s and id <> ALL (%s)', (id,ids2))
+                    ids3 = map(lambda x:x[0], cr.fetchall())
+                    obj.write(cr, user, ids3, {self._fields_id:False}, context=context or {})
         return result
 
     def search(self, cr, obj, args, name, value, offset=0, limit=None, uid=None, operator='like', context=None):
@@ -780,12 +890,14 @@ class many2many(_column):
     """
     _classic_read = False
     _classic_write = False
-    _prefetch = False
     _type = 'many2many'
+
+    __slots__ = ['_obj', '_rel', '_id1', '_id2', '_limit', '_auto_join']
 
     def __init__(self, obj, rel=None, id1=None, id2=None, string='unknown', limit=None, **args):
         """
         """
+        args['_prefetch'] = args.get('_prefetch', False)
         _column.__init__(self, string=string, **args)
         self._obj = obj
         if rel and '.' in rel:
@@ -795,6 +907,7 @@ class many2many(_column):
         self._id1 = id1
         self._id2 = id2
         self._limit = limit
+        self._auto_join = False
 
     def to_field_args(self):
         args = super(many2many, self).to_field_args()
@@ -822,6 +935,7 @@ class many2many(_column):
                                                'is not possible when source and destination models are '\
                                                'the same'
                 tbl = '%s_%s_rel' % tables
+                openerp.models.check_pg_name(tbl)
             if not col1:
                 col1 = '%s_id' % source_model._table
             if not col2:
@@ -831,16 +945,16 @@ class many2many(_column):
     def _get_query_and_where_params(self, cr, model, ids, values, where_params):
         """ Extracted from ``get`` to facilitate fine-tuning of the generated
             query. """
-        query = 'SELECT %(rel)s.%(id2)s, %(rel)s.%(id1)s \
-                   FROM %(rel)s, %(from_c)s \
-                  WHERE %(rel)s.%(id1)s IN %%s \
-                    AND %(rel)s.%(id2)s = %(tbl)s.id \
-                 %(where_c)s  \
-                 %(order_by)s \
-                 %(limit)s \
-                 OFFSET %(offset)d' \
-                 % values
-        return query, where_params
+        query = """SELECT %(rel)s.%(id2)s, %(rel)s.%(id1)s
+                     FROM %(rel)s, %(from_c)s
+                    WHERE %(where_c)s
+                      AND %(rel)s.%(id1)s IN %%s
+                      AND %(rel)s.%(id2)s = %(tbl)s.id
+                      %(order_by)s
+                      %(limit)s
+                   OFFSET %(offset)d
+                """ % values
+        return query, where_params + [tuple(ids)]
 
     def get(self, cr, model, ids, name, user=None, offset=0, context=None, values=None):
         if not context:
@@ -866,28 +980,31 @@ class many2many(_column):
 
         wquery = obj._where_calc(cr, user, domain, context=context)
         obj._apply_ir_rules(cr, user, wquery, 'read', context=context)
+        order_by = obj._generate_order_by(cr, user, None, wquery, context=context)
         from_c, where_c, where_params = wquery.get_sql()
-        if where_c:
-            where_c = ' AND ' + where_c
-
-        order_by = ' ORDER BY "%s".%s' %(obj._table, obj._order.split(',')[0])
+        if not where_c:
+            where_c = '1=1'
 
         limit_str = ''
         if self._limit is not None:
             limit_str = ' LIMIT %d' % self._limit
 
-        query, where_params = self._get_query_and_where_params(cr, model, ids, {'rel': rel,
-               'from_c': from_c,
-               'tbl': obj._table,
-               'id1': id1,
-               'id2': id2,
-               'where_c': where_c,
-               'limit': limit_str,
-               'order_by': order_by,
-               'offset': offset,
-                }, where_params)
+        query_parts = {
+            'rel': rel,
+            'from_c': from_c,
+            'tbl': obj._table,
+            'id1': id1,
+            'id2': id2,
+            'where_c': where_c,
+            'limit': limit_str,
+            'order_by': order_by,
+            'offset': offset,
+        }
+        query, where_params = self._get_query_and_where_params(cr, model, ids,
+                                                               query_parts,
+                                                               where_params)
 
-        cr.execute(query, [tuple(ids),] + where_params)
+        cr.execute(query, where_params)
         for r in cr.fetchall():
             res[r[1]].append(r[0])
         return res
@@ -947,6 +1064,8 @@ def get_nice_size(value):
         size = value
     elif value: # this is supposed to be a string
         size = len(value)
+        if size < 12:  # suppose human size
+            return value
     return tools.human_size(size)
 
 # See http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char
@@ -1177,43 +1296,79 @@ class function(_column):
         }
 
     """
-    _classic_read = False
-    _classic_write = False
-    _prefetch = False
-    _type = 'function'
     _properties = True
 
-    # function fields are not copied by default
-    copy = False
+    __slots__ = [
+        '_type',
+        '_classic_read',
+        '_classic_write',
+        '_symbol_c',
+        '_symbol_f',
+        '_symbol_set',
+        '_symbol_get',
+
+        '_fnct',
+        '_arg',
+        '_fnct_inv',
+        '_fnct_inv_arg',
+        '_fnct_search',
+        '_multi',
+        'store',
+
+        '_digits',
+        '_digits_compute',
+        'selection',
+        '_obj',
+    ]
+
+    @property
+    def digits(self):
+        if self._digits_compute:
+            with _get_cursor() as cr:
+                return self._digits_compute(cr)
+        else:
+            return self._digits
 
 #
 # multi: compute several fields in one call
 #
     def __init__(self, fnct, arg=None, fnct_inv=None, fnct_inv_arg=None, type='float', fnct_search=None, obj=None, store=False, multi=False, **args):
+        self._classic_read = False
+        self._classic_write = False
+        self._prefetch = False
+        self._symbol_c = '%s'
+        self._symbol_f = _symbol_set
+        self._symbol_set = (self._symbol_c, self._symbol_f)
+        self._symbol_get = None
+
+        # pop attributes that should not be assigned to self
+        self._digits = args.pop('digits', (16,2))
+        self._digits_compute = args.pop('digits_compute', None)
+        self._obj = args.pop('relation', obj)
+
+        # function fields are not copied by default
+        args['copy'] = args.get('copy', False)
+
         _column.__init__(self, **args)
-        self._obj = obj
-        self._fnct = fnct
-        self._fnct_inv = fnct_inv
-        self._arg = arg
-        self._multi = multi
-        if 'relation' in args:
-            self._obj = args['relation']
 
-        self.digits = args.get('digits', (16,2))
-        self.digits_compute = args.get('digits_compute', None)
-        if callable(args.get('selection')):
-            from openerp import api
-            self.selection = api.expected(api.cr_uid_context, args['selection'])
-
-        self._fnct_inv_arg = fnct_inv_arg
-        if not fnct_inv:
-            self.readonly = 1
         self._type = type
+        self._fnct = fnct
+        self._arg = arg
+        self._fnct_inv = fnct_inv
+        self._fnct_inv_arg = fnct_inv_arg
         self._fnct_search = fnct_search
         self.store = store
+        self._multi = multi
+
+        if not fnct_inv:
+            self.readonly = 1
 
         if not fnct_search and not store:
             self.selectable = False
+
+        if callable(args.get('selection')):
+            from openerp import api
+            self.selection = api.expected(api.cr_uid_context, args['selection'])
 
         if store:
             if self._type != 'many2one':
@@ -1229,6 +1384,10 @@ class function(_column):
             self._symbol_c = char._symbol_c
             self._symbol_f = lambda x: _symbol_set_char(self, x)
             self._symbol_set = (self._symbol_c, self._symbol_f)
+        elif type == 'float':
+            self._symbol_c = float._symbol_c
+            self._symbol_f = lambda x: _symbol_set_float(self, x)
+            self._symbol_set = (self._symbol_c, self._symbol_f)
         else:
             type_class = globals().get(type)
             if type_class is not None:
@@ -1236,10 +1395,21 @@ class function(_column):
                 self._symbol_f = type_class._symbol_f
                 self._symbol_set = type_class._symbol_set
 
+    def new(self, _computed_field=False, **args):
+        if _computed_field:
+            # field is computed, we need an instance of a non-function column
+            type_class = globals()[self._type]
+            return type_class(**args)
+        else:
+            # HACK: function fields are tricky to recreate, simply return a copy
+            import copy
+            return copy.copy(self)
+
     def to_field_args(self):
         args = super(function, self).to_field_args()
+        args['store'] = bool(self.store)
         if self._type in ('float',):
-            args['digits'] = self.digits_compute or self.digits
+            args['digits'] = self._digits_compute or self._digits
         elif self._type in ('selection', 'reference'):
             args['selection'] = self.selection
         elif self._type in ('many2one', 'one2many', 'many2many'):
@@ -1247,14 +1417,7 @@ class function(_column):
         return args
 
     def digits_change(self, cr):
-        if self._type == 'float':
-            if self.digits_compute:
-                self.digits = self.digits_compute(cr)
-            if self.digits:
-                precision, scale = self.digits
-                self._symbol_set = ('%s', lambda x: float_repr(float_round(__builtin__.float(x or 0.0),
-                                                                           precision_digits=scale),
-                                                               precision_digits=scale))
+        pass
 
     def search(self, cr, uid, obj, name, args, context=None):
         if not self._fnct_search:
@@ -1293,9 +1456,9 @@ class function(_column):
         # if we already have a value, don't recompute it.
         # This happen if case of stored many2one fields
         if values and not multi and name in values[0]:
-            result = {v['id']: v[name] for v in values}
+            result = dict((v['id'], v[name]) for v in values)
         elif values and multi and all(n in values[0] for n in name):
-            result = {v['id']: dict((n, v[n]) for n in name) for v in values}
+            result = dict((v['id'], dict((n, v[n]) for n in name)) for v in values)
         else:
             result = self._fnct(obj, cr, uid, ids, name, self._arg, context)
         if multi:
@@ -1342,14 +1505,15 @@ class related(function):
            'bar': fields.related('foo_id', 'frol', type='char', string='Frol of Foo'),
         }
     """
+    __slots__ = ['arg', '_relations']
 
-    def _fnct_search(self, tobj, cr, uid, obj=None, name=None, domain=None, context=None):
+    def _related_search(self, tobj, cr, uid, obj=None, name=None, domain=None, context=None):
         # assume self._arg = ('foo', 'bar', 'baz')
         # domain = [(name, op, val)]   =>   search [('foo.bar.baz', op, val)]
         field = '.'.join(self._arg)
         return map(lambda x: (field, x[1], x[2]), domain)
 
-    def _fnct_write(self, obj, cr, uid, ids, field_name, values, args, context=None):
+    def _related_write(self, obj, cr, uid, ids, field_name, values, args, context=None):
         if isinstance(ids, (int, long)):
             ids = [ids]
         for instance in obj.browse(cr, uid, ids, context=context):
@@ -1360,7 +1524,7 @@ class related(function):
                 # write on the last field of the target record
                 instance.write({self.arg[-1]: values})
 
-    def _fnct_read(self, obj, cr, uid, ids, field_name, args, context=None):
+    def _related_read(self, obj, cr, uid, ids, field_name, args, context=None):
         res = {}
         for record in obj.browse(cr, SUPERUSER_ID, ids, context=context):
             value = record
@@ -1387,13 +1551,14 @@ class related(function):
     def __init__(self, *arg, **args):
         self.arg = arg
         self._relations = []
-        super(related, self).__init__(self._fnct_read, arg, self._fnct_write, fnct_inv_arg=arg, fnct_search=self._fnct_search, **args)
+        super(related, self).__init__(self._related_read, arg, self._related_write, fnct_inv_arg=arg, fnct_search=self._related_search, **args)
         if self.store is True:
             # TODO: improve here to change self.store = {...} according to related objects
             pass
 
 
-class sparse(function):   
+class sparse(function):
+    __slots__ = ['serialization_field']
 
     def convert_value(self, obj, cr, uid, record, value, read_value, context=None):        
         """
@@ -1423,6 +1588,8 @@ class sparse(function):
         """
 
         if self._type == 'many2many':
+            if not value:
+                return []
             assert value[0][0] == 6, 'Unsupported m2m value for sparse field: %s' % value
             return value[0][2]
 
@@ -1442,8 +1609,7 @@ class sparse(function):
             return read_value
         return value
 
-
-    def _fnct_write(self,obj,cr, uid, ids, field_name, value, args, context=None):
+    def _sparse_write(self,obj,cr, uid, ids, field_name, value, args, context=None):
         if not type(ids) == list:
             ids = [ids]
         records = obj.browse(cr, uid, ids, context=context)
@@ -1458,7 +1624,7 @@ class sparse(function):
             obj.write(cr, uid, ids, {self.serialization_field: serialized}, context=context)
         return True
 
-    def _fnct_read(self, obj, cr, uid, ids, field_names, args, context=None):
+    def _sparse_read(self, obj, cr, uid, ids, field_names, args, context=None):
         results = {}
         records = obj.browse(cr, uid, ids, context=context)
         for record in records:
@@ -1484,8 +1650,7 @@ class sparse(function):
 
     def __init__(self, serialization_field, **kwargs):
         self.serialization_field = serialization_field
-        super(sparse, self).__init__(self._fnct_read, fnct_inv=self._fnct_write, multi='__sparse_multi', **kwargs)
-     
+        super(sparse, self).__init__(self._sparse_read, fnct_inv=self._sparse_write, multi='__sparse_multi', **kwargs)
 
 
 # ---------------------------------------------------------
@@ -1493,19 +1658,21 @@ class sparse(function):
 # ---------------------------------------------------------
 
 class dummy(function):
-    def _fnct_search(self, tobj, cr, uid, obj=None, name=None, domain=None, context=None):
+    __slots__ = ['arg', '_relations']
+
+    def _dummy_search(self, tobj, cr, uid, obj=None, name=None, domain=None, context=None):
         return []
 
-    def _fnct_write(self, obj, cr, uid, ids, field_name, values, args, context=None):
+    def _dummy_write(self, obj, cr, uid, ids, field_name, values, args, context=None):
         return False
 
-    def _fnct_read(self, obj, cr, uid, ids, field_name, args, context=None):
+    def _dummy_read(self, obj, cr, uid, ids, field_name, args, context=None):
         return {}
 
     def __init__(self, *arg, **args):
         self.arg = arg
         self._relations = []
-        super(dummy, self).__init__(self._fnct_read, arg, self._fnct_write, fnct_inv_arg=arg, fnct_search=self._fnct_search, **args)
+        super(dummy, self).__init__(self._dummy_read, arg, self._dummy_write, fnct_inv_arg=arg, fnct_search=self._dummy_search, **args)
 
 # ---------------------------------------------------------
 # Serialized fields
@@ -1516,51 +1683,62 @@ class serialized(_column):
     
         Note: only plain components allowed.
     """
-    
+    _type = 'serialized'
+    __slots__ = []
+
     def _symbol_set_struct(val):
         return simplejson.dumps(val)
 
     def _symbol_get_struct(self, val):
         return simplejson.loads(val or '{}')
-    
-    _prefetch = False
-    _type = 'serialized'
 
     _symbol_c = '%s'
     _symbol_f = _symbol_set_struct
     _symbol_set = (_symbol_c, _symbol_f)
     _symbol_get = _symbol_get_struct
 
+    def __init__(self, *args, **kwargs):
+        kwargs['_prefetch'] = kwargs.get('_prefetch', False)
+        super(serialized, self).__init__(*args, **kwargs)
+
 # TODO: review completly this class for speed improvement
 class property(function):
+    __slots__ = []
 
     def to_field_args(self):
         args = super(property, self).to_field_args()
         args['company_dependent'] = True
         return args
 
-    def _fnct_search(self, tobj, cr, uid, obj, name, domain, context=None):
+    def _property_search(self, tobj, cr, uid, obj, name, domain, context=None):
         ir_property = obj.pool['ir.property']
         result = []
         for field, operator, value in domain:
             result += ir_property.search_multi(cr, uid, name, tobj._name, operator, value, context=context)
         return result
 
-    def _fnct_write(self, obj, cr, uid, id, prop_name, value, obj_dest, context=None):
+    def _property_write(self, obj, cr, uid, id, prop_name, value, obj_dest, context=None):
         ir_property = obj.pool['ir.property']
         ir_property.set_multi(cr, uid, prop_name, obj._name, {id: value}, context=context)
         return True
 
-    def _fnct_read(self, obj, cr, uid, ids, prop_names, obj_dest, context=None):
+    def _property_read(self, obj, cr, uid, ids, prop_names, obj_dest, context=None):
         ir_property = obj.pool['ir.property']
 
         res = {id: {} for id in ids}
         for prop_name in prop_names:
-            column = obj._all_columns[prop_name].column
+            field = obj._fields[prop_name]
             values = ir_property.get_multi(cr, uid, prop_name, obj._name, ids, context=context)
-            if column._type == 'many2one':
+            if field.type == 'many2one':
+                # name_get the non-null values as SUPERUSER_ID
+                vals = sum(set(filter(None, values.itervalues())),
+                           obj.pool[field.comodel_name].browse(cr, uid, [], context=context))
+                vals_name = dict(vals.sudo().name_get()) if vals else {}
                 for id, value in values.iteritems():
-                    res[id][prop_name] = value.name_get()[0] if value else False
+                    ng = False
+                    if value and value.id in vals_name:
+                        ng = value.id, vals_name[value.id]
+                    res[id][prop_name] = ng
             else:
                 for id, value in values.iteritems():
                     res[id][prop_name] = value
@@ -1570,12 +1748,12 @@ class property(function):
     def __init__(self, **args):
         if 'view_load' in args:
             _logger.warning("view_load attribute is deprecated on ir.fields. Args: %r", args)
-        obj = 'relation' in args and args['relation'] or ''
+        args = dict(args)
+        args['obj'] = args.pop('relation', '') or args.get('obj', '')
         super(property, self).__init__(
-            fnct=self._fnct_read,
-            fnct_inv=self._fnct_write,
-            fnct_search=self._fnct_search,
-            obj=obj,
+            fnct=self._property_read,
+            fnct_inv=self._property_write,
+            fnct_search=self._property_search,
             multi='properties',
             **args
         )
@@ -1609,6 +1787,8 @@ class column_info(object):
             contains it i.e in case of multilevel inheritance, ``None`` for
             local columns.
     """
+    __slots__ = ['name', 'column', 'parent_model', 'parent_column', 'original_parent']
+
     def __init__(self, name, column, parent_model=None, parent_column=None, original_parent=None):
         self.name = name
         self.column = column
@@ -1620,6 +1800,3 @@ class column_info(object):
         return '%s(%s, %s, %s, %s, %s)' % (
             self.__class__.__name__, self.name, self.column,
             self.parent_model, self.parent_column, self.original_parent)
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

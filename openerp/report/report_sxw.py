@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 from lxml import etree
 import StringIO
 import cStringIO
@@ -32,12 +14,14 @@ import logging
 import openerp.tools as tools
 import zipfile
 import common
+from openerp.exceptions import AccessError
 
 import openerp
 from openerp import SUPERUSER_ID
 from openerp.osv.fields import float as float_field, function as function_field, datetime as datetime_field
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
+from openerp.tools.safe_eval import safe_eval as eval
 
 _logger = logging.getLogger(__name__)
 
@@ -192,20 +176,17 @@ class rml_parse(object):
         elif (hasattr(obj, '_field') and\
                 isinstance(obj._field, (float_field, function_field)) and\
                 obj._field.digits):
-                d = obj._field.digits[1] or DEFAULT_DIGITS
+                d = obj._field.digits[1]
+                if not d and d is not 0:
+                    d = DEFAULT_DIGITS
         return d
 
     def formatLang(self, value, digits=None, date=False, date_time=False, grouping=True, monetary=False, dp=False, currency_obj=False):
-        """
-            Assuming 'Account' decimal.precision=3:
-                formatLang(value) -> digits=2 (default)
-                formatLang(value, digits=4) -> digits=4
-                formatLang(value, dp='Account') -> digits=3
-                formatLang(value, digits=5, dp='Account') -> digits=5
-        """
         if digits is None:
             if dp:
                 digits = self.get_digits(dp=dp)
+            elif currency_obj:
+                digits = currency_obj.decimal_places
             else:
                 digits = self.get_digits(value)
 
@@ -244,12 +225,13 @@ class rml_parse(object):
         res = self.lang_dict['lang_obj'].format('%.' + str(digits) + 'f', value, grouping=grouping, monetary=monetary)
         if currency_obj:
             if currency_obj.position == 'after':
-                res='%s %s'%(res,currency_obj.symbol)
+                res = u'%s\N{NO-BREAK SPACE}%s' % (res, currency_obj.symbol)
             elif currency_obj and currency_obj.position == 'before':
-                res='%s %s'%(currency_obj.symbol, res)
+                res = u'%s\N{NO-BREAK SPACE}%s' % (currency_obj.symbol, res)
         return res
 
-    def display_address(self, address_record):
+    def display_address(self, address_record, without_company=False):
+        # FIXME handle `without_company`
         return address_record.contact_address
 
     def repeatIn(self, lst, name,nodes_parent=False):
@@ -440,9 +422,9 @@ class report_sxw(report_rml, preprocess.report):
                             'res_id': obj.id,
                             }, context=ctx
                         )
-                    except Exception:
+                    except AccessError:
                         #TODO: should probably raise a proper osv_except instead, shouldn't we? see LP bug #325632
-                        _logger.error('Could not create saved report attachment', exc_info=True)
+                        _logger.info('Could not create saved report attachment', exc_info=True)
                 results.append(result)
             if results:
                 if results[0][1]=='pdf':
@@ -630,6 +612,3 @@ class report_sxw(report_rml, preprocess.report):
         create_doc = self.generators['makohtml2html']
         html = create_doc(mako_html,html_parser.localcontext)
         return html,'html'
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

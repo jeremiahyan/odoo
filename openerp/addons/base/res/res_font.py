@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2013 OpenERP SA (<http://openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from reportlab.pdfbase import ttfonts
 from openerp.modules.registry import RegistryManager
@@ -98,17 +80,8 @@ class res_font(osv.Model):
                 font = ttfonts.TTFontFile(font_path)
                 _logger.debug("Found font %s at %s", font.name, font_path)
                 found_fonts.append((font.familyName, font.name, font_path, font.styleName))
-            except KeyError, ex:
-                if ex.args and ex.args[0] == 'head':
-                    # Sometimes, the system can have a lot of Bitmap fonts, and
-                    # in this case, Reportlab can't load the 'head' table from
-                    # the structure of the TTF file (ex: NISC18030.ttf)
-                    # In this case, we have to bypass the loading of this font!
-                    _logger.warning("Could not register Fond %s (Old Bitmap font)", font_path)
-                else:
-                    raise
-            except ttfonts.TTFError:
-                _logger.warning("Could not register Font %s", font_path)
+            except Exception, ex:
+                _logger.warning("Could not register Font %s: %s", font_path, ex)
 
         for family, name, path, mode in found_fonts:
             if not self.search(cr, uid, [('family', '=', family), ('name', '=', name)], context=context):

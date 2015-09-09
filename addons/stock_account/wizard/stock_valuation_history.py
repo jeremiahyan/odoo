@@ -8,7 +8,7 @@ class wizard_valuation_history(osv.osv_memory):
     _name = 'wizard.valuation.history'
     _description = 'Wizard that opens the stock valuation history table'
     _columns = {
-        'choose_date': fields.boolean('Choose a Particular Date'),
+        'choose_date': fields.boolean('Inventory at Date'),
         'date': fields.datetime('Date', required=True),
     }
 
@@ -29,7 +29,7 @@ class wizard_valuation_history(osv.osv_memory):
             'domain': "[('date', '<=', '" + data['date'] + "')]",
             'name': _('Stock Value At Date'),
             'view_type': 'form',
-            'view_mode': 'tree,graph',
+            'view_mode': 'tree',
             'res_model': 'stock.history',
             'type': 'ir.actions.act_window',
             'context': ctx,
@@ -46,23 +46,44 @@ class stock_history(osv.osv):
         if context is None:
             context = {}
         date = context.get('history_date')
-        prod_dict = {}
         if 'inventory_value' in fields:
+            group_lines = {}
             for line in res:
-                if '__domain' in line:
-                    lines = self.search(cr, uid, line['__domain'], context=context)
-                    inv_value = 0.0
-                    product_tmpl_obj = self.pool.get("product.template")
-                    lines_rec = self.browse(cr, uid, lines, context=context)
-                    for line_rec in lines_rec:
-                        if line_rec.product_id.cost_method == 'real':
-                            price = line_rec.price_unit_on_quant
-                        else:
-                            if not line_rec.product_id.id in prod_dict:
-                                prod_dict[line_rec.product_id.id] = product_tmpl_obj.get_history_price(cr, uid, line_rec.product_id.product_tmpl_id.id, line_rec.company_id.id, date=date, context=context)
-                            price = prod_dict[line_rec.product_id.id]
-                        inv_value += price * line_rec.quantity
-                    line['inventory_value'] = inv_value
+                domain = line.get('__domain', [])
+                group_lines.setdefault(str(domain), self.search(cr, uid, domain, context=context))
+            line_ids = set()
+            for ids in group_lines.values():
+                for product_id in ids:
+                    line_ids.add(product_id)
+            line_ids = list(line_ids)
+            lines_rec = {}
+            if line_ids:
+                cr.execute('SELECT id, product_id, price_unit_on_quant, company_id, quantity FROM stock_history WHERE id in %s', (tuple(line_ids),))
+                lines_rec = cr.dictfetchall()
+            lines_dict = dict((line['id'], line) for line in lines_rec)
+            product_ids = list(set(line_rec['product_id'] for line_rec in lines_rec))
+            products_rec = self.pool['product.product'].read(cr, uid, product_ids, ['cost_method', 'product_tmpl_id'], context=context)
+            products_dict = dict((product['id'], product) for product in products_rec)
+            cost_method_product_tmpl_ids = list(set(product['product_tmpl_id'][0] for product in products_rec if product['cost_method'] != 'real'))
+            histories = []
+            if cost_method_product_tmpl_ids:
+                cr.execute('SELECT DISTINCT ON (product_template_id, company_id) product_template_id, company_id, cost FROM product_price_history WHERE product_template_id in %s AND datetime <= %s ORDER BY product_template_id, company_id, datetime DESC', (tuple(cost_method_product_tmpl_ids), date))
+                histories = cr.dictfetchall()
+            histories_dict = {}
+            for history in histories:
+                histories_dict[(history['product_template_id'], history['company_id'])] = history['cost']
+            for line in res:
+                inv_value = 0.0
+                lines = group_lines.get(str(line.get('__domain', [])))
+                for line_id in lines:
+                    line_rec = lines_dict[line_id]
+                    product = products_dict[line_rec['product_id']]
+                    if product['cost_method'] == 'real':
+                        price = line_rec['price_unit_on_quant']
+                    else:
+                        price = histories_dict.get((product['product_tmpl_id'][0], line_rec['company_id']), 0.0)
+                    inv_value += price * line_rec['quantity']
+                line['inventory_value'] = inv_value
         return res
 
     def _get_inventory_value(self, cr, uid, ids, name, attr, context=None):
@@ -84,11 +105,13 @@ class stock_history(osv.osv):
         'company_id': fields.many2one('res.company', 'Company'),
         'product_id': fields.many2one('product.product', 'Product', required=True),
         'product_categ_id': fields.many2one('product.category', 'Product Category', required=True),
-        'quantity': fields.integer('Product Quantity'),
+        'quantity': fields.float('Product Quantity'),
         'date': fields.datetime('Operation Date'),
         'price_unit_on_quant': fields.float('Value'),
         'inventory_value': fields.function(_get_inventory_value, string="Inventory Value", type='float', readonly=True),
-        'source': fields.char('Source')
+        'source': fields.char('Source'),
+        'product_template_id': fields.many2one('product.template', 'Product Template', required=True),
+        'serial_number': fields.char('Serial Number', required=True),
     }
 
     def init(self, cr):
@@ -101,10 +124,12 @@ class stock_history(osv.osv):
                 company_id,
                 product_id,
                 product_categ_id,
+                product_template_id,
                 SUM(quantity) as quantity,
                 date,
                 price_unit_on_quant,
-                source
+                source,
+                serial_number
                 FROM
                 ((SELECT
                     stock_move.id::text || '-' || quant.id::text AS id,
@@ -113,24 +138,35 @@ class stock_history(osv.osv):
                     dest_location.id AS location_id,
                     dest_location.company_id AS company_id,
                     stock_move.product_id AS product_id,
+                    product_template.id AS product_template_id,
                     product_template.categ_id AS product_categ_id,
                     quant.qty AS quantity,
                     stock_move.date AS date,
                     quant.cost as price_unit_on_quant,
-                    stock_move.origin AS source
+                    stock_move.origin AS source,
+                    stock_production_lot.name AS serial_number
                 FROM
-                    stock_quant as quant, stock_quant_move_rel, stock_move
+                    stock_quant as quant
                 LEFT JOIN
-                   stock_location dest_location ON stock_move.location_dest_id = dest_location.id
+                    stock_quant_move_rel ON stock_quant_move_rel.quant_id = quant.id
+                LEFT JOIN
+                    stock_move ON stock_move.id = stock_quant_move_rel.move_id
+                LEFT JOIN
+                    stock_production_lot ON stock_production_lot.id = quant.lot_id
+                LEFT JOIN
+                    stock_location dest_location ON stock_move.location_dest_id = dest_location.id
                 LEFT JOIN
                     stock_location source_location ON stock_move.location_id = source_location.id
                 LEFT JOIN
                     product_product ON product_product.id = stock_move.product_id
                 LEFT JOIN
                     product_template ON product_template.id = product_product.product_tmpl_id
-                WHERE stock_move.state = 'done' AND dest_location.usage in ('internal', 'transit') AND stock_quant_move_rel.quant_id = quant.id
-                AND stock_quant_move_rel.move_id = stock_move.id AND ((source_location.company_id is null and dest_location.company_id is not null) or
-                (source_location.company_id is not null and dest_location.company_id is null) or source_location.company_id != dest_location.company_id)
+                WHERE quant.qty>0 AND stock_move.state = 'done' AND dest_location.usage in ('internal', 'transit')
+                AND (
+                    (source_location.company_id is null and dest_location.company_id is not null) or
+                    (source_location.company_id is not null and dest_location.company_id is null) or
+                    source_location.company_id != dest_location.company_id or
+                    source_location.usage not in ('internal', 'transit'))
                 ) UNION
                 (SELECT
                     '-' || stock_move.id::text || '-' || quant.id::text AS id,
@@ -139,13 +175,21 @@ class stock_history(osv.osv):
                     source_location.id AS location_id,
                     source_location.company_id AS company_id,
                     stock_move.product_id AS product_id,
+                    product_template.id AS product_template_id,
                     product_template.categ_id AS product_categ_id,
                     - quant.qty AS quantity,
                     stock_move.date AS date,
                     quant.cost as price_unit_on_quant,
-                    stock_move.origin AS source
+                    stock_move.origin AS source,
+                    stock_production_lot.name AS serial_number
                 FROM
-                    stock_quant as quant, stock_quant_move_rel, stock_move
+                    stock_quant as quant
+                LEFT JOIN
+                    stock_quant_move_rel ON stock_quant_move_rel.quant_id = quant.id
+                LEFT JOIN
+                    stock_move ON stock_move.id = stock_quant_move_rel.move_id
+                LEFT JOIN
+                    stock_production_lot ON stock_production_lot.id = quant.lot_id
                 LEFT JOIN
                     stock_location source_location ON stock_move.location_id = source_location.id
                 LEFT JOIN
@@ -154,10 +198,13 @@ class stock_history(osv.osv):
                     product_product ON product_product.id = stock_move.product_id
                 LEFT JOIN
                     product_template ON product_template.id = product_product.product_tmpl_id
-                WHERE stock_move.state = 'done' AND source_location.usage in ('internal', 'transit') AND stock_quant_move_rel.quant_id = quant.id
-                AND stock_quant_move_rel.move_id = stock_move.id AND ((dest_location.company_id is null and source_location.company_id is not null) or
-                (dest_location.company_id is not null and source_location.company_id is null) or dest_location.company_id != source_location.company_id)
+                WHERE quant.qty>0 AND stock_move.state = 'done' AND source_location.usage in ('internal', 'transit')
+                AND (
+                    (dest_location.company_id is null and source_location.company_id is not null) or
+                    (dest_location.company_id is not null and source_location.company_id is null) or
+                    dest_location.company_id != source_location.company_id or
+                    dest_location.usage not in ('internal', 'transit'))
                 ))
                 AS foo
-                GROUP BY move_id, location_id, company_id, product_id, product_categ_id, date, price_unit_on_quant, source
+                GROUP BY move_id, location_id, company_id, product_id, product_categ_id, date, price_unit_on_quant, source, product_template_id, serial_number
             )""")

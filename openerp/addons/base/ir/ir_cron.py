@@ -1,29 +1,12 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-TODAY OpenERP S.A. <http://www.openerp.com>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
 import threading
 import time
 import psycopg2
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import pytz
 
 import openerp
 from openerp import SUPERUSER_ID, netsvc, api
@@ -32,6 +15,7 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.safe_eval import safe_eval as eval
 from openerp.tools.translate import _
 from openerp.modules import load_information_from_description_file
+from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -84,7 +68,6 @@ class ir_cron(osv.osv):
         'interval_type' : 'months',
         'numbercall' : 1,
         'active' : 1,
-        'doall' : 1
     }
 
     def _check_args(self, cr, uid, ids, context=None):
@@ -98,6 +81,14 @@ class ir_cron(osv.osv):
     _constraints = [
         (_check_args, 'Invalid arguments', ['args']),
     ]
+
+    def method_direct_trigger(self, cr, uid, ids, context=None):
+        if context is None:
+            context={}
+        cron_obj = self.browse(cr, uid, ids, context=context)
+        for cron in cron_obj:
+            self._callback(cr, uid, cron_obj.model, cron_obj.function, cron_obj.args, cron_obj.id)
+        return True
 
     def _handle_callback_exception(self, cr, uid, model_name, method_name, args, job_id, job_exception):
         """ Method called when an exception is raised by a job.
@@ -149,18 +140,18 @@ class ir_cron(osv.osv):
         except Exception, e:
             self._handle_callback_exception(cr, uid, model_name, method_name, args, job_id, e)
 
-    def _process_job(self, cr, job, cron_cr):
+    def _process_job(self, job_cr, job, cron_cr):
         """ Run a given job taking care of the repetition.
 
-        :param cr: cursor to use to execute the job, safe to commit/rollback
+        :param job_cr: cursor to use to execute the job, safe to commit/rollback
         :param job: job to be run (as a dictionary).
         :param cron_cr: cursor holding lock on the cron job row, to use to update the next exec date,
             must not be committed/rolled back!
         """
         try:
             with api.Environment.manage():
-                now = datetime.now() 
-                nextcall = datetime.strptime(job['nextcall'], DEFAULT_SERVER_DATETIME_FORMAT)
+                now = fields.datetime.context_timestamp(job_cr, job['user_id'], datetime.now())
+                nextcall = fields.datetime.context_timestamp(job_cr, job['user_id'], datetime.strptime(job['nextcall'], DEFAULT_SERVER_DATETIME_FORMAT))
                 numbercall = job['numbercall']
 
                 ok = False
@@ -168,7 +159,7 @@ class ir_cron(osv.osv):
                     if numbercall > 0:
                         numbercall -= 1
                     if not ok or job['doall']:
-                        self._callback(cr, job['user_id'], job['model'], job['function'], job['args'], job['id'])
+                        self._callback(job_cr, job['user_id'], job['model'], job['function'], job['args'], job['id'])
                     if numbercall:
                         nextcall += _intervalTypes[job['interval_type']](job['interval_number'])
                     ok = True
@@ -176,11 +167,11 @@ class ir_cron(osv.osv):
                 if not numbercall:
                     addsql = ', active=False'
                 cron_cr.execute("UPDATE ir_cron SET nextcall=%s, numbercall=%s"+addsql+" WHERE id=%s",
-                           (nextcall.strftime(DEFAULT_SERVER_DATETIME_FORMAT), numbercall, job['id']))
-                self.invalidate_cache(cr, SUPERUSER_ID)
+                           (nextcall.astimezone(pytz.UTC).strftime(DEFAULT_SERVER_DATETIME_FORMAT), numbercall, job['id']))
+                self.invalidate_cache(job_cr, SUPERUSER_ID)
 
         finally:
-            cr.commit()
+            job_cr.commit()
             cron_cr.commit()
 
     @classmethod
@@ -277,9 +268,9 @@ class ir_cron(osv.osv):
                        (tuple(ids),), log_exceptions=False)
         except psycopg2.OperationalError:
             cr.rollback() # early rollback to allow translations to work for the user feedback
-            raise osv.except_osv(_("Record cannot be modified right now"),
-                                 _("This cron task is currently being executed and may not be modified, "
-                                  "please try again in a few minutes"))
+            raise UserError(_("Record cannot be modified right now: "
+                                "This cron task is currently being executed and may not be modified "
+                                "Please try again in a few minutes"))
 
     def create(self, cr, uid, vals, context=None):
         res = super(ir_cron, self).create(cr, uid, vals, context=context)
@@ -295,4 +286,18 @@ class ir_cron(osv.osv):
         res = super(ir_cron, self).unlink(cr, uid, ids, context=context)
         return res
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+    def try_write(self, cr, uid, ids, values, context=None):
+        try:
+            with cr.savepoint():
+                cr.execute("""SELECT id FROM "%s" WHERE id IN %%s FOR UPDATE NOWAIT""" % self._table,
+                           (tuple(ids),), log_exceptions=False)
+        except psycopg2.OperationalError:
+            pass
+        else:
+            return super(ir_cron, self).write(cr, uid, ids, values, context=context)
+        return False
+
+    def toggle(self, cr, uid, ids, model, domain, context=None):
+        active = bool(self.pool[model].search_count(cr, uid, domain, context=context))
+
+        return self.try_write(cr, uid, ids, {'active': active}, context=context)

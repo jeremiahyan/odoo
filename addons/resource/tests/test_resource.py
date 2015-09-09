@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (c) 2013-TODAY OpenERP S.A. <http://www.openerp.com>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -28,6 +10,7 @@ from openerp.addons.resource.tests.common import TestResourceCommon
 class TestResource(TestResourceCommon):
 
     def test_00_intervals(self):
+        cr, uid = self.cr, self.uid
         intervals = [
             (
                 datetime.strptime('2013-02-04 09:00:00', '%Y-%m-%d %H:%M:%S'),
@@ -65,7 +48,7 @@ class TestResource(TestResourceCommon):
 
         # Test: disjoint removal
         working_interval = (datetime.strptime('2013-02-04 08:00:00', '%Y-%m-%d %H:%M:%S'), datetime.strptime('2013-02-04 18:00:00', '%Y-%m-%d %H:%M:%S'))
-        result = self.resource_calendar.interval_remove_leaves(working_interval, intervals)
+        result = self.resource_calendar.interval_remove_leaves(cr, uid, working_interval, intervals)
         self.assertEqual(len(result), 1, 'resource_calendar: wrong leave removal from interval')
         # First interval: 04, 14-17
         self.assertEqual(result[0][0], datetime.strptime('2013-02-04 14:00:00', '%Y-%m-%d %H:%M:%S'), 'resource_calendar: wrong leave removal from interval')
@@ -143,9 +126,9 @@ class TestResource(TestResourceCommon):
         weekdays = self.resource_calendar.get_weekdays(cr, uid, self.calendar_id)
         self.assertEqual(weekdays, [1, 4], 'resource_calendar: wrong weekdays computing')
 
-        attendances = self.resource_calendar.get_attendances_for_weekdays(cr, uid, self.calendar_id, [2, 3, 4, 5])
-        self.assertEqual(set([att.id for att in attendances]), set([self.att2_id, self.att3_id]),
-                         'resource_calendar: wrong attendances filtering by weekdays computing')
+#        attendances = self.resource_calendar.get_attendances_for_weekdays(cr, uid, self.calendar_id, [2, 3, 4, 5])
+#        self.assertEqual(set([att.id for att in attendances]), set([self.att2_id, self.att3_id]),
+#                         'resource_calendar: wrong attendances filtering by weekdays computing')
 
     def test_20_calendar_working_intervals(self):
         """ Testing working intervals computing method of resource.calendar """
@@ -430,6 +413,8 @@ class TestResource(TestResourceCommon):
 
         res = self.resource_calendar.schedule_days_get_date(cr, uid, self.calendar_id, 5, day_date=self.date1)
         self.assertEqual(res.date(), datetime.strptime('2013-02-26 00:0:00', _format).date(), 'resource_calendar: wrong days scheduling')
+        res = self.resource_calendar.schedule_days_get_date(cr, uid, self.calendar_id, -2, day_date=self.date1)
+        self.assertEqual(res.date(), datetime.strptime('2013-02-08 00:00:00', _format).date(), 'resource_calendar: wrong days scheduling')
 
         res = self.resource_calendar.schedule_days_get_date(
             cr, uid, self.calendar_id, 5, day_date=self.date1,

@@ -1,31 +1,16 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import time
+from psycopg2 import OperationalError
 
+from openerp import api
 from openerp import SUPERUSER_ID
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 import openerp
+from openerp.exceptions import UserError
 
 PROCUREMENT_PRIORITIES = [('0', 'Not urgent'), ('1', 'Normal'), ('2', 'Urgent'), ('3', 'Very Urgent')]
 
@@ -63,7 +48,7 @@ class procurement_group(osv.osv):
         'procurement_ids': fields.one2many('procurement.order', 'group_id', 'Procurements'),
     }
     _defaults = {
-        'name': lambda self, cr, uid, c: self.pool.get('ir.sequence').get(cr, uid, 'procurement.group') or '',
+        'name': lambda self, cr, uid, c: self.pool.get('ir.sequence').next_by_code(cr, uid, 'procurement.group') or '',
         'move_type': lambda self, cr, uid, c: 'direct'
     }
 
@@ -79,7 +64,7 @@ class procurement_rule(osv.osv):
         return []
 
     _columns = {
-        'name': fields.char('Name', required=True,
+        'name': fields.char('Name', required=True, translate=True,
             help="This field will fill the packing origin and the name of its moves"),
         'active': fields.boolean('Active', help="If unchecked, it will allow you to hide the rule without removing it."),
         'group_propagation_option': fields.selection([('none', 'Leave Empty'), ('propagate', 'Propagate'), ('fixed', 'Fixed')], string="Propagation of Procurement Group"),
@@ -104,14 +89,14 @@ class procurement_order(osv.osv):
     _name = "procurement.order"
     _description = "Procurement"
     _order = 'priority desc, date_planned, id asc'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread','ir.needaction_mixin']
     _log_create = False
     _columns = {
         'name': fields.text('Description', required=True),
 
         'origin': fields.char('Source Document',
             help="Reference of the document that created this Procurement.\n"
-            "This is automatically completed by OpenERP."),
+            "This is automatically completed by Odoo."),
         'company_id': fields.many2one('res.company', 'Company', required=True),
 
         # These two fields are used for shceduling
@@ -124,9 +109,6 @@ class procurement_order(osv.osv):
         'product_id': fields.many2one('product.product', 'Product', required=True, states={'confirmed': [('readonly', False)]}, readonly=True),
         'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product Unit of Measure'), required=True, states={'confirmed': [('readonly', False)]}, readonly=True),
         'product_uom': fields.many2one('product.uom', 'Product Unit of Measure', required=True, states={'confirmed': [('readonly', False)]}, readonly=True),
-
-        'product_uos_qty': fields.float('UoS Quantity', states={'confirmed': [('readonly', False)]}, readonly=True),
-        'product_uos': fields.many2one('product.uom', 'Product UoS', states={'confirmed': [('readonly', False)]}, readonly=True),
 
         'state': fields.selection([
             ('cancel', 'Cancelled'),
@@ -144,6 +126,9 @@ class procurement_order(osv.osv):
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'procurement.order', context=c)
     }
 
+    def _needaction_domain_get(self, cr, uid, context=None):
+        return [('state', '=', 'exception')] 
+        
     def unlink(self, cr, uid, ids, context=None):
         procurements = self.read(cr, uid, ids, ['state'], context=context)
         unlink_ids = []
@@ -151,8 +136,7 @@ class procurement_order(osv.osv):
             if s['state'] == 'cancel':
                 unlink_ids.append(s['id'])
             else:
-                raise osv.except_osv(_('Invalid Action!'),
-                        _('Cannot delete Procurement Order(s) which are in %s state.') % s['state'])
+                raise UserError(_('Cannot delete Procurement Order(s) which are in %s state.') % s['state'])
         return osv.osv.unlink(self, cr, uid, unlink_ids, context=context)
 
     def do_view_procurements(self, cr, uid, ids, context=None):
@@ -168,7 +152,7 @@ class procurement_order(osv.osv):
         return result
 
     def onchange_product_id(self, cr, uid, ids, product_id, context=None):
-        """ Finds UoM and UoS of changed product.
+        """ Finds UoM of changed product.
         @param product_id: Changed id of product.
         @return: Dictionary of values.
         """
@@ -176,7 +160,6 @@ class procurement_order(osv.osv):
             w = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
             v = {
                 'product_uom': w.uom_id.id,
-                'product_uos': w.uos_id and w.uos_id.id or w.uom_id.id
             }
             return {'value': v}
         return {}
@@ -193,31 +176,53 @@ class procurement_order(osv.osv):
     def reset_to_confirmed(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {'state': 'confirmed'}, context=context)
 
-    def run(self, cr, uid, ids, context=None):
+    @api.v8
+    def run(self, autocommit=False):
+        return self._model.run(self._cr, self._uid, self.ids, autocommit=False, context=self._context)
+
+    @api.v7
+    def run(self, cr, uid, ids, autocommit=False, context=None):
         for procurement_id in ids:
-            #we intentionnaly do the browse under the for loop to avoid caching all ids which would be ressource greedy
+            #we intentionnaly do the browse under the for loop to avoid caching all ids which would be resource greedy
             #and useless as we'll make a refresh later that will invalidate all the cache (and thus the next iteration
             #will fetch all the ids again) 
             procurement = self.browse(cr, uid, procurement_id, context=context)
             if procurement.state not in ("running", "done"):
-                if self._assign(cr, uid, procurement, context=context):
-                    procurement.refresh()
-                    res = self._run(cr, uid, procurement, context=context or {})
-                    if res:
-                        self.write(cr, uid, [procurement.id], {'state': 'running'}, context=context)
+                try:
+                    if self._assign(cr, uid, procurement, context=context):
+                        res = self._run(cr, uid, procurement, context=context or {})
+                        if res:
+                            self.write(cr, uid, [procurement.id], {'state': 'running'}, context=context)
+                        else:
+                            self.write(cr, uid, [procurement.id], {'state': 'exception'}, context=context)
                     else:
+                        self.message_post(cr, uid, [procurement.id], body=_('No rule matching this procurement'), context=context)
                         self.write(cr, uid, [procurement.id], {'state': 'exception'}, context=context)
-                else:
-                    self.message_post(cr, uid, [procurement.id], body=_('No rule matching this procurement'), context=context)
-                    self.write(cr, uid, [procurement.id], {'state': 'exception'}, context=context)
+                    if autocommit:
+                        cr.commit()
+                except OperationalError:
+                    if autocommit:
+                        cr.rollback()
+                        continue
+                    else:
+                        raise
         return True
 
-    def check(self, cr, uid, ids, context=None):
+    def check(self, cr, uid, ids, autocommit=False, context=None):
         done_ids = []
         for procurement in self.browse(cr, uid, ids, context=context):
-            result = self._check(cr, uid, procurement, context=context)
-            if result:
-                done_ids.append(procurement.id)
+            try:
+                result = self._check(cr, uid, procurement, context=context)
+                if result:
+                    done_ids.append(procurement.id)
+                if autocommit:
+                    cr.commit()
+            except OperationalError:
+                if autocommit:
+                    cr.rollback()
+                    continue
+                else:
+                    raise
         if done_ids:
             self.write(cr, uid, done_ids, {'state': 'done'}, context=context)
         return done_ids
@@ -291,11 +296,14 @@ class procurement_order(osv.osv):
             dom = [('state', '=', 'confirmed')]
             if company_id:
                 dom += [('company_id', '=', company_id)]
+            prev_ids = []
             while True:
                 ids = self.search(cr, SUPERUSER_ID, dom, context=context)
-                if not ids:
+                if not ids or prev_ids == ids:
                     break
-                self.run(cr, SUPERUSER_ID, ids, context=context)
+                else:
+                    prev_ids = ids
+                self.run(cr, SUPERUSER_ID, ids, autocommit=use_new_cursor, context=context)
                 if use_new_cursor:
                     cr.commit()
 
@@ -304,12 +312,14 @@ class procurement_order(osv.osv):
             dom = [('state', '=', 'running')]
             if company_id:
                 dom += [('company_id', '=', company_id)]
+            prev_ids = []
             while True:
                 ids = self.search(cr, SUPERUSER_ID, dom, offset=offset, context=context)
-                if not ids:
+                if not ids or prev_ids == ids:
                     break
-                done = self.check(cr, SUPERUSER_ID, ids, context=context)
-                offset += len(ids) - len(done)
+                else:
+                    prev_ids = ids
+                self.check(cr, SUPERUSER_ID, ids, autocommit=use_new_cursor, context=context)
                 if use_new_cursor:
                     cr.commit()
 
@@ -321,4 +331,3 @@ class procurement_order(osv.osv):
                     pass
 
         return {}
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

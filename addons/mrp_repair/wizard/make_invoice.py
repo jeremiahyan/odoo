@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from openerp.osv import fields, osv
 
@@ -54,7 +36,7 @@ class make_invoice(osv.osv_memory):
         form_res = mod_obj.get_object_reference(cr, uid, 'account', 'invoice_form')
         form_id = form_res and form_res[1] or False
         tree_res = mod_obj.get_object_reference(cr, uid, 'account', 'invoice_tree')
-        tree_id = tree_res and tree_res[1] or Fals
+        tree_id = tree_res and tree_res[1] or False
 
         return {
             'domain': [('id','in', newinv.values())],
@@ -67,7 +49,3 @@ class make_invoice(osv.osv_memory):
             'context': "{'type':'out_invoice'}",
             'type': 'ir.actions.act_window'
         }
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

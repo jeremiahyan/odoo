@@ -6,7 +6,7 @@
             <field name="name">Challenges List</field>
             <field name="model">gamification.challenge</field>
             <field name="arch" type="xml">
-                <tree string="Goal definitions" colors="blue:state == 'draft';grey:state == 'done'">
+                <tree string="Goal definitions" decoration-info="state == 'draft'" decoration-muted="state == 'done'">
                     <field name="name"/>
                     <field name="period"/>
                     <field name="manager_id"/>
@@ -34,11 +34,25 @@
             <field name="arch" type="xml">
                 <form string="Goal definitions">
                     <header>
+                        <button string="Start Challenge" type="object" name="action_start" states="draft" class="oe_highlight"/>
                         <button string="Refresh Challenge" type="object" name="action_check" states="inprogress"/>
                         <button string="Send Report" type="object" name="action_report_progress" states="inprogress,done" groups="base.group_no_one"/>
                         <field name="state" widget="statusbar" clickable="True"/>
                     </header>
                     <sheet>
+                        <!-- action buttons -->
+                        <div class="oe_button_box" name="button_box">
+                            <button type="action" 
+                                name="%(goals_from_challenge_act)d" 
+                                class="oe_stat_button"
+                                icon="fa-gift"
+                                attrs="{'invisible': [('state','=','draft')]}">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_text">Related</span>
+                                    <span class="o_stat_text">Goals</span>
+                                </div>
+                            </button>
+                        </div>
 
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only"/>
@@ -48,20 +62,10 @@
                             <label for="user_domain" class="oe_edit_only" string="Assign Challenge To"/>
                             <div>
                                 <field name="user_domain" widget="char_domain" options="{'model': 'res.users'}" />
-                                <field name="user_ids" groups="base.group_no_one" widget="many2many_tags" />
+                                <field name="user_ids" groups="base.group_no_one" widget="many2many_tags" readonly="True" />
                             </div>
                         </div>
 
-                        <!-- action buttons -->
-                        <div class="oe_right oe_button_box">
-                            <button type="action" 
-                                name="%(goals_from_challenge_act)d" 
-                                class="oe_stat_button"
-                                icon="fa-gift"
-                                attrs="{'invisible': [('state','=','draft')]}">
-                                <div>Related<br/>Goals</div>
-                            </button>
-                        </div>
                         <group>
                             <group>
                                 <field name="period" attrs="{'readonly':[('state','!=','draft')]}"/>
@@ -142,12 +146,6 @@
                     <templates>
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_card oe_kanban_goal oe_kanban_global_click">
-                                <div class="oe_dropdown_toggle oe_dropdown_kanban">
-                                    <span class="oe_e">í</span>
-                                    <ul class="oe_dropdown_menu">
-                                        <li><a type="edit">Configure Challenge</a></li>
-                                    </ul>
-                                </div>
                                 <div class="oe_kanban_content">
                                    <strong>
                                        <h4 class="text-center"><field name="name"/></h4>
@@ -158,11 +156,9 @@
                                            </a>
                                        </div>
                                    </strong>
-                                    <div class="oe_kanban_badge_avatars">
-                                        <t t-foreach="record.user_ids.raw_value.slice(0,11)" t-as="member">
-                                            <img t-att-src="kanban_image('res.users', 'image_small', member)" t-att-data-member_id="member"/>
-                                        </t>
-                                    </div>
+                                    <t t-foreach="record.user_ids.raw_value.slice(0,11)" t-as="member">
+                                        <img class="oe_kanban_badge_avatars img-rounded oe_margin_top_8" t-att-src="kanban_image('res.users', 'image_small', member)" t-att-data-member_id="member"/>
+                                    </t>
                                 </div>
                             </div>
                         </t>
@@ -276,9 +272,9 @@
                     </group>
                     <footer>
                         <center>
-                            <button string="Accept" type="object" name="accept_challenge" class="oe_highlight" />
-                            <button string="Reject" type="object" name="discard_challenge"/> or
-                            <button string="reply later" special="cancel" class="oe_link"/>
+                            <button string="Accept" type="object" name="accept_challenge" class="btn-primary" />
+                            <button string="Reject" type="object" class="btn-default" name="discard_challenge"/>
+                            <button string="reply later" special="cancel" class="btn-default"/>
                         </center>
                     </footer>
                 </form>

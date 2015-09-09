@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from openerp.osv import fields
 from openerp.osv import osv
@@ -84,6 +66,7 @@ class mrp_production(osv.osv):
         """ Confirms production order and calculates quantity based on subproduct_type.
         @return: Newly generated picking Id.
         """
+        move_obj = self.pool.get('stock.move')
         picking_id = super(mrp_production,self).action_confirm(cr, uid, ids, context=context)
         product_uom_obj = self.pool.get('product.uom')
         for production in self.browse(cr, uid, ids):
@@ -93,30 +76,23 @@ class mrp_production(osv.osv):
             for sub_product in production.bom_id.sub_products:
                 product_uom_factor = product_uom_obj._compute_qty(cr, uid, production.product_uom.id, production.product_qty, production.bom_id.product_uom.id)
                 qty1 = sub_product.product_qty
-                qty2 = production.product_uos and production.product_uos_qty or False
-                product_uos_factor = 0.0
-                if qty2 and production.bom_id.product_uos.id:
-                    product_uos_factor = product_uom_obj._compute_qty(cr, uid, production.product_uos.id, production.product_uos_qty, production.bom_id.product_uos.id)
                 if sub_product.subproduct_type == 'variable':
                     if production.product_qty:
                         qty1 *= product_uom_factor / (production.bom_id.product_qty or 1.0)
-                    if production.product_uos_qty:
-                        qty2 *= product_uos_factor / (production.bom_id.product_uos_qty or 1.0)
                 data = {
                     'name': 'PROD:'+production.name,
                     'date': production.date_planned,
                     'product_id': sub_product.product_id.id,
                     'product_uom_qty': qty1,
                     'product_uom': sub_product.product_uom.id,
-                    'product_uos_qty': qty2,
-                    'product_uos': production.product_uos and production.product_uos.id or False,
                     'location_id': source,
                     'location_dest_id': production.location_dest_id.id,
                     'move_dest_id': production.move_prod_id.id,
-                    'state': 'waiting',
                     'production_id': production.id
                 }
-                self.pool.get('stock.move').create(cr, uid, data)
+                move_id = move_obj.create(cr, uid, data, context=context)
+                move_obj.action_confirm(cr, uid, [move_id], context=context)
+
         return picking_id
 
     def _get_subproduct_factor(self, cr, uid, production_id, move_id=None, context=None):
@@ -158,5 +134,3 @@ class change_production_qty(osv.osv_memory):
                         factor = prod_obj._get_subproduct_factor(cr, uid, prod.id, m.id, context=context)
                         subproduct_qty = sub_product_line.subproduct_type == 'variable' and qty * factor or sub_product_line.product_qty
                         move_lines_obj.write(cr, uid, [m.id], {'product_uom_qty': subproduct_qty})
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

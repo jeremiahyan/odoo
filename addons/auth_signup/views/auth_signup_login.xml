@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- vim:fdn=3:
--->
 <openerp>
     <data>
         <template id="auth_signup.login" inherit_id="web.login" name="Sign up - Reset Password">
@@ -11,7 +9,6 @@
         </template>
 
         <template id="auth_signup.fields" name="Auth Signup/ResetPassword form fields">
-            <t t-call="web.database_select"/>
 
             <div class="form-group field-login">
                 <label for="login" class="control-label">Your Email</label>
@@ -42,7 +39,9 @@
             <t t-call="web.login_layout">
                 <form class="oe_signup_form" role="form" method="post" t-if="not message">
 
-                    <t t-call="auth_signup.fields"/>
+                    <t t-call="auth_signup.fields">
+                        <t t-set="only_passwords" t-value="bool(token)"/>
+                    </t>
 
                     <p class="alert alert-danger" t-if="error">
                         <t t-esc="error"/>

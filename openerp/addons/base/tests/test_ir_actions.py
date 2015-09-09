@@ -1,6 +1,6 @@
 import unittest2
 
-from openerp.osv.orm import except_orm
+from openerp.exceptions import ValidationError
 import openerp.tests.common as common
 from openerp.tools import mute_logger
 
@@ -194,7 +194,6 @@ workflow"""
             'state': 'trigger',
             'use_relational_model': 'base',
             'wkf_model_id': self.res_partner_model_id,
-            'wkf_model_name': 'res.partner',
             'wkf_transition_id': partner_trs1_id,
         })
         self.ir_actions_server.run(cr, uid, [self.act_id], self.context)
@@ -205,7 +204,6 @@ workflow"""
         self.ir_actions_server.write(cr, uid, [self.act_id], {
             'use_relational_model': 'relational',
             'wkf_model_id': self.res_country_model_id,
-            'wkf_model_name': 'res.country',
             'wkf_field_id': self.res_partner_country_field_id,
             'wkf_transition_id': country_trs1_id,
         })
@@ -364,20 +362,28 @@ workflow"""
         # Data: 2 server actions that will be nested
         act1_id = self.ir_actions_server.create(cr, uid, {
             'name': 'Subaction1',
+            'sequence': 1,
             'model_id': self.res_partner_model_id,
             'state': 'code',
             'code': 'action = {"type": "ir.actions.act_window"}',
         })
-        # Do: create a new record in the same model and link it
         act2_id = self.ir_actions_server.create(cr, uid, {
             'name': 'Subaction2',
+            'sequence': 2,
             'model_id': self.res_partner_model_id,
             'state': 'object_create',
             'use_create': 'copy_current',
         })
+        act3_id = self.ir_actions_server.create(cr, uid, {
+            'name': 'Subaction3',
+            'sequence': 3,
+            'model_id': self.res_partner_model_id,
+            'state': 'code',
+            'code': 'action = {"type": "ir.actions.act_url"}',
+        })
         self.ir_actions_server.write(cr, uid, [self.act_id], {
             'state': 'multi',
-            'child_ids': [(6, 0, [act1_id, act2_id])],
+            'child_ids': [(6, 0, [act1_id, act2_id, act3_id])],
         })
 
         # Do: run the action
@@ -387,12 +393,13 @@ workflow"""
         pids = self.res_partner.search(cr, uid, [('name', 'ilike', 'TestingPartner (copy)')])  # currently res_partner overrides default['name'] whatever its value
         self.assertEqual(len(pids), 1, 'ir_actions_server: TODO')
         # Test: action returned
-        self.assertEqual(res.get('type'), 'ir.actions.act_window', '')
+        self.assertEqual(res.get('type'), 'ir.actions.act_url')
 
         # Test loops
-        self.assertRaises(except_orm, self.ir_actions_server.write, cr, uid, [self.act_id], {
-            'child_ids': [(6, 0, [self.act_id])]
-        })
+        with self.assertRaises(ValidationError):
+            self.ir_actions_server.write(cr, uid, [self.act_id], {
+                'child_ids': [(6, 0, [self.act_id])]
+            })
 
 
 if __name__ == '__main__':

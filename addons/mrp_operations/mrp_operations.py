@@ -1,29 +1,12 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from openerp.osv import fields
 from openerp.osv import osv
 import time
 from datetime import datetime
 from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 #----------------------------------------------------------
 # Work Centers
@@ -119,11 +102,10 @@ class mrp_production_workcenter_line(osv.osv):
             elif prod_obj.state =='in_production':
                 return
             else:
-                raise osv.except_osv(_('Error!'),_('Manufacturing order cannot be started in state "%s"!') % (prod_obj.state,))
+                raise UserError(_('Manufacturing order cannot be started in state "%s"!') % (prod_obj.state,))
         else:
             open_count = self.search_count(cr,uid,[('production_id','=',prod_obj.id), ('state', '!=', 'done')])
             flag = not bool(open_count)
-
             if flag:
                 for production in prod_obj_pool.browse(cr, uid, [prod_obj.id], context= None):
                     if production.move_lines or production.move_created_ids:
@@ -208,19 +190,19 @@ class mrp_production(osv.osv):
                 result[prod.id] = max(line.date_planned_end, result[prod.id])
         return result
 
-    def action_production_end(self, cr, uid, ids):
+    def action_production_end(self, cr, uid, ids, context=None):
         """ Finishes work order if production order is done.
         @return: Super method
         """
-        obj = self.browse(cr, uid, ids)[0]
+        obj = self.browse(cr, uid, ids, context=context)[0]
         workcenter_pool = self.pool.get('mrp.production.workcenter.line')
         for workcenter_line in obj.workcenter_lines:
             if workcenter_line.state == 'draft':
                 workcenter_line.signal_workflow('button_start_working')
             workcenter_line.signal_workflow('button_done')
-        return super(mrp_production,self).action_production_end(cr, uid, ids)
+        return super(mrp_production,self).action_production_end(cr, uid, ids, context=context)
 
-    def action_in_production(self, cr, uid, ids):
+    def action_in_production(self, cr, uid, ids, context=None):
         """ Changes state to In Production and writes starting date.
         @return: True
         """
@@ -228,7 +210,7 @@ class mrp_production(osv.osv):
         for prod in self.browse(cr, uid, ids):
             if prod.workcenter_lines:
                 workcenter_pool.signal_workflow(cr, uid, [prod.workcenter_lines[0].id], 'button_start_working')
-        return super(mrp_production,self).action_in_production(cr, uid, ids)
+        return super(mrp_production,self).action_in_production(cr, uid, ids, context=context)
     
     def action_cancel(self, cr, uid, ids, context=None):
         """ Cancels work order if production order is canceled.
@@ -289,14 +271,15 @@ class mrp_production(osv.osv):
         for po in self.browse(cr, uid, ids, context=context):
             if po.allow_reorder:
                 continue
-            todo = po.move_lines
+            todo = list(po.move_lines)
             dt = datetime.strptime(po.date_start,'%Y-%m-%d %H:%M:%S')
             while todo:
                 l = todo.pop(0)
                 if l.state in ('done','cancel','draft'):
                     continue
                 todo += l.move_dest_id_lines
-                if l.production_id and (l.production_id.date_finished > dt):
+                date_end = l.production_id.date_finished
+                if date_end and datetime.strptime(date_end, '%Y-%m-%d %H:%M:%S') > dt:
                     if l.production_id.state not in ('done','cancel'):
                         for wc in l.production_id.workcenter_lines:
                             i = self.pool.get('resource.calendar').interval_min_get(
@@ -337,7 +320,7 @@ class mrp_production(osv.osv):
             for po in self.browse(cr, uid, ids, context=context):
                 direction[po.id] = cmp(po.date_start, vals.get('date_start', False))
         result = super(mrp_production, self).write(cr, uid, ids, vals, context=context)
-        if (vals.get('workcenter_lines', False) or vals.get('date_start', False)) and update:
+        if (vals.get('workcenter_lines', False) or vals.get('date_start', False) or vals.get('date_planned', False)) and update:
             self._compute_planned_workcenter(cr, uid, ids, context=context, mini=mini)
         for d in direction:
             if direction[d] == 1:
@@ -432,37 +415,37 @@ class mrp_operations_operation(osv.osv):
 
         if not oper_objs:
             if code.start_stop!='start':
-                raise osv.except_osv(_('Sorry!'),_('Operation is not started yet!'))
+                raise UserError(_('Operation is not started yet!'))
                 return False
         else:
             for oper in oper_objs:
                  code_lst.append(oper.code_id.start_stop)
             if code.start_stop=='start':
                     if 'start' in code_lst:
-                        raise osv.except_osv(_('Sorry!'),_('Operation has already started! You can either Pause/Finish/Cancel the operation.'))
+                        raise UserError(_('Operation has already started! You can either Pause/Finish/Cancel the operation.'))
                         return False
             if code.start_stop=='pause':
                     if  code_lst[len(code_lst)-1]!='resume' and code_lst[len(code_lst)-1]!='start':
-                        raise osv.except_osv(_('Error!'),_('In order to Pause the operation, it must be in the Start or Resume state!'))
+                        raise UserError(_('In order to Pause the operation, it must be in the Start or Resume state!'))
                         return False
             if code.start_stop=='resume':
                 if code_lst[len(code_lst)-1]!='pause':
-                   raise osv.except_osv(_('Error!'),_('In order to Resume the operation, it must be in the Pause state!'))
+                   raise UserError(_('In order to Resume the operation, it must be in the Pause state!'))
                    return False
 
             if code.start_stop=='done':
                if code_lst[len(code_lst)-1]!='start' and code_lst[len(code_lst)-1]!='resume':
-                  raise osv.except_osv(_('Sorry!'),_('In order to Finish the operation, it must be in the Start or Resume state!'))
+                  raise UserError(_('In order to Finish the operation, it must be in the Start or Resume state!'))
                   return False
                if 'cancel' in code_lst:
-                  raise osv.except_osv(_('Sorry!'),_('Operation is Already Cancelled!'))
+                  raise UserError(_('Operation is Already Cancelled!'))
                   return False
             if code.start_stop=='cancel':
                if  not 'start' in code_lst :
-                   raise osv.except_osv(_('Error!'),_('No operation to cancel.'))
+                   raise UserError(_('No operation to cancel.'))
                    return False
                if 'done' in code_lst:
-                  raise osv.except_osv(_('Error!'),_('Operation is already finished!'))
+                  raise UserError(_('Operation is already finished!'))
                   return False
         return True
 
@@ -545,5 +528,3 @@ class mrp_operations_operation(osv.osv):
     _defaults={
         'date_start': lambda *a:datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

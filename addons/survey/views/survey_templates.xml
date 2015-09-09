@@ -6,9 +6,10 @@
         <t t-call="website.layout">
             <div class="wrap">
                 <div class="container">
+                    <t t-call="survey.back" />
                     <div class="jumbotron mt32">
                         <h1>Thank you!</h1>
-                        <div t-field="survey.thank_you_message" />
+                        <div t-field="survey.thank_you_message" class="oe_no_empty" />
                         <div t-if='survey.quizz_mode'>You scored <t t-esc="user_input.quizz_score" /> points.</div>
                         <div>If you wish, you can <a t-att-href="'/survey/print/%s/%s' % (slug(survey), token)">review your answers</a>.</div>
                     </div>
@@ -38,7 +39,7 @@
                 <div class="container">
                     <div class="jumbotron mt32">
                         <h1>Login required</h1>
-                        <p>This survey is open only to registered people. Please <a t-attf-href="/web/login?redirect=%2Fsurvey%2Fstart%2F#{ slug(survey) }">log in</a>.</p>
+                        <p>This survey is open only to registered people. Please <a t-attf-href="/web/login?redirect=%2Fsurvey%2Fstart%2F#{ slug(survey) }%2F#{token}">log in</a>.</p>
                     </div>
                 </div>
             </div>
@@ -50,6 +51,7 @@
         <t t-call="website.layout">
             <div class="wrap">
                 <div class="container">
+                    <t t-call="survey.back" />
                     <div class="jumbotron mt32">
                         <h1>Not ready</h1>
                         <p>This survey has no pages by now!</p>
@@ -59,15 +61,20 @@
         </t>
     </template>
 
+    <!-- Back Button to redirect in form view of survey -->
+    <template id="back" name="Back">
+        <div groups="base.group_website_publisher" t-ignore="true" class="pull-right">
+            <a t-attf-href="/web#view_type=form&amp;model=survey.survey&amp;id=#{survey.id}&amp;action=survey.action_survey_form" class="btn btn-default">Back to Survey</a>
+        </div>
+    </template>
+
     <!-- First page of a survey -->
     <template id="survey_init" name="Survey">
         <t t-call="website.layout">
             <div class="wrap">
                 <div class="oe_structure" />
                 <div class="container">
-                    <div groups="base.group_website_publisher" t-ignore="true" class="text-right">
-                        <a href="/web#action=survey.action_survey_form" class="btn btn-default">Go back to surveys</a>
-                    </div>
+                    <t t-call="survey.back" />
                     <div class='jumbotron mt32'>
                         <h1 t-field='survey.title' />
                         <div t-field='survey.description' class="oe_no_empty"/>
@@ -82,17 +89,18 @@
     </template>
 
     <!-- A survey -->
+    <template id="assets_frontend" inherit_id="website.assets_frontend" name="Survey assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/survey/static/src/js/survey.js" />
+            <script type="text/javascript" src="/survey/static/src/js/tour_test_survey.js"></script>
+        </xpath>
+    </template>
     <template id="survey" name="Survey">
         <t t-call="website.layout">
-            <t t-set="head">
-                <script type="text/javascript" src="/survey/static/src/js/survey.js" />
-            </t>
             <div class="wrap">
                 <div class="oe_structure"/>
                 <div class="container">
-                    <div groups="base.group_website_publisher" t-ignore="true" class="text-right">
-                        <a href="/web#action=survey.action_survey_form" class="btn btn-default">Go back to surveys</a>
-                    </div>
+                    <t t-call="survey.back" />
                     <t t-call="survey.page" />
                 </div>
                 <div class="oe_structure"/>
@@ -166,11 +174,14 @@
     </template>
 
     <template id="datetime" name="Datetime box">
-        <input type="text" class="form-control" t-att-name="prefix" placeholder="yyyy-mm-dd hh:mm:ss" />
+        <div class='input-group date'>
+            <input type="text" class="form-control" data-date-format="YYYY-MM-DD hh:mm:ss" t-att-name="prefix" placeholder="YYYY-MM-DD hh:mm:ss" />
+            <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+        </div>
     </template>
 
     <template id="simple_choice" name="Simple choice">
-        <div t-if="question.display_mode == 'dropdown'" class="js_drop row">
+        <div t-if="question.display_mode == 'dropdown' and token" class="js_drop row">
             <div class="col-md-12">
                 <select class="form-control" t-att-name="prefix">
                     <option disabled="1" selected="1" value="">Choose...</option>
@@ -190,7 +201,7 @@
                 <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
             </div>
         </div>
-        <div t-if="question.display_mode == 'columns' " class="row js_radio">
+        <div t-if="question.display_mode == 'columns' or not token" class="row js_radio">
             <div t-foreach='question.labels_ids' t-as='label' t-attf-class="col-md-#{question.column_nb}">
                 <label t-att-class="' bg-success ' if quizz_correction and label.quizz_mark > 0.0 else ''">
                     <input type="radio" t-att-name="prefix" t-att-value='label.id' />
@@ -257,14 +268,18 @@
         </div>
     </template>
 
+    <template id="assets_frontend_survey" inherit_id="website.assets_frontend" name="Printing Survey assets">
+        <xpath expr="." position="inside">
+            <link href="/survey/static/src/css/survey_print.css" rel="stylesheet" type="text/css"/>
+        </xpath>
+    </template>
+
     <!-- Printable view of a survey (all pages) -->
     <template id="survey_print" name="Survey">
         <t t-call="website.layout">
-            <t t-set="head">
-                <script type="text/javascript" src="/survey/static/src/js/survey.js" />
-            </t>
             <div class="wrap">
                 <div class="container">
+                    <t t-call="survey.back" />
                     <div class="row">
                         <div class='jumbotron mt32'>
                             <h1><span t-field='survey.title'/></h1>

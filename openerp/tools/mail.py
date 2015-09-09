@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (C) 2012-TODAY OpenERP S.A. (<http://openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from lxml import etree
 import cgi
@@ -33,6 +15,7 @@ from email.utils import getaddresses
 
 import openerp
 from openerp.loglevels import ustr
+from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
@@ -42,18 +25,18 @@ _logger = logging.getLogger(__name__)
 #----------------------------------------------------------
 
 tags_to_kill = ["script", "head", "meta", "title", "link", "style", "frame", "iframe", "base", "object", "embed"]
-tags_to_remove = ['html', 'body', 'font']
+tags_to_remove = ['html', 'body']
 
 # allow new semantic HTML5 tags
 allowed_tags = clean.defs.tags | frozenset('article section header footer hgroup nav aside figure main'.split() + [etree.Comment])
 safe_attrs = clean.defs.safe_attrs | frozenset(
     ['style',
-     'data-oe-model', 'data-oe-id', 'data-oe-field', 'data-oe-type', 'data-oe-expression', 'data-oe-translate', 'data-oe-nodeid',
-     'data-snippet-id', 'data-publish', 'data-id', 'data-res_id', 'data-member_id', 'data-view-id'
+     'data-oe-model', 'data-oe-id', 'data-oe-field', 'data-oe-type', 'data-oe-expression', 'data-oe-translation-id', 'data-oe-nodeid',
+     'data-publish', 'data-id', 'data-res_id', 'data-member_id', 'data-view-id'
      ])
 
 
-def html_sanitize(src, silent=True, strict=False):
+def html_sanitize(src, silent=True, strict=False, strip_style=False, strip_classes=False):
     if not src:
         return src
     src = ustr(src, errors='replace')
@@ -63,15 +46,18 @@ def html_sanitize(src, silent=True, strict=False):
     # html encode email tags
     part = re.compile(r"(<(([^a<>]|a[^<>\s])[^<>]*)@[^<>]+>)", re.IGNORECASE | re.DOTALL)
     src = part.sub(lambda m: cgi.escape(m.group(1)), src)
+    # html encode mako tags <% ... %> to decode them later and keep them alive, otherwise they are stripped by the cleaner
+    src = src.replace('<%', cgi.escape('<%'))
+    src = src.replace('%>', cgi.escape('%>'))
 
     kwargs = {
         'page_structure': True,
-        'style': False,             # do not remove style attributes
+        'style': strip_style,       # True = remove style tags/attrs
         'forms': True,              # remove form tags
         'remove_unknown_tags': False,
         'allow_tags': allowed_tags,
         'comments': False,
-        'processing_instructions' : False
+        'processing_instructions': False
     }
     if etree.LXML_VERSION >= (2, 3, 1):
         # kill_tags attribute has been added in version 2.3.1
@@ -85,9 +71,13 @@ def html_sanitize(src, silent=True, strict=False):
     if strict:
         if etree.LXML_VERSION >= (3, 1, 0):
             # lxml < 3.1.0 does not allow to specify safe_attrs. We keep all attributes in order to keep "style"
+            if strip_classes:
+                current_safe_attrs = safe_attrs - frozenset(['class'])
+            else:
+                current_safe_attrs = safe_attrs
             kwargs.update({
                 'safe_attrs_only': True,
-                'safe_attrs': safe_attrs,
+                'safe_attrs': current_safe_attrs,
             })
     else:
         kwargs['safe_attrs_only'] = False    # keep oe-data attributes + style
@@ -104,6 +94,8 @@ def html_sanitize(src, silent=True, strict=False):
         cleaned = cleaned.replace('%20', ' ')
         cleaned = cleaned.replace('%5B', '[')
         cleaned = cleaned.replace('%5D', ']')
+        cleaned = cleaned.replace('&lt;%', '<%')
+        cleaned = cleaned.replace('%&gt;', '%>')
     except etree.ParserError, e:
         if 'empty' in str(e):
             return ""
@@ -276,7 +268,7 @@ def html_email_clean(html, remove=False, shorten=False, max_length=300, expand_o
             read_more_node.append(read_more_separator_node)
         read_more_link_node = _create_node(
             'a',
-            expand_options.get('oe_expand_a_content', 'read more'),
+            expand_options.get('oe_expand_a_content', _('read more')),
             None,
             {
                 'href': expand_options.get('oe_expand_a_href', '#'),
@@ -381,6 +373,11 @@ def html_email_clean(html, remove=False, shorten=False, max_length=300, expand_o
             node.set('in_quote', '1')
             node.set('tail_remove', '1')
         if node.tag == 'blockquote' or node.get('text_quote') or node.get('text_signature'):
+            # here no quote_begin because we want to be able to remove some quoted
+            # text without removing all the remaining context
+            node.set('in_quote', '1')
+        if node.getparent() is not None and node.getparent().get('in_quote'):
+            # inside a block of removed text but not in quote_begin (see above)
             node.set('in_quote', '1')
 
         # shorten:
@@ -464,6 +461,10 @@ def html2plaintext(html, body_id=None, encoding='utf-8'):
     ## download here: http://www.peterbe.com/plog/html2plaintext
 
     html = ustr(html)
+
+    if not html:
+        return ''
+
     tree = etree.fromstring(html, parser=etree.HTMLParser())
 
     if body_id is not None:
@@ -498,6 +499,9 @@ def html2plaintext(html, body_id=None, encoding='utf-8'):
     html = re.sub('<br\s*/?>', '\n', html)
     html = re.sub('<.*?>', ' ', html)
     html = html.replace(' ' * 2, ' ')
+    html = html.replace('&gt;', '>')
+    html = html.replace('&lt;', '<')
+    html = html.replace('&amp;', '&')
 
     # strip all lines
     html = '\n'.join([x.strip() for x in html.splitlines()])
@@ -509,6 +513,24 @@ def html2plaintext(html, body_id=None, encoding='utf-8'):
         html += ustr('[%s] %s\n') % (i + 1, url)
 
     return html
+
+def html_escape_keep_url(self, message):
+    """ Escape the message and transform the url into clickable link
+        :param string message: the message to escape url and transform them into clickable link
+        :returns the escaped message
+        :rtype : string
+    """
+    safe_message = ""
+    first = 0
+    last = 0
+    for m in re.finditer('(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?', message):
+        last = m.start()
+        safe_message += cgi.escape(message[first:last])
+        safe_message += '<a href="%s" target="_blank">%s</a>' % (cgi.escape(m.group(0)), m.group(0))
+        first = m.end()
+        last = m.end()
+    safe_message += cgi.escape(message[last:])
+    return safe_message
 
 def plaintext2html(text, container_tag=False):
     """ Convert plaintext into html. Content of the text is escaped to manage
@@ -566,7 +588,7 @@ def append_content_to_html(html, content, plaintext=True, preserve=False, contai
     elif plaintext:
         content = '\n%s\n' % plaintext2html(content, container_tag)
     else:
-        content = re.sub(r'(?i)(</?html.*>|</?body.*>|<!\W*DOCTYPE.*>)', '', content)
+        content = re.sub(r'(?i)(</?(?:html|body|head|!\s*DOCTYPE)[^>]*>)', '', content)
         content = u'\n%s\n' % ustr(content)
     # Force all tags to lowercase
     html = re.sub(r'(</?)\W*(\w+)([ >])',
@@ -583,7 +605,7 @@ def append_content_to_html(html, content, plaintext=True, preserve=False, contai
 #----------------------------------------------------------
 
 # matches any email in a body of text
-email_re = re.compile(r"""([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})""", re.VERBOSE) 
+email_re = re.compile(r"""([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})""", re.VERBOSE)
 
 # matches a string containing only one email
 single_email_re = re.compile(r"""^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$""", re.VERBOSE)
@@ -594,12 +616,8 @@ command_re = re.compile("^Set-([a-z]+) *: *(.+)$", re.I + re.UNICODE)
 # Updated in 7.0 to match the model name as well
 # Typical form of references is <timestamp-openerp-record_id-model_name@domain>
 # group(1) = the record ID ; group(2) = the model (if any) ; group(3) = the domain
-reference_re = re.compile("<.*-open(?:object|erp)-(\\d+)(?:-([\w.]+))?.*@(.*)>", re.UNICODE)
+reference_re = re.compile("<.*-open(?:object|erp)-(\\d+)(?:-([\w.]+))?[^>]*@([^>]*)>", re.UNICODE)
 
-# Bounce regex
-# Typical form of bounce is bounce-128-crm.lead-34@domain
-# group(1) = the mail ID; group(2) = the model (if any); group(3) = the record ID
-bounce_re = re.compile("[\w]+-(\d+)-?([\w.]+)?-?(\d+)?", re.UNICODE)
 
 def generate_tracking_message_id(res_id):
     """Returns a string that can be used in the Message-ID RFC822 header field

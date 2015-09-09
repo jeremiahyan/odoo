@@ -1,27 +1,10 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
-#    Copyright (C) 2010-2014 OpenERP s.a. (<http://openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import functools
 import imp
+import importlib
+import inspect
 import itertools
 import logging
 import os
@@ -29,6 +12,7 @@ import re
 import sys
 import time
 import unittest
+import threading
 from os.path import join as opj
 
 import unittest2
@@ -39,6 +23,7 @@ import openerp.release as release
 from openerp.tools.safe_eval import safe_eval as eval
 
 MANIFEST = '__openerp__.py'
+README = ['README.rst', 'README.md', 'README.txt']
 
 _logger = logging.getLogger(__name__)
 
@@ -154,7 +139,7 @@ def get_module_filetree(module, dir='.'):
 
     return tree
 
-def get_module_resource(module, *args):
+def get_resource_path(module, *args):
     """Return the full path of a resource of the given module.
 
     :param module: module name
@@ -163,7 +148,6 @@ def get_module_resource(module, *args):
     :rtype: str
     :return: absolute path to the resource
 
-    TODO name it get_resource_path
     TODO make it available inside on osv object (self.get_resource_path)
     """
     mod_path = get_module_path(module)
@@ -174,6 +158,33 @@ def get_module_resource(module, *args):
         if os.path.exists(resource_path):
             return resource_path
     return False
+
+# backwards compatibility
+get_module_resource = get_resource_path
+
+def get_resource_from_path(path):
+    """Tries to extract the module name and the resource's relative path
+    out of an absolute resource path.
+
+    If operation is successfull, returns a tuple containing the module name, the relative path
+    to the resource using '/' as filesystem seperator[1] and the same relative path using
+    os.path.sep seperators.
+
+    [1] same convention as the resource path declaration in manifests
+
+    :param path: absolute resource path
+
+    :rtype: tuple
+    :return: tuple(module_name, relative_path, os_relative_path) if possible, else None
+    """
+    resource = [path.replace(adpath, '') for adpath in ad_paths if path.startswith(adpath)]
+    if resource:
+        relative = resource[0].split(os.path.sep)
+        if not relative[0]:
+            relative.pop(0)
+        module = relative.pop(0)
+        return (module, '/'.join(relative), os.path.sep.join(relative))
+    return None
 
 def get_module_icon(module):
     iconpath = ['static', 'description', 'icon.png']
@@ -223,19 +234,18 @@ def load_information_from_description_file(module, mod_path=None):
             # default values for descriptor
             info = {
                 'application': False,
-                'author': '',
+                'author': 'Odoo SA',
                 'auto_install': False,
                 'category': 'Uncategorized',
                 'depends': [],
                 'description': '',
                 'icon': get_module_icon(module),
                 'installable': True,
-                'license': 'AGPL-3',
-                'name': False,
+                'license': 'LGPL-3',
                 'post_load': None,
                 'version': '1.0',
                 'web': False,
-                'website': '',
+                'website': 'http://www.odoo.com',
                 'sequence': 100,
                 'summary': '',
             }
@@ -248,6 +258,13 @@ def load_information_from_description_file(module, mod_path=None):
                 info.update(eval(f.read()))
             finally:
                 f.close()
+
+            if not info.get('description'):
+                readme_path = [opj(mod_path, x) for x in README
+                               if os.path.isfile(opj(mod_path, x))]
+                if readme_path:
+                    readme_text = tools.file_open(readme_path[0]).read()
+                    info['description'] = readme_text
 
             if 'active' in info:
                 # 'active' has been renamed 'auto_install'
@@ -359,23 +376,26 @@ def adapt_version(version):
     return version
 
 def get_test_modules(module):
-    """ Return a list of module for the addons potentialy containing tests to
+    """ Return a list of module for the addons potentially containing tests to
     feed unittest2.TestLoader.loadTestsFromModule() """
     # Try to import the module
-    module = 'openerp.addons.' + module + '.tests'
+    modpath = 'openerp.addons.' + module
     try:
-        __import__(module)
+        mod = importlib.import_module('.tests', modpath)
     except Exception, e:
         # If module has no `tests` sub-module, no problem.
         if str(e) != 'No module named tests':
             _logger.exception('Can not `import %s`.', module)
         return []
 
-    # include submodules too
-    result = [mod_obj for name, mod_obj in sys.modules.iteritems()
-              if mod_obj # mod_obj can be None
-              if name.startswith(module)
-              if re.search(r'test_\w+$', name)]
+    if hasattr(mod, 'fast_suite') or hasattr(mod, 'checks'):
+        _logger.warn(
+            "Found deprecated fast_suite or checks attribute in test module "
+            "%s. These have no effect in or after version 8.0.",
+            mod.__name__)
+
+    result = [mod_obj for name, mod_obj in inspect.getmembers(mod, inspect.ismodule)
+              if name.startswith('test_')]
     return result
 
 # Use a custom stream object to log the test executions.
@@ -423,6 +443,7 @@ def run_unit_tests(module_name, dbname, position=runs_at_install):
     global current_test
     current_test = module_name
     mods = get_test_modules(module_name)
+    threading.currentThread().testing = True
     r = True
     for m in mods:
         tests = unwrap_suite(unittest2.TestLoader().loadTestsFromModule(m))
@@ -440,6 +461,7 @@ def run_unit_tests(module_name, dbname, position=runs_at_install):
                 _logger.error("Module %s: %d failures, %d errors", module_name, len(result.failures), len(result.errors))
 
     current_test = None
+    threading.currentThread().testing = False
     return r
 
 def unwrap_suite(test):
@@ -467,5 +489,3 @@ def unwrap_suite(test):
     for item in itertools.chain.from_iterable(
             itertools.imap(unwrap_suite, subtests)):
         yield item
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

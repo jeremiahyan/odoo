@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
     <data>
 
-        <record id="view_crm_case_jobs_filter_inherit" model="ir.ui.view">
-            <field name="name">Jobs - Recruitment Search</field>
+        <record id="view_hr_applicant_document_search_inherit" model="ir.ui.view">
+            <field name="name">hr.applicant.document.search.inherit</field>
             <field name="model">hr.applicant</field>
-            <field name="inherit_id" ref="hr_recruitment.view_crm_case_jobs_filter" />
+            <field name="inherit_id" ref="hr_recruitment.view_crm_case_jobs_filter"/>
             <field name="arch" type="xml">
-                <field name="job_id" position="before">
-                    <field name="index_content" string="Resume Content"/>
-                </field>
+                <xpath expr="//field[@name='partner_name']" position="attributes">
+                    <attribute name="filter_domain">['|','|','|','|',('partner_id','ilike',self),('partner_name','ilike',self),('email_from','ilike',self),('name', 'ilike', self),('attachment_ids.index_content', 'ilike', self)]</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -20,6 +20,7 @@
             <field name="view_mode">kanban,tree,form</field>
             <field name="view_id" ref="mail.view_document_file_kanban"/>
             <field name="domain">[('res_model','=','hr.applicant')]</field>
+            <field name="context" eval="{'default_res_model': 'hr.applicant'}"/>
             <field name="help" type="html">
             <p>
              Search through resumes and motivation letters.
@@ -29,10 +30,8 @@
 
         <menuitem
             name="Resumes and Letters"
-            parent="base.menu_crm_case_job_req_main"
-            id="menu_crm_case_categ0_act_job02" action="hr_applicant_resumes" sequence="3"/>            
+            parent="hr_recruitment.menu_hr_recruitment_root"
+            id="menu_crm_case_categ0_act_job02" action="hr_applicant_resumes" sequence="3"/>
 
    </data>
-</openerp>
-    
-
+</odoo>

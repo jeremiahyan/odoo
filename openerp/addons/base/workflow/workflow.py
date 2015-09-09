@@ -1,25 +1,7 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (C) 2004-2014 OpenERP S.A. (<http://openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from openerp.exceptions import Warning
+from openerp.exceptions import UserError
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.workflow
@@ -39,7 +21,7 @@ class workflow(osv.osv):
     }
 
     def copy(self, cr, uid, id, values, context=None):
-        raise Warning(_("Duplicating workflows is not possible, please create a new workflow"))
+        raise UserError(_("Duplicating workflows is not possible, please create a new workflow"))
 
     def write(self, cr, user, ids, vals, context=None):
         if not context:
@@ -98,8 +80,7 @@ class wkf_activity(osv.osv):
     def unlink(self, cr, uid, ids, context=None):
         if context is None: context = {}
         if not context.get('_force_unlink') and self.pool.get('workflow.workitem').search(cr, uid, [('act_id', 'in', ids)]):
-            raise osv.except_osv(_('Operation Forbidden'),
-                                 _('Please make sure no workitems refer to an activity before deleting it!'))
+            raise UserError(_('Please make sure no workitems refer to an activity before deleting it!'))
         super(wkf_activity, self).unlink(cr, uid, ids, context=context)
 
 wkf_activity()
@@ -111,6 +92,7 @@ class wkf_transition(osv.osv):
     _columns = {
         'trigger_model': fields.char('Trigger Object'),
         'trigger_expr_id': fields.char('Trigger Expression'),
+        'sequence': fields.integer('Sequence'),
         'signal': fields.char('Signal (Button Name)',
                               help="When the operation of transition comes from a button pressed in the client form, "\
                               "signal tests the name of the pressed button. If signal is NULL, no button is necessary to validate this transition."),
@@ -126,7 +108,10 @@ class wkf_transition(osv.osv):
     }
     _defaults = {
         'condition': lambda *a: 'True',
+        'sequence': 10,
     }
+
+    _order = 'sequence,id'
 
     def name_get(self, cr, uid, ids, context=None):
         return [(line.id, (line.act_from.name) + '+' + (line.act_to.name)) if line.signal == False else (line.id, line.signal) for line in self.browse(cr, uid, ids, context=context)]
@@ -174,7 +159,7 @@ class wkf_workitem(osv.osv):
     _columns = {
         'act_id': fields.many2one('workflow.activity', 'Activity', required=True, ondelete="cascade", select=True),
         'wkf_id': fields.related('act_id','wkf_id', type='many2one', relation='workflow', string='Workflow'),
-        'subflow_id': fields.many2one('workflow.instance', 'Subflow', ondelete="cascade", select=True),
+        'subflow_id': fields.many2one('workflow.instance', 'Subflow', ondelete="set null", select=True),
         'inst_id': fields.many2one('workflow.instance', 'Instance', required=True, ondelete="cascade", select=True),
         'state': fields.char('Status', select=True),
     }
@@ -196,7 +181,3 @@ class wkf_triggers(osv.osv):
         if not cr.fetchone():
             cr.execute('CREATE INDEX wkf_triggers_res_id_model_index ON wkf_triggers (res_id, model)')
 wkf_triggers()
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

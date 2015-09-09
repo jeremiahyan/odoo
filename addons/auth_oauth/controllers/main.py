@@ -24,6 +24,7 @@ _logger = logging.getLogger(__name__)
 def fragment_to_query_string(func):
     @functools.wraps(func)
     def wrapper(self, *a, **kw):
+        kw.pop('debug', False)
         if not kw:
             return """<html><head><script>
                 var l = window.location;
@@ -49,8 +50,7 @@ class OAuthLogin(Home):
     def list_providers(self):
         try:
             provider_obj = request.registry.get('auth.oauth.provider')
-            providers = provider_obj.search_read(request.cr, SUPERUSER_ID, [('enabled', '=', True), ('auth_endpoint', '!=', False), ('validation_endpoint', '!=', False)])
-            # TODO in forwardport: remove conditions on 'auth_endpoint' and 'validation_endpoint' when these fields will be 'required' in model
+            providers = provider_obj.search_read(request.cr, SUPERUSER_ID, [('enabled', '=', True)])
         except Exception:
             providers = []
         for provider in providers:
@@ -69,9 +69,9 @@ class OAuthLogin(Home):
         return providers
 
     def get_state(self, provider):
-        redirect = request.params.get('redirect', 'web')
+        redirect = request.params.get('redirect') or 'web'
         if not redirect.startswith(('//', 'http://', 'https://')):
-            redirect = '%s%s' % (request.httprequest.url_root, redirect)
+            redirect = '%s%s' % (request.httprequest.url_root, redirect[1:] if redirect[0] == '/' else redirect)
         state = dict(
             d=request.session.db,
             p=provider['id'],
@@ -173,7 +173,7 @@ class OAuthController(http.Controller):
 
     @http.route('/auth_oauth/oea', type='http', auth='none')
     def oea(self, **kw):
-        """login user via OpenERP Account provider"""
+        """login user via Odoo Account provider"""
         dbname = kw.pop('db', None)
         if not dbname:
             dbname = db_monodb()
@@ -197,5 +197,3 @@ class OAuthController(http.Controller):
 
         kw['state'] = simplejson.dumps(state)
         return self.signin(**kw)
-
-# vim:expandtab:tabstop=4:softtabstop=4:shiftwidth=4:

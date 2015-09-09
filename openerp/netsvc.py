@@ -1,27 +1,10 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2014 OpenERP SA (<http://www.openerp.com>)
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
 import logging.handlers
 import os
+import platform
 import pprint
 import release
 import sys
@@ -77,10 +60,11 @@ class PostgreSQLHandler(logging.Handler):
     def emit(self, record):
         ct = threading.current_thread()
         ct_db = getattr(ct, 'dbname', None)
-        dbname = tools.config['log_db'] or ct_db
+        dbname = tools.config['log_db'] if tools.config['log_db'] and tools.config['log_db'] != '%d' else ct_db
         if not dbname:
             return
-        with tools.ignore(Exception), tools.mute_logger('openerp.sql_db'), sql_db.db_connect(dbname).cursor() as cr:
+        with tools.ignore(Exception), tools.mute_logger('openerp.sql_db'), sql_db.db_connect(dbname, allow_uri=True).cursor() as cr:
+            cr.autocommit(True)
             msg = tools.ustr(record.msg)
             if record.args:
                 msg = msg % record.args
@@ -137,13 +121,17 @@ def init_logger():
 
     # create a format for log messages and dates
     format = '%(asctime)s %(pid)s %(levelname)s %(dbname)s %(name)s: %(message)s'
+    # Normal Handler on stderr
+    handler = logging.StreamHandler()
 
     if tools.config['syslog']:
         # SysLog Handler
         if os.name == 'nt':
             handler = logging.handlers.NTEventLogHandler("%s %s" % (release.description, release.version))
+        elif platform.system() == 'Darwin':
+            handler = logging.handlers.SysLogHandler('/var/run/log')
         else:
-            handler = logging.handlers.SysLogHandler()
+            handler = logging.handlers.SysLogHandler('/dev/log')
         format = '%s %s' % (release.description, release.version) \
                 + ':%(dbname)s:%(levelname)s:%(name)s:%(message)s'
 
@@ -160,13 +148,9 @@ def init_logger():
             elif os.name == 'posix':
                 handler = logging.handlers.WatchedFileHandler(logf)
             else:
-                handler = logging.handlers.FileHandler(logf)
+                handler = logging.FileHandler(logf)
         except Exception:
             sys.stderr.write("ERROR: couldn't create the logfile directory. Logging to the standard output.\n")
-            handler = logging.StreamHandler(sys.stdout)
-    else:
-        # Normal Handler on standard output
-        handler = logging.StreamHandler(sys.stdout)
 
     # Check that handler.stream has a fileno() method: when running OpenERP
     # behind Apache with mod_wsgi, handler.stream will have type mod_wsgi.Log,
@@ -175,7 +159,7 @@ def init_logger():
     def is_a_tty(stream):
         return hasattr(stream, 'fileno') and os.isatty(stream.fileno())
 
-    if isinstance(handler, logging.StreamHandler) and is_a_tty(handler.stream):
+    if os.name == 'posix' and isinstance(handler, logging.StreamHandler) and is_a_tty(handler.stream):
         formatter = ColoredFormatter(format)
     else:
         formatter = DBFormatter(format)
@@ -184,8 +168,15 @@ def init_logger():
     logging.getLogger().addHandler(handler)
 
     if tools.config['log_db']:
+        db_levels = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL,
+        }
         postgresqlHandler = PostgreSQLHandler()
-        postgresqlHandler.setLevel(25)
+        postgresqlHandler.setLevel(int(db_levels.get(tools.config['log_db_level'], tools.config['log_db_level'])))
         logging.getLogger().addHandler(postgresqlHandler)
 
     # Configure loggers levels
@@ -221,5 +212,3 @@ PSEUDOCONFIG_MAPPER = {
     'error': ['openerp:ERROR', 'werkzeug:ERROR'],
     'critical': ['openerp:CRITICAL', 'werkzeug:CRITICAL'],
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

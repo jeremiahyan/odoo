@@ -2,32 +2,11 @@
 # -*- coding: utf-8 -*-
 # This test can be run stand-alone with something like:
 # > PYTHONPATH=. python2 openerp/tests/test_misc.py
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (c) 2012-TODAY OpenERP S.A. <http://openerp.com>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import unittest2
 
-from lxml import etree
-
 from openerp.tools import html_sanitize, html_email_clean, append_content_to_html, plaintext2html, email_split
-
 import test_mail_examples
 
 
@@ -44,6 +23,24 @@ class TestSanitizer(unittest2.TestCase):
         for content, expected in cases:
             html = html_sanitize(content)
             self.assertEqual(html, expected, 'html_sanitize is broken')
+
+    def test_mako(self):
+        cases = [
+            ('''<p>Some text</p>
+<% set signup_url = object.get_signup_url() %>
+% if signup_url:
+<p>
+    You can access this document and pay online via our Customer Portal:
+</p>''', '''<p>Some text</p>
+<% set signup_url = object.get_signup_url() %>
+% if signup_url:
+<p>
+    You can access this document and pay online via our Customer Portal:
+</p>''')
+        ]
+        for content, expected in cases:
+            html = html_sanitize(content, silent=False)
+            self.assertEqual(html, expected, 'html_sanitize: broken mako management')
 
     def test_evil_malicious_code(self):
         # taken from https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#Tests
@@ -327,6 +324,12 @@ class TestCleaner(unittest2.TestCase):
         for ext in test_mail_examples.BUG_2_OUT:
             self.assertNotIn(ext, new_html, 'html_email_cleaner did not removed invalid content')
 
+        new_html = html_email_clean(test_mail_examples.BUG3, remove=True, shorten=True, max_length=250)
+        for ext in test_mail_examples.BUG_3_IN:
+            self.assertIn(ext, new_html, 'html_email_cleaner wrongly removed valid content')
+        for ext in test_mail_examples.BUG_3_OUT:
+            self.assertNotIn(ext, new_html, 'html_email_cleaner did not removed invalid content')
+
     def test_90_misc(self):
         # False boolean for text must return empty string
         new_html = html_email_clean(False)
@@ -363,16 +366,17 @@ class TestHtmlTools(unittest2.TestCase):
         for html, content, plaintext_flag, preserve_flag, container_tag, expected in test_samples:
             self.assertEqual(append_content_to_html(html, content, plaintext_flag, preserve_flag, container_tag), expected, 'append_content_to_html is broken')
 
+
 class TestEmailTools(unittest2.TestCase):
     """ Test some of our generic utility functions for emails """
 
     def test_email_split(self):
         cases = [
-            ("John <12345@gmail.com>", ['12345@gmail.com']), # regular form 
-            ("d@x; 1@2", ['d@x', '1@2']), # semi-colon + extra space
-            ("'(ss)' <123@gmail.com>, 'foo' <foo@bar>", ['123@gmail.com','foo@bar']), # comma + single-quoting
-            ('"john@gmail.com"<johnny@gmail.com>', ['johnny@gmail.com']), # double-quoting
-            ('"<jg>" <johnny@gmail.com>', ['johnny@gmail.com']), # double-quoting with brackets 
+            ("John <12345@gmail.com>", ['12345@gmail.com']),  # regular form
+            ("d@x; 1@2", ['d@x', '1@2']),  # semi-colon + extra space
+            ("'(ss)' <123@gmail.com>, 'foo' <foo@bar>", ['123@gmail.com', 'foo@bar']),  # comma + single-quoting
+            ('"john@gmail.com"<johnny@gmail.com>', ['johnny@gmail.com']),  # double-quoting
+            ('"<jg>" <johnny@gmail.com>', ['johnny@gmail.com']),  # double-quoting with brackets
         ]
         for text, expected in cases:
             self.assertEqual(email_split(text), expected, 'email_split is broken')

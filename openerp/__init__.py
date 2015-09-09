@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 """ OpenERP core library."""
 
@@ -56,11 +38,15 @@ del time
 # The hard-coded super-user id (a.k.a. administrator, or root user).
 SUPERUSER_ID = 1
 
-def registry(database_name):
+def registry(database_name=None):
     """
-    Return the model registry for the given database. If the registry does not
-    exist yet, it is created on the fly.
+    Return the model registry for the given database, or the database mentioned
+    on the current thread. If the registry does not exist yet, it is created on
+    the fly.
     """
+    if database_name is None:
+        import threading
+        database_name = threading.currentThread().dbname
     return modules.registry.RegistryManager.get(database_name)
 
 #----------------------------------------------------------
@@ -93,5 +79,3 @@ from openerp.tools.translate import _
 #----------------------------------------------------------
 import cli
 import http
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

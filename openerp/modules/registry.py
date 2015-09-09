@@ -1,35 +1,18 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 """ Models registries.
 
 """
-from collections import Mapping
-from contextlib import contextmanager
+from collections import Mapping, defaultdict
 import logging
+import os
 import threading
 
 import openerp
 from .. import SUPERUSER_ID
-from openerp.tools import assertion_report, lazy_property
+from openerp.tools import assertion_report, lazy_property, classproperty, config
+from openerp.tools.lru import LRU
 
 _logger = logging.getLogger(__name__)
 
@@ -50,7 +33,7 @@ class Registry(Mapping):
         self._init = True
         self._init_parent = {}
         self._assertion_report = assertion_report.assertion_report()
-        self.fields_by_model = None
+        self._fields_by_model = None
 
         # modules fully loaded (maintained during init phase by `loading` module)
         self._init_modules = set()
@@ -72,6 +55,7 @@ class Registry(Mapping):
         self.base_registry_signaling_sequence = None
         self.base_cache_signaling_sequence = None
 
+        self.cache = LRU(8192)
         # Flag indicating if at least one model cache has been cleared.
         # Useful only in a multi-process context.
         self._any_cache_cleared = False
@@ -104,6 +88,10 @@ class Registry(Mapping):
         return self.models[model_name]
 
     @lazy_property
+    def model_cache(self):
+        return RegistryManager.model_cache
+
+    @lazy_property
     def pure_function_fields(self):
         """ Return the list of pure function fields (field objects) """
         fields = []
@@ -112,6 +100,20 @@ class Registry(Mapping):
             for fname in fnames:
                 fields.append(model_fields[fname])
         return fields
+
+    def clear_manual_fields(self):
+        """ Invalidate the cache for manual fields. """
+        self._fields_by_model = None
+
+    def get_manual_fields(self, cr, model_name):
+        """ Return the manual fields (as a dict) for the given model. """
+        if self._fields_by_model is None:
+            # Query manual fields for all models at once
+            self._fields_by_model = dic = defaultdict(dict)
+            cr.execute('SELECT * FROM ir_model_fields WHERE state=%s', ('manual',))
+            for field in cr.dictfetchall():
+                dic[field['model']][field['name']] = field
+        return self._fields_by_model[model_name]
 
     def do_parent_store(self, cr):
         for o in self._init_parent:
@@ -151,31 +153,43 @@ class Registry(Mapping):
 
         return [self.models[m] for m in models_to_load]
 
-    def setup_models(self, cr):
+    def setup_models(self, cr, partial=False):
         """ Complete the setup of models.
             This must be called after loading modules and before using the ORM.
+
+            :param partial: ``True`` if all models have not been loaded yet.
         """
+        lazy_property.reset_all(self)
+
+        # load custom models
+        ir_model = self['ir.model']
+        cr.execute('select model, transient from ir_model where state=%s', ('manual',))
+        for (model_name, transient) in cr.fetchall():
+            ir_model.instanciate(cr, SUPERUSER_ID, model_name, transient, {})
+
         # prepare the setup on all models
         for model in self.models.itervalues():
-            model._prepare_setup_fields(cr, SUPERUSER_ID)
+            model._prepare_setup(cr, SUPERUSER_ID)
 
         # do the actual setup from a clean state
         self._m2m = {}
         for model in self.models.itervalues():
+            model._setup_base(cr, SUPERUSER_ID, partial)
+
+        for model in self.models.itervalues():
             model._setup_fields(cr, SUPERUSER_ID)
+
+        for model in self.models.itervalues():
+            model._setup_complete(cr, SUPERUSER_ID)
 
     def clear_caches(self):
         """ Clear the caches
         This clears the caches associated to methods decorated with
         ``tools.ormcache`` or ``tools.ormcache_multi`` for all the models.
         """
+        self.cache.clear()
         for model in self.models.itervalues():
             model.clear_caches()
-        # Special case for ir_ui_menu which does not use openerp.tools.ormcache.
-        ir_ui_menu = self.models.get('ir.ui.menu')
-        if ir_ui_menu is not None:
-            ir_ui_menu.clear_cache()
-
 
     # Useful only in a multi-process context.
     def reset_any_cache_cleared(self):
@@ -221,6 +235,7 @@ class Registry(Mapping):
     def leave_test_mode(self):
         """ Leave the test mode. """
         assert self.test_cr is not None
+        self.clear_caches()
         self.test_cr.force_close()
         self.test_cr = None
         RegistryManager.leave_test_mode()
@@ -257,11 +272,36 @@ class RegistryManager(object):
         registries (essentially database connection/model registry pairs).
 
     """
-    # Mapping between db name and model registry.
-    # Accessed through the methods below.
-    registries = {}
+    _registries = None
+    _model_cache = None
     _lock = threading.RLock()
     _saved_lock = None
+
+    @classproperty
+    def registries(cls):
+        if cls._registries is None:
+            size = config.get('registry_lru_size', None)
+            if not size:
+                # Size the LRU depending of the memory limits
+                if os.name != 'posix':
+                    # cannot specify the memory limit soft on windows...
+                    size = 42
+                else:
+                    # A registry takes 10MB of memory on average, so we reserve
+                    # 10Mb (registry) + 5Mb (working memory) per registry
+                    avgsz = 15 * 1024 * 1024
+                    size = int(config['limit_memory_soft'] / avgsz)
+
+            cls._registries = LRU(size)
+        return cls._registries
+
+    @classproperty
+    def model_cache(cls):
+        """ A cache for model classes, indexed by their base classes. """
+        if cls._model_cache is None:
+            # we cache 256 classes per registry on average
+            cls._model_cache = LRU(cls.registries.count * 256)
+        return cls._model_cache
 
     @classmethod
     def lock(cls):
@@ -410,13 +450,6 @@ class RegistryManager(object):
                     _logger.info("Invalidating all model caches after database signaling.")
                     registry.clear_caches()
                     registry.reset_any_cache_cleared()
-                    # One possible reason caches have been invalidated is the
-                    # use of decimal_precision.write(), in which case we need
-                    # to refresh fields.float columns.
-                    for model in registry.models.values():
-                        for column in model._columns.values():
-                            if hasattr(column, 'digits_change'):
-                                column.digits_change(cr)
                 registry.base_registry_signaling_sequence = r
                 registry.base_cache_signaling_sequence = c
             finally:
@@ -454,5 +487,3 @@ class RegistryManager(object):
             finally:
                 cr.close()
             registry.base_registry_signaling_sequence = r
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

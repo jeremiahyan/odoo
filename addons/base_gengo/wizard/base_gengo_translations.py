@@ -1,23 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (C) 2004-2012 OpenERP S.A. (<http://openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import uuid
 import logging
@@ -27,6 +9,7 @@ import time
 from openerp.osv import osv, fields
 from openerp import tools, SUPERUSER_ID
 from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -40,12 +23,13 @@ GENGO_DEFAULT_LIMIT = 20
 
 class base_gengo_translations(osv.osv_memory):
     GENGO_KEY = "Gengo.UUID"
+    GROUPS = ['base.group_system']
 
     _name = 'base.gengo.translations'
     _columns = {
         'sync_type': fields.selection([('send', 'Send New Terms'),
                                        ('receive', 'Receive Translation'),
-                                       ('both', 'Both')], "Sync Type"),
+                                       ('both', 'Both')], "Sync Type", required=True),
         'lang_id': fields.many2one('res.lang', 'Language', required=True),
         'sync_limit': fields.integer("No. of terms to sync"),
     }
@@ -57,7 +41,7 @@ class base_gengo_translations(osv.osv_memory):
     def init(self, cr):
         icp = self.pool['ir.config_parameter']
         if not icp.get_param(cr, SUPERUSER_ID, self.GENGO_KEY, default=None):
-            icp.set_param(cr, SUPERUSER_ID, self.GENGO_KEY, str(uuid.uuid4()), groups=['base.group_website_designer', 'base.group_website_publisher'])
+            icp.set_param(cr, SUPERUSER_ID, self.GENGO_KEY, str(uuid.uuid4()), groups=self.GROUPS)
 
     def get_gengo_key(self, cr):
         icp = self.pool['ir.config_parameter']
@@ -74,7 +58,7 @@ class base_gengo_translations(osv.osv_memory):
             by the cron) or in a dialog box (if requested by the user), thus it's important to return it
             translated.
         '''
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
+        user = self.pool.get('res.users').browse(cr, 1, uid, context=context)
         if not user.company_id.gengo_public_key or not user.company_id.gengo_private_key:
             return (False, _("Gengo `Public Key` or `Private Key` are missing. Enter your Gengo authentication parameters under `Settings > Companies > Gengo Parameters`."))
         try:
@@ -98,17 +82,17 @@ class base_gengo_translations(osv.osv_memory):
 
         flag, gengo = self.gengo_authentication(cr, uid, context=context)
         if not flag:
-            raise osv.except_osv(_('Gengo Authentication Error'), gengo)
+            raise UserError(gengo)
         for wizard in self.browse(cr, uid, ids, context=context):
             supported_langs = self.pool.get('ir.translation')._get_all_supported_languages(cr, uid, context=context)
             language = self.pool.get('ir.translation')._get_gengo_corresponding_language(wizard.lang_id.code)
             if language not in supported_langs:
-                raise osv.except_osv(_("Warning"), _('This language is not supported by the Gengo translation services.'))
+                raise UserError(_('This language is not supported by the Gengo translation services.'))
 
             ctx = context.copy()
             ctx['gengo_language'] = wizard.lang_id.id
             if wizard.sync_limit > 200 or wizard.sync_limit < 1:
-                raise osv.except_osv(_("Warning"), _('Sync limit should between 1 to 200 for Gengo translation services.'))
+                raise UserError(_('The number of terms to sync should be between 1 to 200 to work with Gengo translation services.'))
             if wizard.sync_type in ['send', 'both']:
                 self._sync_request(cr, uid, wizard.sync_limit, context=ctx)
             if wizard.sync_type in ['receive', 'both']:
@@ -119,7 +103,7 @@ class base_gengo_translations(osv.osv_memory):
         """
         This method will be called by cron services to get translations from
         Gengo. It will read translated terms and comments from Gengo and will
-        update respective ir.translation in openerp.
+        update respective ir.translation in Odoo.
         """
         translation_pool = self.pool.get('ir.translation')
         flag, gengo = self.gengo_authentication(cr, uid, context=context)
@@ -245,7 +229,7 @@ class base_gengo_translations(osv.osv_memory):
 
         A special key 'gengo_language' can be passed in the context in order to
         request only translations of that language only. Its value is the language
-        ID in openerp.
+        ID in Odoo.
         """
         if context is None:
             context = {}
@@ -270,5 +254,3 @@ class base_gengo_translations(osv.osv_memory):
                     break
         except Exception, e:
             _logger.error("%s", e)
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

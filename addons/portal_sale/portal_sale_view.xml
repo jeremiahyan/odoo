@@ -1,28 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        
-        <!--  Add payment options to sale.order and invoice forms -->
-        <record model="ir.ui.view" id="sale_order_form_payment">
-                <field name="name">sale.order.form.payment</field>
-                <field name="model">sale.order</field>
-                <field name="inherit_id" ref="sale.view_order_form"/>
-                <field name="arch" type="xml">
-                    <notebook position="before">
-                        <field name="portal_payment_options" groups="portal_sale.group_payment_options" class="view_portal_payment_options"/>
-                    </notebook>
-                </field>
-        </record>
-        <record model="ir.ui.view" id="invoice_form_payment">
-                <field name="name">account.invoice.form.payment</field>
-                <field name="model">account.invoice</field>
-                <field name="inherit_id" ref="account.invoice_form"/>
-                <field name="arch" type="xml">
-                    <notebook position="before">
-                        <field name="portal_payment_options" groups="portal_sale.group_payment_options" class="view_portal_payment_options"/>
-                    </notebook>
-                </field>
-        </record>
 
         <record id="view_account_invoice_filter_share" model="ir.ui.view">
             <field name="name">account.invoice.select.share</field>
@@ -64,7 +42,7 @@
             <field name="res_model">account.invoice</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('type','in',['out_invoice','out_refund'])]</field>
-            <field name="context">{'type':['out_invoice','out_refund'], 'journal_type': 'sale'}</field>
+            <field name="context">{}</field>
             <field name="search_view_id" ref="account.view_account_invoice_filter"/>
             <field name="help">We haven't sent you any invoice.</field>
         </record>
