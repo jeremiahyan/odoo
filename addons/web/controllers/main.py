@@ -12,7 +12,7 @@ import datetime
 import hashlib
 import os
 import re
-import simplejson
+import json
 import sys
 import time
 import urllib2
@@ -52,7 +52,7 @@ else:
     loader = jinja2.PackageLoader('openerp.addons.web', "views")
 
 env = jinja2.Environment(loader=loader, autoescape=True)
-env.filters["json"] = simplejson.dumps
+env.filters["json"] = json.dumps
 
 # 1 week cache for asset bundles as advised by Google Page Speed
 BUNDLE_MAXAGE = 60 * 60 * 24 * 7
@@ -78,7 +78,7 @@ def serialize_exception(f):
                 'message': "Odoo Server Error",
                 'data': se
             }
-            return werkzeug.exceptions.InternalServerError(simplejson.dumps(error))
+            return werkzeug.exceptions.InternalServerError(json.dumps(error))
     return wrap
 
 def redirect_with_hash(*args, **kw):
@@ -241,7 +241,7 @@ def manifest_glob(extension, addons=None, db=None, include_remotes=False):
     return r
 
 def manifest_list(extension, mods=None, db=None, debug=None):
-    """ list ressources to load specifying either:
+    """ list resources to load specifying either:
     mods: a comma separated string listing modules
     db: a database name (return all installed modules in that database)
     """
@@ -427,8 +427,8 @@ def content_disposition(filename):
     version = int((request.httprequest.user_agent.version or '0').split('.')[0])
     if browser == 'msie' and version < 9:
         return "attachment; filename=%s" % escaped
-    elif browser == 'safari':
-        return u"attachment; filename=%s" % filename
+    elif browser == 'safari' and version < 537:
+        return u"attachment; filename=%s" % filename.encode('ascii', 'replace')
     else:
         return "attachment; filename*=UTF-8''%s" % escaped
 
@@ -505,7 +505,11 @@ def binary_content(xmlid=None, model='ir.attachment', id=None, field='datas', un
         headers.append(('Content-Disposition', content_disposition(filename)))
 
     # get content after cache control
-    content = obj[field] or ''
+    if model == 'ir.attachment' and obj.type == 'url' and obj.url:
+        status = 301
+        content = obj.url
+    else:
+        content = obj[field] or ''
 
     return (status, headers, content)
 
@@ -563,12 +567,6 @@ class Home(http.Controller):
             request.uid = old_uid
             values['error'] = "Wrong login/password"
         return request.render('web.login', values)
-
-    @http.route('/login', type='http', auth="none")
-    def login(self, db, login, key, redirect="/web", **kw):
-        if not http.db_filter([db]):
-            return werkzeug.utils.redirect('/', 303)
-        return login_and_redirect(db, login, key, redirect_url=redirect)
 
 class WebClient(http.Controller):
 
@@ -650,8 +648,8 @@ class WebClient(http.Controller):
         ids = res_lang.search(request.cr, uid, [("code", "=", lang)])
         lang_params = None
         if ids:
-            lang_params = res_lang.read(request.cr, uid, ids[0], ["direction", "date_format", "time_format",
-                                                "grouping", "decimal_point", "thousands_sep"])
+            lang_params = res_lang.read(request.cr, uid, ids[0],
+                ["name", "direction", "date_format", "time_format", "grouping", "decimal_point", "thousands_sep"])
 
         # Regional languages (ll_CC) must inherit/override their parent lang (ll), but this is
         # done server-side when the language is loaded, so we only need to load the user's lang.
@@ -666,8 +664,11 @@ class WebClient(http.Controller):
             translations_per_module[mod]['messages'].extend({'id': m['src'],
                                                              'string': m['value']} \
                                                                 for m in msg_group)
-        return {"modules": translations_per_module,
-                "lang_parameters": lang_params}
+        return {
+            'lang_parameters': lang_params,
+            'modules': translations_per_module,
+            'multi_lang': len(res_lang.get_installed(request.cr, uid)) > 1,
+        }
 
     @http.route('/web/webclient/version_info', type='json', auth="none")
     def version_info(self):
@@ -735,7 +736,7 @@ class Database(http.Controller):
     def manager(self, **kw):
         return self._render_template()
 
-    @http.route('/web/database/create', type='http', auth="none")
+    @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
     def create(self, master_pwd, name, lang, password, **post):
         try:
             request.session.proxy("db").create_database(master_pwd, name, bool(post.get('demo')), lang,  password)
@@ -745,7 +746,7 @@ class Database(http.Controller):
             error = "Database creation error: %s" % e
         return self._render_template(error=error)
 
-    @http.route('/web/database/duplicate', type='http', auth="none")
+    @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
     def duplicate(self, master_pwd, name, new_name):
         try:
             request.session.proxy("db").duplicate_database(master_pwd, name, new_name)
@@ -754,7 +755,7 @@ class Database(http.Controller):
             error = "Database duplication error: %s" % e
             return self._render_template(error=error)
 
-    @http.route('/web/database/drop', type='http', auth="none")
+    @http.route('/web/database/drop', type='http', auth="none", methods=['POST'], csrf=False)
     def drop(self, master_pwd, name):
         try:
             request.session.proxy("db").drop(master_pwd, name)
@@ -763,7 +764,7 @@ class Database(http.Controller):
             error = "Database deletion error: %s" % e
             return self._render_template(error=error)
 
-    @http.route('/web/database/backup', type='http', auth="none")
+    @http.route('/web/database/backup', type='http', auth="none", methods=['POST'], csrf=False)
     def backup(self, master_pwd, name, backup_format = 'zip'):
         try:
             openerp.service.db.check_super(master_pwd)
@@ -781,7 +782,7 @@ class Database(http.Controller):
             error = "Database backup error: %s" % e
             return self._render_template(error=error)
 
-    @http.route('/web/database/restore', type='http', auth="none")
+    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
     def restore(self, master_pwd, backup_file, name, copy=False):
         try:
             data = base64.b64encode(backup_file.read())
@@ -791,7 +792,7 @@ class Database(http.Controller):
             error = "Database restore error: %s" % e
             return self._render_template(error=error)
 
-    @http.route('/web/database/change_password', type='http', auth="none")
+    @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
     def change_password(self, master_pwd, master_pwd_new):
         try:
             request.session.proxy("db").change_admin_password(master_pwd, master_pwd_new)
@@ -1045,6 +1046,8 @@ class Binary(http.Controller):
         status, headers, content = binary_content(xmlid=xmlid, model=model, id=id, field=field, unique=unique, filename=filename, filename_field=filename_field, download=download, mimetype=mimetype)
         if status == 304:
             response = werkzeug.wrappers.Response(status=status, headers=headers)
+        elif status == 301:
+            return werkzeug.utils.redirect(content, code=301)
         elif status != 200:
             response = request.not_found()
         else:
@@ -1076,6 +1079,8 @@ class Binary(http.Controller):
         status, headers, content = binary_content(xmlid=xmlid, model=model, id=id, field=field, unique=unique, filename=filename, filename_field=filename_field, download=download, mimetype=mimetype, default_mimetype='image/png')
         if status == 304:
             return werkzeug.wrappers.Response(status=304, headers=headers)
+        elif status == 301:
+            return werkzeug.utils.redirect(content, code=301)
         elif status != 200 and download:
             return request.not_found()
 
@@ -1090,7 +1095,7 @@ class Binary(http.Controller):
         image_base64 = content and base64.b64decode(content) or self.placeholder()
         headers.append(('Content-Length', len(image_base64)))
         response = request.make_response(image_base64, headers)
-        response.status = str(status)
+        response.status_code = status
         return response
 
     # backward compatibility
@@ -1117,7 +1122,7 @@ class Binary(http.Controller):
                     ufile.content_type, base64.b64encode(data)]
         except Exception, e:
             args = [False, e.message]
-        return out % (simplejson.dumps(callback), simplejson.dumps(args))
+        return out % (json.dumps(callback), json.dumps(args))
 
     @http.route('/web/binary/upload_attachment', type='http', auth="user")
     @serialize_exception
@@ -1143,7 +1148,7 @@ class Binary(http.Controller):
         except Exception:
             args = {'error': "Something horrible happened"}
             _logger.exception("Fail to upload attachment %s" % ufile.filename)
-        return out % (simplejson.dumps(callback), simplejson.dumps(args))
+        return out % (json.dumps(callback), json.dumps(args))
 
     @http.route([
         '/web/binary/company_logo',
@@ -1391,7 +1396,7 @@ class ExportFormat(object):
         raise NotImplementedError()
 
     def base(self, data, token):
-        params = simplejson.loads(data)
+        params = json.loads(data)
         model, fields, ids, domain, import_compat = \
             operator.itemgetter('model', 'fields', 'ids', 'domain',
                                 'import_compat')(
@@ -1517,7 +1522,7 @@ class Reports(http.Controller):
     @http.route('/web/report', type='http', auth="user")
     @serialize_exception
     def index(self, action, token):
-        action = simplejson.loads(action)
+        action = json.loads(action)
 
         report_srv = request.session.proxy("report")
         context = dict(request.context)

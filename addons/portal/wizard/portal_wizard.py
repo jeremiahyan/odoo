@@ -140,8 +140,8 @@ class wizard_user(osv.osv_memory):
                     wizard_user.user_id.write({'active': True, 'groups_id': [(4, portal.id)]})
                     # prepare for the signup process
                     wizard_user.user_id.partner_id.signup_prepare()
+                    self._send_email(cr, uid, wizard_user.id, context)
                 wizard_user.refresh()
-                self._send_email(cr, uid, wizard_user.id, context)
             else:
                 # remove the user (if it exists) from the portal group
                 if wizard_user.user_id and (portal in wizard_user.user_id.groups_id):
@@ -156,7 +156,7 @@ class wizard_user(osv.osv_memory):
             @param wizard_user: browse record of model portal.wizard.user
             @return: browse record of model res.users
         """
-        wizard_user = self.browse(cr, uid, ids[0], context=context)
+        wizard_user = self.browse(cr, uid, ids, context=context)
         res_users = self.pool.get('res.users')
         create_context = dict(context or {}, noshortcut=True, no_reset_password=True)       # to prevent shortcut creation
         values = {
@@ -172,7 +172,7 @@ class wizard_user(osv.osv_memory):
             @param wizard_user: browse record of model portal.wizard.user
             @return: the id of the created mail.mail record
         """
-        wizard_user = self.browse(cr, uid, ids[0], context=context)
+        wizard_user = self.browse(cr, uid, ids, context=context)
         res_partner = self.pool['res.partner']
         this_user = self.pool.get('res.users').browse(cr, SUPERUSER_ID, uid, context)
         if not this_user.email:

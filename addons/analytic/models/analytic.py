@@ -41,16 +41,9 @@ class account_analytic_account(models.Model):
             account.credit = data_credit.get(account.id, 0.0)
             account.balance = account.credit - account.debit
 
-    @api.model
-    def _default_company(self):
-        return self.env.user.company_id.id
-
-    @api.model
-    def _default_user(self):
-        return self.env.user.id
-
     name = fields.Char(string='Analytic Account', index=True, required=True, track_visibility='onchange')
     code = fields.Char(string='Reference', index=True, track_visibility='onchange')
+    # FIXME: account_type is probably not necessary anymore, could be removed in v10
     account_type = fields.Selection([
         ('normal', 'Analytic View')
         ], string='Type of Account', required=True, default='normal')
@@ -58,7 +51,7 @@ class account_analytic_account(models.Model):
     tag_ids = fields.Many2many('account.analytic.tag', 'account_analytic_account_tag_rel', 'account_id', 'tag_id', string='Tags', copy=True)
     line_ids = fields.One2many('account.analytic.line', 'account_id', string="Analytic Lines")
 
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=_default_company)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     partner_id = fields.Many2one('res.partner', string='Customer')
 
     balance = fields.Monetary(compute='_compute_debit_credit_balance', string='Balance')
@@ -84,17 +77,6 @@ class account_analytic_account(models.Model):
         args = args or []
         recs = self.search(['|', '|', ('code', operator, name), ('partner_id', operator, name), ('name', operator, name)] + args, limit=limit)
         return recs.name_get()
-
-    @api.multi
-    def _track_subtype(self, init_values):
-        self.ensure_one()
-        if 'state' in init_values and self.state == 'open':
-            return 'analytic.mt_account_opened'
-        elif 'state' in init_values and self.state == 'close':
-            return 'analytic.mt_account_closed'
-        elif 'state' in init_values and self.state == 'pending':
-            return 'analytic.mt_account_pending'
-        return super(account_analytic_account, self)._track_subtype(init_values)
 
 
 class account_analytic_line(models.Model):

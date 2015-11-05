@@ -27,6 +27,9 @@
                         <field name="group_uom" widget="radio"/>
                         <field name="group_costing_method" widget="radio"/>
                         <field name="module_purchase_requisition" widget="radio"/>
+                        <field name="group_advance_purchase_requisition" widget="radio"
+                            attrs="{'invisible': [('module_purchase_requisition', '=', 0)]}"/>
+                        <field name="group_manage_vendor_price" widget="radio"/>
                     </group>
                     <group string="Location &amp; Warehouse">
                         <field name="module_stock_dropshipping" widget="radio"/>
@@ -45,26 +48,5 @@
 
         <menuitem id="menu_purchase_general_settings" name="Settings" parent="menu_purchase_config"
             sequence="0" action="action_purchase_configuration"/>
-
-        <record id="view_account_config" model="ir.ui.view">
-            <field name="name">account settings</field>
-            <field name="model">account.config.settings</field>
-            <field name="inherit_id" ref="account.view_account_config_settings"/>
-            <field name="priority" eval="18"/>
-            <field name="arch" type="xml">
-                <separator name="analytic_account" position="attributes">
-                    <attribute name="invisible">0</attribute>
-                </separator>
-                <group name="analytic_account_purchase" position="attributes">
-                    <attribute name="invisible">0</attribute>
-                </group>
-                <xpath expr="//group[@name='analytic_account_purchase']" position="inside">
-                    <div>
-                        <field name="group_analytic_account_for_purchases" class="oe_inline"/>
-                        <label for="group_analytic_account_for_purchases"/>
-                    </div>
-                </xpath>
-            </field>
-        </record>
     </data>
 </openerp>

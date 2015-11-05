@@ -81,7 +81,6 @@ class AccountInvoice(models.Model):
         'move_id.line_ids.currency_id')
     def _compute_residual(self):
         residual = 0.0
-        residual_signed = 0.0
         residual_company_signed = 0.0
         sign = self.type in ['in_refund', 'in_invoice'] and -1 or 1
         for line in self.sudo().move_id.line_ids:
@@ -103,7 +102,7 @@ class AccountInvoice(models.Model):
     def _get_outstanding_info_JSON(self):
         self.outstanding_credits_debits_widget = json.dumps(False)
         if self.state == 'open':
-            domain = [('journal_id.type', 'in', ('bank', 'cash')), ('account_id', '=', self.account_id.id), ('partner_id', '=', self.partner_id.id), ('reconciled', '=', False), ('amount_residual', '!=', 0.0)]
+            domain = [('journal_id.type', 'in', ('bank', 'cash')), ('account_id', '=', self.account_id.id), ('partner_id', '=', self.env['res.partner']._find_accounting_partner(self.partner_id).id), ('reconciled', '=', False), ('amount_residual', '!=', 0.0)]
             if self.type in ('out_invoice', 'in_refund'):
                 domain.extend([('credit', '>', 0), ('debit', '=', 0)])
                 type_payment = _('Outstanding credits')
@@ -149,8 +148,9 @@ class AccountInvoice(models.Model):
                     continue
                 # get the payment value in invoice currency
                 if payment.currency_id and amount_currency != 0:
-                    amount_to_show = amount_currency
+                    amount_to_show = -amount_currency
                 else:
+                    self.with_context(date=payment.date)
                     amount_to_show = payment.company_id.currency_id.compute(-amount, self.currency_id)
                 info['content'].append({
                     'name': payment.name,
@@ -210,8 +210,8 @@ class AccountInvoice(models.Model):
         ], string='Status', index=True, readonly=True, default='draft',
         track_visibility='onchange', copy=False,
         help=" * The 'Draft' status is used when a user is encoding a new and unconfirmed Invoice.\n"
-             " * The 'Pro-forma' status is used the invoice does not have an invoice number.\n"
-             " * The 'Open' status is used when user create invoice, an invoice number is generated. Its in open status till user does not pay invoice.\n"
+             " * The 'Pro-forma' status is used when the invoice does not have an invoice number.\n"
+             " * The 'Open' status is used when user creates invoice, an invoice number is generated. Its in open status till user does not pay invoice.\n"
              " * The 'Paid' status is set automatically when the invoice is paid. Its related journal entries may or may not be reconciled.\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
     sent = fields.Boolean(readonly=True, default=False, copy=False,
@@ -737,6 +737,9 @@ class AccountInvoice(models.Model):
             ctx_nolang = ctx.copy()
             ctx_nolang.pop('lang', None)
             move = account_move.with_context(ctx_nolang).create(move_vals)
+            # Pass invoice in context in method post: used if you want to get the same
+            # account move reference when creating the same invoice after a cancelled one:
+            move.post()
             # make the invoice point to that move
             vals = {
                 'move_id': move.id,
@@ -744,13 +747,16 @@ class AccountInvoice(models.Model):
                 'move_name': move.name,
             }
             inv.with_context(ctx).write(vals)
-            # Pass invoice in context in method post: used if you want to get the same
-            # account move reference when creating the same invoice after a cancelled one:
-            move.post()
         return True
 
     @api.multi
     def invoice_validate(self):
+        for invoice in self:
+            #refuse to validate a vendor bill/refund if there already exists one with the same reference for the same partner,
+            #because it's probably a double encoding of the same bill/refund
+            if invoice.type in ('in_invoice', 'in_refund') and invoice.reference:
+                if self.search([('type', '=', invoice.type), ('reference', '=', invoice.reference), ('company_id', '=', invoice.company_id.id), ('commercial_partner_id', '=', invoice.commercial_partner_id.id), ('id', '!=', invoice.id)]):
+                    raise UserError(_("Duplicated vendor reference detected. You probably encoded twice the same vendor bill/refund."))
         return self.write({'state': 'open'})
 
     @api.model
@@ -1016,7 +1022,7 @@ class AccountInvoiceLine(models.Model):
     invoice_id = fields.Many2one('account.invoice', string='Invoice Reference',
         ondelete='cascade', index=True)
     uom_id = fields.Many2one('product.uom', string='Unit of Measure',
-        ondelete='set null', index=True)
+        ondelete='set null', index=True, oldname='uos_id')
     product_id = fields.Many2one('product.product', string='Product',
         ondelete='restrict', index=True)
     account_id = fields.Many2one('account.account', string='Account',
@@ -1082,7 +1088,7 @@ class AccountInvoiceLine(models.Model):
 
         part = self.invoice_id.partner_id
         fpos = self.invoice_id.fiscal_position_id
-        company = self.company_id
+        company = self.invoice_id.company_id
         currency = self.invoice_id.currency_id
         type = self.invoice_id.type
 
@@ -1105,7 +1111,8 @@ class AccountInvoiceLine(models.Model):
 
             self.name = product.partner_ref
             account = self.get_invoice_line_account(type, product, fpos, company)
-            self.account_id = account.id
+            if account:
+                self.account_id = account.id
             self._set_taxes()
 
             if type in ('in_invoice', 'in_refund'):
@@ -1125,7 +1132,7 @@ class AccountInvoiceLine(models.Model):
                 if company.currency_id != currency:
                     if type in ('in_invoice', 'in_refund'):
                         self.price_unit = product.standard_price
-                    self.price_unit = self.price_unit * currency.with_context(dict(self._context or {}, date=self.date_invoice)).rate
+                    self.price_unit = self.price_unit * currency.with_context(dict(self._context or {}, date=self.invoice_id.date_invoice)).rate
 
                 if self.uom_id and self.uom_id.id != product.uom_id.id:
                     self.price_unit = self.env['product.uom']._compute_price(
@@ -1275,12 +1282,12 @@ class MailComposeMessage(models.Model):
     _inherit = 'mail.compose.message'
 
     @api.multi
-    def send_mail(self):
+    def send_mail(self, auto_commit=False):
         context = self._context
         if context.get('default_model') == 'account.invoice' and \
                 context.get('default_res_id') and context.get('mark_invoice_as_sent'):
             invoice = self.env['account.invoice'].browse(context['default_res_id'])
             invoice = invoice.with_context(mail_post_autofollow=True)
-            invoice.write({'sent': True})
+            invoice.sent = True
             invoice.message_post(body=_("Invoice sent"))
-        return super(MailComposeMessage, self).send_mail()
+        return super(MailComposeMessage, self).send_mail(auto_commit=auto_commit)

@@ -4,13 +4,13 @@
 # This module is Copyright (c) 2009-2013 General Solutions (http://gscom.vn) All Rights Reserved.
 
 {
-    "name" : "Vietnam Chart of Accounts",
+    "name" : "Vietnam - Accounting",
     "version" : "1.0",
     "author" : "General Solutions",
     'website': 'http://gscom.vn',
     "category" : "Localization/Account Charts",
     "description": """
-This is the module to manage the accounting chart for Vietnam in OpenERP.
+This is the module to manage the accounting chart for Vietnam in Odoo.
 =========================================================================
 
 This module applies to companies based in Vietnamese Accounting Standard (VAS).

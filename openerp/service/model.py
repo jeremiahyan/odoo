@@ -8,7 +8,7 @@ import threading
 import time
 
 import openerp
-from openerp.exceptions import UserError, ValidationError
+from openerp.exceptions import UserError, ValidationError, QWebException
 from openerp.tools.translate import translate
 from openerp.tools.translate import _
 
@@ -54,7 +54,12 @@ def check(f):
                 if args and isinstance(args[-1], dict):
                     ctx = args[-1]
             elif isinstance(kwargs, dict):
-                ctx = kwargs.get('context', {})
+                if 'context' in kwargs:
+                    ctx = kwargs['context']
+                elif 'kwargs' in kwargs:
+                    # http entry points such as call_kw()
+                    ctx = kwargs['kwargs'].get('context')
+
 
             uid = 1
             if args and isinstance(args[0], (long, int)):
@@ -111,7 +116,13 @@ def check(f):
                 if openerp.registry(dbname)._init and not openerp.tools.config['test_enable']:
                     raise openerp.exceptions.Warning('Currently, this database is not fully loaded and can not be used.')
                 return f(dbname, *args, **kwargs)
-            except OperationalError, e:
+            except (OperationalError, QWebException) as e:
+                if isinstance(e, QWebException):
+                    cause = e.qweb.get('cause')
+                    if isinstance(cause, OperationalError):
+                        e = cause
+                    else:
+                        raise
                 # Automatically retry the typical transaction serialization errors
                 if e.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     raise

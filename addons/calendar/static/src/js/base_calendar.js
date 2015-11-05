@@ -22,7 +22,7 @@ function reload_favorite_list(result) {
     if (result.view) {
         self = result.view;
     }
-    new Model("res.users")
+    return new Model("res.users")
     .query(["partner_id"])
     .filter([["id", "=", self.dataset.context.uid]])
     .first()
@@ -78,10 +78,11 @@ function reload_favorite_list(result) {
 
 CalendarView.include({
     extraSideBar: function() {
-        this._super();
+        var result = this._super();
         if (this.useContacts) {
-            reload_favorite_list(this);
+            return result.then(reload_favorite_list(this));
         }
+        return result;
     }
 });
 
@@ -128,7 +129,7 @@ widgets.SidebarFilter.include({
     add_filter: function() {
         var self = this;
         var defs = [];
-        new Model("res.users")
+        defs.push(new Model("res.users")
         .query(["partner_id"])
         .filter([["id", "=",this.view.dataset.context.uid]])
         .first()
@@ -139,9 +140,9 @@ widgets.SidebarFilter.include({
                     defs.push(self.ds_message.call("create", [{'partner_id': index}]));
                 }
             });
-        });
-        $.when.apply(null, defs).done(function() {
-            reload_favorite_list(self);
+        }));
+        return $.when.apply(null, defs).then(function() {
+            return reload_favorite_list(self);
         });
     },
     destroy_filter: function(e) {
@@ -165,31 +166,32 @@ widgets.SidebarFilter.include({
 
 var CalendarNotification = Notification.extend({
     template: "CalendarNotification",
-    events: {
-        'click .link2event': function() {
-            var self = this;
-
-            this.rpc("/web/action/load", {
-                action_id: "calendar.action_calendar_event_notify",
-            }).then(function(r) {
-                r.res_id = self.eid;
-                return self.do_action(r);
-            });
-        },
-
-        'click .link2recall': function() {
-            this.destroy(true);
-        },
-
-        'click .link2showed': function() {
-            this.destroy(true);
-            this.rpc("/calendar/notify_ack");
-        },
-    },
 
     init: function(parent, title, text, eid) {
         this._super(parent, title, text, true);
         this.eid = eid;
+
+        this.events = _.extend(this.events || {}, {
+            'click .link2event': function() {
+                var self = this;
+
+                this.rpc("/web/action/load", {
+                    action_id: "calendar.action_calendar_event_notify",
+                }).then(function(r) {
+                    r.res_id = self.eid;
+                    return self.do_action(r);
+                });
+            },
+
+            'click .link2recall': function() {
+                this.destroy(true);
+            },
+
+            'click .link2showed': function() {
+                this.destroy(true);
+                this.rpc("/calendar/notify_ack");
+            },
+        });
     },
 });
 
@@ -239,7 +241,14 @@ var Many2ManyAttendee = FieldMany2ManyTags.extend({
     tag_template: "Many2ManyAttendeeTag",
     get_render_data: function(ids){
         var dataset = new data.DataSetStatic(this, this.field.relation, this.build_context());
-        return dataset.call('get_attendee_detail',[ids, this.getParent().datarecord.id || false]);
+        return dataset.call('get_attendee_detail',[ids, this.getParent().datarecord.id || false])
+                      .then(process_data);
+
+        function process_data(data) {
+            return _.map(data, function(d) {
+                return _.object(['id', 'name', 'status'], d);
+            });
+        }
     }
 });
 

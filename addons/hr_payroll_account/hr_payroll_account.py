@@ -23,11 +23,11 @@ class hr_payslip_line(osv.osv):
             payslip_line.slip_id.employee_id.address_home_id.id
         if credit_account:
             if payslip_line.salary_rule_id.register_id.partner_id or \
-                    payslip_line.salary_rule_id.account_credit.type in ('receivable', 'payable'):
+                    payslip_line.salary_rule_id.account_credit.internal_type in ('receivable', 'payable'):
                 return partner_id
         else:
             if payslip_line.salary_rule_id.register_id.partner_id or \
-                    payslip_line.salary_rule_id.account_debit.type in ('receivable', 'payable'):
+                    payslip_line.salary_rule_id.account_debit.internal_type in ('receivable', 'payable'):
                 return partner_id
         return False
 
@@ -46,10 +46,10 @@ class hr_payslip(osv.osv):
     }
 
     def _get_default_journal(self, cr, uid, context=None):
-        model_data = self.pool.get('ir.model.data')
-        res = model_data.search(cr, uid, [('name', '=', 'expenses_journal')])
+        journal_obj = self.pool.get('account.journal')
+        res = journal_obj.search(cr, uid, [('type', '=', 'general')])
         if res:
-            return model_data.browse(cr, uid, res[0]).res_id
+            return res[0]
         return False
 
     _defaults = {
@@ -204,10 +204,10 @@ class hr_payslip_run(osv.osv):
     }
 
     def _get_default_journal(self, cr, uid, context=None):
-        model_data = self.pool.get('ir.model.data')
-        res = model_data.search(cr, uid, [('name', '=', 'expenses_journal')])
+        journal_obj = self.pool.get('account.journal')
+        res = journal_obj.search(cr, uid, [('type', '=', 'general')])
         if res:
-            return model_data.browse(cr, uid, res[0]).res_id
+            return res[0]
         return False
 
     _defaults = {

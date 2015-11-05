@@ -230,6 +230,7 @@ var Option = Class.extend({
 
 /* ----- default options ---- */
 
+// to remove after 9.0 (keep for compatibility without update with -u)
 var media = Option.extend({
     start: function () {
         var self =this;
@@ -255,6 +256,7 @@ var media = Option.extend({
                     self.buildingBlock.make_active($(item));
                 },0);
             }
+            $(item).trigger("content_changed");
         });
     },
     on_focus : function () {

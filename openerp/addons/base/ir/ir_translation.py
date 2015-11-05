@@ -4,7 +4,7 @@
 from difflib import get_close_matches
 import logging
 
-from openerp import api, tools
+from openerp import api, tools, SUPERUSER_ID
 import openerp.modules
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
@@ -56,7 +56,10 @@ class ir_translation_import_cursor(object):
     def push(self, trans_dict):
         """Feed a translation, as a dictionary, into the cursor
         """
-        params = dict(trans_dict, state="translated" if trans_dict['value'] else "to_translate")
+        if not trans_dict['value']:
+            return
+
+        params = dict(trans_dict, state="translated")
 
         if params['type'] == 'view':
             # ugly hack for QWeb views - pending refactoring of translations in master
@@ -216,13 +219,21 @@ class ir_translation(osv.osv):
                 model.write(cr, uid, [record.res_id], {field_name: value}, context=context_wo_lang)
         return self.write(cr, uid, id, {'src': value}, context=context)
 
+    def _search_src(self, cr, uid, obj, name, args, context):
+        ''' the source term is stored on 'src' field '''
+        res = []
+        for field, operator, value in args:
+            res.append(('src', operator, value))
+        return res
+
     _columns = {
         'name': fields.char('Translated field', required=True),
         'res_id': fields.integer('Record ID', select=True),
         'lang': fields.selection(_get_language, string='Language'),
         'type': fields.selection(TRANSLATION_TYPE, string='Type', select=True),
-        'src': fields.text('Old source'),
-        'source': fields.function(_get_src, fnct_inv=_set_src, type='text', string='Source'),
+        'src': fields.text('Internal Source'),  # stored in database, kept for backward compatibility
+        'source': fields.function(_get_src, fnct_inv=_set_src, fnct_search=_search_src,
+            type='text', string='Source term'),
         'value': fields.text('Translation Value'),
         'module': fields.char('Module', help="Module this term belongs to", select=True),
 
@@ -275,7 +286,6 @@ class ir_translation(osv.osv):
             return
         return super(ir_translation, self)._check_selection_field_value(cr, uid, field, value, context=context)
 
-    @tools.ormcache_multi('name', 'tt', 'lang', multi='ids')
     def _get_ids(self, cr, uid, name, tt, lang, ids):
         translations = dict.fromkeys(ids, False)
         if ids:
@@ -447,7 +457,9 @@ class ir_translation(osv.osv):
 
             # remap existing translations on terms when possible
             for trans in record_trans:
-                if trans.src not in terms:
+                if trans.src == trans.value:
+                    discarded += trans
+                elif trans.src not in terms:
                     matches = get_close_matches(trans.src, terms, 1, 0.9)
                     if matches:
                         trans.write({'src': matches[0], 'state': trans.state})
@@ -529,7 +541,7 @@ class ir_translation(osv.osv):
             query = """ INSERT INTO ir_translation (lang, type, name, res_id, src, value)
                         SELECT l.code, 'model', %(name)s, %(res_id)s, %(src)s, %(src)s
                         FROM res_lang l
-                        WHERE l.code != 'en_US' AND NOT EXISTS (
+                        WHERE l.active AND NOT EXISTS (
                             SELECT 1 FROM ir_translation
                             WHERE lang=l.code AND type='model' AND name=%(name)s AND res_id=%(res_id)s AND src=%(src)s
                         );
@@ -547,7 +559,7 @@ class ir_translation(osv.osv):
             query = """ INSERT INTO ir_translation (lang, type, name, res_id, src, value)
                         SELECT l.code, 'model', %(name)s, %(res_id)s, %(src)s, %(src)s
                         FROM res_lang l
-                        WHERE l.code != 'en_US' AND NOT EXISTS (
+                        WHERE l.active AND l.code != 'en_US' AND NOT EXISTS (
                             SELECT 1 FROM ir_translation
                             WHERE lang=l.code AND type='model' AND name=%(name)s AND res_id=%(res_id)s
                         );
@@ -600,8 +612,10 @@ class ir_translation(osv.osv):
             'name': 'Translate',
             'res_model': 'ir.translation',
             'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'tree,form',
+            'view_mode': 'tree',
+            'view_id': self.env.ref('base.view_translation_dialog_tree').id,
+            'target': 'new',
+            'flags': {'search_view': True, 'action_buttons': True},
             'domain': domain,
         }
         if field:
@@ -619,6 +633,11 @@ class ir_translation(osv.osv):
 
     def load_module_terms(self, cr, modules, langs, context=None):
         context = dict(context or {}) # local copy
+        # make sure the given languages are active
+        lang_obj = self.pool['res.lang']
+        for lang in langs:
+            lang_obj.load_lang(cr, SUPERUSER_ID, lang)
+        # load i18n files
         for module_name in modules:
             modpath = openerp.modules.get_module_path(module_name)
             if not modpath:

@@ -12,22 +12,22 @@ from openerp.exceptions import AccessError
 from openerp.osv import osv, fields
 
 
-class res_partner(osv.Model):
-    _inherit = 'res.partner'
-
-    #
-    # add related fields to test them
-    #
+class Alpha(osv.Model):
+    _name = 'test_new_api.alpha'
     _columns = {
-        # a regular one
-        'related_company_partner_id': fields.related(
-            'company_id', 'partner_id', type='many2one', obj='res.partner'),
+        'name': fields.char(),
+    }
+
+class Bravo(osv.Model):
+    _name = 'test_new_api.bravo'
+    _columns = {
+        'alpha_id': fields.many2one('test_new_api.alpha'),
+        # a related field with a non-trivial path
+        'alpha_name': fields.related('alpha_id', 'name', type='char'),
         # a related field with a single field
-        'single_related_company_id': fields.related(
-            'company_id', type='many2one', obj='res.company'),
+        'related_alpha_id': fields.related('alpha_id', type='many2one', obj='test_new_api.alpha'),
         # a related field with a single field that is also a related field!
-        'related_related_company_id': fields.related(
-            'single_related_company_id', type='many2one', obj='res.company'),
+        'related_related_alpha_id': fields.related('related_alpha_id', type='many2one', obj='test_new_api.alpha'),
     }
 
 
@@ -212,8 +212,7 @@ class MixedModel(models.Model):
 
     @api.model
     def _get_lang(self):
-        langs = self.env['res.lang'].search([])
-        return [(lang.code, lang.name) for lang in langs]
+        return self.env['res.lang'].get_installed()
 
     @api.model
     def _reference_models(self):

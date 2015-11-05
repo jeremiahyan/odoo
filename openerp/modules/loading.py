@@ -162,12 +162,16 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
 
             migrations.migrate_module(package, 'post')
 
+            # Update translations for all installed languages
+            modobj.update_translations(cr, SUPERUSER_ID, [module_id], None, {'overwrite': openerp.tools.config["overwrite_existing_translations"]})
+
+            registry._init_modules.add(package.name)
+
             if new_install:
                 post_init = package.info.get('post_init_hook')
                 if post_init:
                     getattr(py_module, post_init)(cr, registry)
 
-            registry._init_modules.add(package.name)
             # validate all the views at a whole
             registry['ir.ui.view']._validate_module_views(cr, SUPERUSER_ID, module_name)
 
@@ -178,9 +182,9 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
                     report.record_result(load_test(module_name, idref, mode))
                     # Python tests
                     ir_http = registry['ir.http']
-                    if hasattr(ir_http, '_routing_map'):
-                        # Force routing map to be rebuilt between each module test suite
-                        del(ir_http._routing_map)
+                    # Force routing map to be rebuilt between each module test suite
+                    vars(ir_http).pop('routing_map', None)
+
                     report.record_result(openerp.modules.module.run_unit_tests(module_name, cr.dbname))
 
             processed_modules.append(package.name)
@@ -188,8 +192,6 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
             ver = adapt_version(package.data['version'])
             # Set new modules and dependencies
             modobj.write(cr, SUPERUSER_ID, [module_id], {'state': 'installed', 'latest_version': ver})
-            # Update translations for all installed languages
-            modobj.update_translations(cr, SUPERUSER_ID, [module_id], None, {'overwrite': openerp.tools.config["overwrite_existing_translations"]})
 
             package.state = 'installed'
             for kind in ('init', 'demo', 'update'):

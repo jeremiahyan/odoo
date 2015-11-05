@@ -30,7 +30,7 @@ class Planner(models.Model):
     data = fields.Text(string='Data')
     tooltip_planner = fields.Html(string='Planner Tooltips', translate=True)
     planner_application = fields.Selection('_get_planner_application', string='Planner Application', required=True)
-    active = fields.Boolean(string="Active", default=True, help="If the active field is set to False, it will allow you to hide the planner. This change requires a refreshing a your page.")
+    active = fields.Boolean(string="Active", default=True, help="If the active field is set to False, it will allow you to hide the planner. This change requires a refresh of your page.")
 
     @api.model
     def render(self, template_id, planner_app):
@@ -62,12 +62,11 @@ class Planner(models.Model):
             params['model'] = 'ir.module.module'
         # setting the module
         if module_name:
-            module = self.env['ir.module.module'].sudo().search([('name', '=', module_name)], limit=1)
-            if module:
-                params['id'] = module.id
+            installed = self.env['ir.module.module']._installed()
+            if module_name in installed:
+                params['id'] = installed[module_name]
         return "/web#%s" % (urlencode(params),)
 
     @api.model
     def is_module_installed(self, module_name=None):
-        count = self.env['ir.module.module'].sudo().search_count([('state', '=', 'installed'), ('name', '=', module_name)])
-        return bool(count)
+        return module_name in self.env['ir.module.module']._installed()

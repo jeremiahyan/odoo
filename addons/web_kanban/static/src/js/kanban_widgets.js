@@ -2,13 +2,13 @@ odoo.define('web_kanban.widgets', function (require) {
 "use strict";
 
 var core = require('web.core');
+var formats = require('web.formats');
 var Priority = require('web.Priority');
 var ProgressBar = require('web.ProgressBar');
 var pyeval = require('web.pyeval');
 var Registry = require('web.Registry');
 var session = require('web.session');
 var Widget = require('web.Widget');
-
 var QWeb = core.qweb;
 /**
  * Interface to be implemented by kanban fields.
@@ -102,53 +102,52 @@ var KanbanSelection = AbstractField.extend({
         this.name = $node.attr('name');
         this.parent = parent;
     },
+    // Instead of making several rpc calls for each kanban card, take the values from the related fields on the tasks
     prepare_dropdown_selection: function() {
         var self = this;
-        var data = [];
-        _.map(this.field.selection || [], function(res) {
+        var _data = [];
+        var stage_id = self.parent.values.stage_id.value[0];
+        var stage_data = {
+            id: stage_id,
+            legend_normal: self.parent.values.legend_normal ? self.parent.values.legend_normal.value : undefined,
+            legend_blocked: self.parent.values.legend_blocked ? self.parent.values.legend_blocked.value: undefined, 
+            legend_done: self.parent.values.legend_done ? self.parent.values.legend_done.value: undefined,
+        };
+        _.map(self.field.selection || [], function(res) {
             var value = {
                 'name': res[0],
                 'tooltip': res[1],
-                'state_name': res[1],
             };
-            var leg_opt = self.options && self.options.states_legend || null;
-            if (leg_opt) {
-                var key = leg_opt[value.name];
-                var legend = self.parent.group_info && self.parent.group_info[key];
-                if (legend) {
-                    value.state_name = legend;
-                    value.tooltip = legend;
-                }
+            if (res[0] === 'normal') {
+                value.state_name = stage_data.legend_normal ? stage_data.legend_normal : res[1];
+            } else if (res[0] === 'done') {
+                value.state_class = 'oe_kanban_status_green'; 
+                value.state_name = stage_data.legend_done ? stage_data.legend_done : res[1];
+            } else { 
+                value.state_class = 'oe_kanban_status_red'; 
+                value.state_name = stage_data.legend_blocked ? stage_data.legend_blocked : res[1];
             }
-            if (res[0] == 'normal') { value.state_class = 'oe_kanban_status'; }
-            else if (res[0] == 'done') { value.state_class = 'oe_kanban_status oe_kanban_status_green'; }
-            else { value.state_class = 'oe_kanban_status oe_kanban_status_red'; }
-            data.push(value);
+            _data.push(value);
         });
-        return data;
+        return _data;
     },
     renderElement: function() {
         var self = this;
-        this.states = this.prepare_dropdown_selection();
-
         var state;
-        for(var i = 0 ; i < this.states.length ; i++) {
-            if(this.states[i].name === this.get('value')) {
-                state = this.states[i];
-            }
-        }
+        self.states = this.prepare_dropdown_selection();
 
-        this.$el = $(QWeb.render("KanbanSelection", {'widget': this}));
-        this.$('a').first().find('span').removeClass().addClass(state.state_class);
-        this.$('ul li').show().filter(function() {
-            return ($(this).data('value') === state.name);
-        }).hide();
-
-        this.$('a').click(function (ev) {
-            ev.preventDefault();
+        var current_state = _.find(this.states, function(state) {
+            return state.name === self.get('value');
         });
 
-        this.$('li').click(this.set_kanban_selection.bind(this));
+        self.$el = $(QWeb.render("KanbanSelection", {
+            current_state_class: current_state.state_class,
+            states: _.without(this.states, current_state)
+        }));
+        self.$('a').click(function (ev) {
+            ev.preventDefault();
+        });
+        self.$('a').click(self.set_kanban_selection.bind(self));
     },
     set_kanban_selection: function(e) {
         e.preventDefault();
@@ -239,6 +238,26 @@ var KanbanProgressBar = AbstractField.extend({
     },
 });
 
+var KanbanMonetary = AbstractField.extend({
+    tagName: 'span',
+    renderElement: function() {
+        var kanban_view = this.getParent();
+        var currency_field = (this.options && this.options.currency_field) || 'currency_id';
+        var currency_id = kanban_view.values[currency_field].value[0];
+        var currency = session.get_currency(currency_id);
+        var digits_precision = this.options.digits || (currency && currency.digits);
+        var value = formats.format_value(this.field.raw_value || 0, {type: this.field.type, digits: digits_precision});
+        if (currency) {
+            if (currency.position === "after") {
+                value += currency.symbol;
+            } else {
+                value = currency.symbol + value;
+            }
+        }
+        this.$el.text(value);
+    }
+});
+
 var fields_registry = new Registry();
 
 fields_registry
@@ -247,6 +266,7 @@ fields_registry
     .add("attachment_image", KanbanAttachmentImage)
     .add('progress', KanbanProgressBar)
     .add('float_time', FormatChar)
+    .add('monetary', KanbanMonetary)
     ;
 
 return {

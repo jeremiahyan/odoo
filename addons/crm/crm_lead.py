@@ -662,7 +662,7 @@ class crm_lead(format_address, osv.osv):
 
         # Check if the stage is in the stages of the sales team. If not, assign the stage with the lowest sequence
         if merged_data.get('team_id'):
-            team_stage_ids = self.pool.get('crm.stage').search(cr, uid, [('team_ids', 'in', merged_data['team_id']), ('type', '=', merged_data.get('type'))], order='sequence', context=context)
+            team_stage_ids = self.pool.get('crm.stage').search(cr, uid, [('team_ids', 'in', merged_data['team_id']), ('type', 'in', [merged_data.get('type'), 'both'])], order='sequence', context=context)
             if merged_data.get('stage_id') not in team_stage_ids:
                 merged_data['stage_id'] = team_stage_ids and team_stage_ids[0] or False
         # Write merged data into first opportunity
@@ -1197,6 +1197,8 @@ Update your business card, phone book, social media,... Send an email right now 
         res['done']['target'] = user.target_sales_done
         res['won']['target'] = user.target_sales_won
 
+        res['currency_id'] = user.company_id.currency_id.id
+
         return res
 
     def modify_target_sales_dashboard(self, cr, uid, target_name, target_value, context=None):
@@ -1220,50 +1222,16 @@ class crm_lead_tag(osv.Model):
             ('name_uniq', 'unique (name)', "Tag name already exists !"),
     ]
 
+
 class crm_lost_reason(osv.Model):
     _name = "crm.lost.reason"
     _description = 'Reason for loosing leads'
 
     _columns = {
         'name': fields.char('Name', required=True),
+        'active': fields.boolean('Active'),
     }
 
-
-class crm_team(osv.Model):
-    _inherit = "crm.team"
-    def action_your_pipeline(self, cr, uid, context={}):
-        imd = self.pool.get('ir.actions.act_window')
-        imd2 = self.pool.get('ir.model.data')
-        action = imd.for_xml_id(cr, uid, 'crm', "crm_lead_opportunities_tree_view", context=context)
-        view_form = imd2.xmlid_lookup(cr, uid, 'crm.crm_case_form_view_oppor')[2]
-        view_tree = imd2.xmlid_lookup(cr, uid, 'crm.crm_case_tree_view_oppor')[2]
-        view_kanban = imd2.xmlid_lookup(cr, uid, 'crm.crm_case_kanban_view_leads')[2]
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        team_id = user.sale_team_id.id
-        if not team_id:
-            team_id = self.search(cr, uid, [], context=context, limit=1)
-            team_id = team_id and team_id[0]
-            action['help'] = """
-                <p class='oe_view_nocontent_create'>Click here to add new opportunities</p><p>
-                    Looks like you are not a member of a sales team. You should add yourself
-                    as a member of one of the sales team.
-                </p>"""
-            if team_id:
-                action['help'] += "<p>As you don't belong to any sales team, Odoo opens the first one by default.</p>"
-        newcontext = eval(action['context'], {'uid': uid})
-        if team_id:
-            newcontext.update({
-                    'default_team_id': team_id,
-                    'search_default_team_id': team_id
-                })
-        result = {
-            'name': action['name'],
-            'help': action['help'],
-            'type': action['type'],
-            'views': [[view_kanban, 'kanban'], [view_tree, 'tree'], [view_form, 'form'], [False, 'graph'], [False, 'calendar'], [False, 'pivot']],
-            'target': action['target'],
-            'context': newcontext,
-            'res_model': action['res_model'],
-        }
-        return result
-
+    _defaults = {
+        'active': True,
+    }

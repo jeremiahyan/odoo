@@ -124,6 +124,11 @@
                         <field name="stage_id" widget="statusbar" clickable="True" />
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
                         <div class="oe_title" style="width: 100%;">
                             <label for="title" class="oe_edit_only"/>
                             <h1><field name="title" placeholder="Survey Title"/></h1>
@@ -599,11 +604,11 @@
 
         <!-- Left menu elements: Survey -->
         <menuitem name="Surveys" id="menu_survey_form" action="action_survey_form" parent="menu_surveys" sequence="1"/>
-        <menuitem name="Answers" id="menu_survey_type_form1" action="action_survey_user_input" parent="menu_surveys" sequence="1" groups="base.group_no_one"/>
+        <menuitem name="Answers" id="menu_survey_type_form1" action="action_survey_user_input" parent="menu_surveys" sequence="1"/>
 
 
         <!-- Left menu elements: Technical Configuration -->
-        <menuitem name="Configuration" id="menu_surveys_configuration" parent="menu_surveys" groups="base.group_configuration" sequence="100" />
+        <menuitem name="Configuration" id="menu_surveys_configuration" parent="menu_surveys" groups="base.group_no_one" sequence="100" />
         <menuitem name="Pages" id="menu_survey_page_form1" action="action_survey_page_form" parent="menu_surveys_configuration" sequence="1"/>
         <menuitem name="Questions" id="menu_survey_question_form1" action="action_survey_question_form" parent="menu_surveys_configuration" sequence="2"/>
         <menuitem name="Labels" id="menu_survey_label_form1" action="action_survey_label_form" parent="menu_surveys_configuration" sequence="3"/>

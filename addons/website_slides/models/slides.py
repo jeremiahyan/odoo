@@ -231,9 +231,9 @@ class Slide(models.Model):
         [('none', 'No One'), ('user', 'Authentified Users Only'), ('public', 'Everyone')],
         string='Download Security',
         required=True, default='user')
-    image = fields.Binary('Image')
-    image_medium = fields.Binary('Medium', compute="_get_image", store=True)
-    image_thumb = fields.Binary('Thumbnail', compute="_get_image", store=True)
+    image = fields.Binary('Image', attachment=True)
+    image_medium = fields.Binary('Medium', compute="_get_image", store=True, attachment=True)
+    image_thumb = fields.Binary('Thumbnail', compute="_get_image", store=True, attachment=True)
 
     @api.depends('image')
     def _get_image(self):
@@ -253,7 +253,7 @@ class Slide(models.Model):
         ('video', 'Video')],
         string='Type', required=True,
         default='document',
-        help="Document type will be set automatically depending on file type, height and width.")
+        help="The document type will be set automatically based on the document URL and properties (e.g. height and width for presentation and document).")
     index_content = fields.Text('Transcript')
     datas = fields.Binary('Content')
     url = fields.Char('Document URL', help="Youtube or Google Document URL")
@@ -381,6 +381,32 @@ class Slide(models.Model):
             if limited_access:
                 fields = [field for field in fields if field in self._PROMOTIONAL_FIELDS]
         return fields
+
+    @api.multi
+    def get_access_action(self):
+        """ Override method that generated the link to access the document. Instead
+        of the classic form view, redirect to the slide on the website directly
+        if it is published. """
+        self.ensure_one()
+        if self.website_published:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '%s' % self.website_url,
+                'target': 'self',
+                'res_id': self.id,
+            }
+        return super(Slide, self).get_access_action()
+
+    @api.multi
+    def _notification_get_recipient_groups(self, message, recipients):
+        """ Override to set the access button: everyone can see an access button
+        on their notification email if the slide is published. """
+        res = super(Slide, self)._notification_get_recipient_groups(message, recipients)
+        if all(slide.website_published for slide in self):
+            access_action = self._notification_link_helper('view', model=message.model, res_id=message.res_id)
+            for category, data in res.iteritems():
+                res[category]['button_access'] = {'url': access_action, 'title': _('View Slide')}
+        return res
 
     def get_related_slides(self, limit=20):
         domain = [('website_published', '=', True), ('channel_id.visibility', '!=', 'private'), ('id', '!=', self.id)]

@@ -40,7 +40,7 @@ class AccountBankStmtCashWizard(models.Model):
 
     @api.multi
     def validate(self):
-        bnk_stmt_id = self.env.context.get('active_id', False)
+        bnk_stmt_id = self.env.context.get('bank_statement_id', False) or self.env.context.get('active_id', False)
         bnk_stmt = self.env['account.bank.statement'].browse(bnk_stmt_id)
         total = 0.0
         for lines in self.cashbox_lines_ids:
@@ -100,7 +100,7 @@ class AccountBankStatement(models.Model):
 
     @api.multi
     def _set_opening_balance(self, journal_id):
-        last_bnk_stmt = self.search([('journal_id', '=', journal_id), ('state', '=', 'confirm')], order="date desc", limit=1)
+        last_bnk_stmt = self.search([('journal_id', '=', journal_id), ('state', '=', 'confirm')], order="date_done desc", limit=1)
         for bank_stmt in self:
             if last_bnk_stmt:
                 bank_stmt.balance_start = last_bnk_stmt.balance_end
@@ -112,7 +112,14 @@ class AccountBankStatement(models.Model):
         #Search last bank statement and set current opening balance as closing balance of previous one
         journal_id = self._context.get('default_journal_id', False) or self._context.get('journal_id', False)
         if journal_id:
-            self._set_opening_balance(journal_id)
+            last_bnk_stmt = self.search([('journal_id', '=', journal_id), ('state', '=', 'confirm')], order="date_done desc", limit=1)
+
+            if last_bnk_stmt:
+                return last_bnk_stmt.balance_end
+            else:
+                return 0
+        else:
+            return 0
 
     _name = "account.bank.statement"
     _description = "Bank Statement"
@@ -338,10 +345,8 @@ class AccountBankStatement(models.Model):
     def link_bank_to_partner(self):
         for statement in self:
             for st_line in statement.line_ids:
-                if st_line.bank_account_id and st_line.partner_id and st_line.bank_account_id.partner_id.id != st_line.partner_id.id:
-                    bank_vals = st_line.bank_account_id.onchange_partner_id(st_line.partner_id.id)['value']
-                    bank_vals.update({'partner_id': st_line.partner_id.id})
-                    st_line.bank_account_id.write(bank_vals)
+                if st_line.bank_account_id and st_line.partner_id and st_line.bank_account_id.partner_id != st_line.partner_id:
+                    st_line.bank_account_id.partner_id = st_line.partner_id
 
 
 class AccountBankStatementLine(models.Model):

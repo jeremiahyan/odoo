@@ -1,4 +1,5 @@
 odoo.define('bus.bus', function (require) {
+"use strict";
 
 var session = require('web.session');
 var Widget = require('web.Widget');

@@ -218,7 +218,7 @@ class AccountJournal(models.Model):
         help="This field contains the information related to the numbering of the journal entries of this journal.", required=True, copy=False)
     refund_sequence_id = fields.Many2one('ir.sequence', string='Refund Entry Sequence',
         help="This field contains the information related to the numbering of the refund entries of this journal.", copy=False)
-    sequence = fields.Integer(help='Used to order Journals in the dashboard view')
+    sequence = fields.Integer(help='Used to order Journals in the dashboard view', default=10)
 
     #groups_id = fields.Many2many('res.groups', 'account_journal_group_rel', 'journal_id', 'group_id', string='Groups')
     currency_id = fields.Many2one('res.currency', help='The currency used to enter statement', string="Currency", oldname='currency')
@@ -281,6 +281,13 @@ class AccountJournal(models.Model):
         if not self.default_debit_account_id:
             self.default_debit_account_id = self.default_credit_account_id
 
+    @api.multi
+    def unlink(self):
+        bank_accounts = self.mapped('bank_account_id')
+        ret = super(AccountJournal, self).unlink()
+        bank_accounts.unlink()
+        return ret
+
     @api.one
     def copy(self, default=None):
         default = dict(default or {})
@@ -322,7 +329,7 @@ class AccountJournal(models.Model):
         prefix = code.upper()
         if refund:
             prefix = 'R' + prefix
-        return prefix + '/%(year)s/'
+        return prefix + '/%(range_year)s/'
 
     @api.model
     def _create_sequence(self, vals, refund=False):
@@ -409,7 +416,7 @@ class AccountJournal(models.Model):
         # We just need to create the relevant sequences according to the chosen options
         if not vals.get('sequence_id'):
             vals.update({'sequence_id': self.sudo()._create_sequence(vals).id})
-        if vals.get('type') in ('sale', 'puchase') and vals.get('refund_sequence') and not vals.get('refund_sequence_id'):
+        if vals.get('type') in ('sale', 'purchase') and vals.get('refund_sequence') and not vals.get('refund_sequence_id'):
             vals.update({'refund_sequence_id': self.sudo()._create_sequence(vals, refund=True).id})
 
         journal = super(AccountJournal, self).create(vals)
@@ -445,8 +452,8 @@ class AccountJournal(models.Model):
     @api.depends('inbound_payment_method_ids', 'outbound_payment_method_ids')
     def _methods_compute(self):
         for journal in self:
-            journal.at_least_one_inbound = bool(len(self.inbound_payment_method_ids))
-            journal.at_least_one_outbound = bool(len(self.outbound_payment_method_ids))
+            journal.at_least_one_inbound = bool(len(journal.inbound_payment_method_ids))
+            journal.at_least_one_outbound = bool(len(journal.outbound_payment_method_ids))
 
 
 class ResPartnerBank(models.Model):
@@ -459,13 +466,19 @@ class ResPartnerBank(models.Model):
     @api.constrains('journal_id')
     def _check_journal_id(self):
         if len(self.journal_id) > 1:
-            raise ValidationError(_('A bank account can anly belong to one journal.'))
+            raise ValidationError(_('A bank account can only belong to one journal.'))
 
 
 #----------------------------------------------------------
 # Tax
 #----------------------------------------------------------
 
+class AccountTaxGroup(models.Model):
+    _name = 'account.tax.group'
+    _order = 'sequence asc'
+
+    name = fields.Char(required=True, translate=True)
+    sequence = fields.Integer(default=10)
 
 class AccountTax(models.Model):
     _name = 'account.tax'
@@ -666,7 +679,7 @@ class AccountTax(models.Model):
     def _fix_tax_included_price(self, price, prod_taxes, line_taxes):
         """Subtract tax amount from price when corresponding "price included" taxes do not apply"""
         # FIXME get currency in param?
-        incl_tax = prod_taxes.filtered(lambda tax: tax.id not in line_taxes and tax.price_include)
+        incl_tax = prod_taxes.filtered(lambda tax: tax not in line_taxes and tax.price_include)
         if incl_tax:
             return incl_tax.compute_all(price)['total_excluded']
         return price
@@ -707,9 +720,4 @@ class AccountOperationTemplate(models.Model):
         self.label = self.name
 
 
-class AccountTaxGroup(models.Model):
-    _name = 'account.tax.group'
-    _order = 'sequence asc'
 
-    name = fields.Char(required=True, translate=True)
-    sequence = fields.Integer(default=10)

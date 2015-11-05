@@ -10,6 +10,9 @@ from openerp.exceptions import AccessError, UserError, ValidationError
 import openerp.addons.decimal_precision as dp
 from openerp import api, fields, models, _
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 #  ---------------------------------------------------------------
 #   Account Templates: Account, Tax, Tax Code and chart. + Wizard
@@ -24,7 +27,7 @@ class AccountAccountTemplate(models.Model):
     name = fields.Char(required=True, index=True)
     currency_id = fields.Many2one('res.currency', string='Account Currency', help="Forces all moves for this account to have this secondary currency.")
     code = fields.Char(size=64, required=True, index=True)
-    user_type_id = fields.Many2one('account.account.type', string='Type', required=True,
+    user_type_id = fields.Many2one('account.account.type', string='Type', required=True, oldname='user_type',
         help="These types are defined according to your country. The type contains more information "\
         "about the account and its specificities.")
     reconcile = fields.Boolean(string='Allow Invoices & payments Matching', default=False,
@@ -80,13 +83,13 @@ class AccountChartTemplate(models.Model):
         string="Loss Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False)])
     property_account_receivable_id = fields.Many2one('account.account.template', string='Receivable Account', oldname="property_account_receivable")
     property_account_payable_id = fields.Many2one('account.account.template', string='Payable Account', oldname="property_account_payable")
-    property_account_expense_categ_id = fields.Many2one('account.account.template', string='Expense Category Account', oldname="property_account_expense_categ")
-    property_account_income_categ_id = fields.Many2one('account.account.template', string='Income Category Account', oldname="property_account_income_categ")
+    property_account_expense_categ_id = fields.Many2one('account.account.template', string='Category of Expense Account', oldname="property_account_expense_categ")
+    property_account_income_categ_id = fields.Many2one('account.account.template', string='Category of Income Account', oldname="property_account_income_categ")
     property_account_expense_id = fields.Many2one('account.account.template', string='Expense Account on Product Template', oldname="property_account_expense")
     property_account_income_id = fields.Many2one('account.account.template', string='Income Account on Product Template', oldname="property_account_income")
-    property_stock_account_input_categ_id = fields.Many2one('account.account.template', oldname="property_stock_account_input_categ")
-    property_stock_account_output_categ_id = fields.Many2one('account.account.template', oldname="property_stock_account_output_categ")
-    property_stock_valuation_account_id = fields.Many2one('account.account.template')
+    property_stock_account_input_categ_id = fields.Many2one('account.account.template', string="Input Account for Stock Valuation", oldname="property_stock_account_input_categ")
+    property_stock_account_output_categ_id = fields.Many2one('account.account.template', string="Output Account for Stock Valuation", oldname="property_stock_account_output_categ")
+    property_stock_valuation_account_id = fields.Many2one('account.account.template', string="Account Template for Stock Valuation")
 
     @api.one
     def try_loading_for_current_company(self):
@@ -168,6 +171,7 @@ class AccountChartTemplate(models.Model):
                 'default_debit_account_id': _get_default_account(journal, 'debit'),
                 'refund_sequence': True,
                 'show_on_dashboard': journal['favorite'],
+                'sequence': journal['sequence']
             }
             journal_data.append(vals)
         return journal_data
@@ -674,10 +678,10 @@ class WizardMultiChartsAccounts(models.TransientModel):
         if not self.chart_template_id.complete_tax_set:
             value = self.sale_tax_rate
             ref_taxs = obj_tax_temp.search([('type_tax_use', '=', 'sale'), ('chart_template_id', 'in', all_parents)], order="sequence, id desc", limit=1)
-            ref_taxs.write({'amount': value, 'name': _('Tax %.2f%%') % value})
+            ref_taxs.write({'amount': value, 'name': _('Tax %.2f%%') % value, 'description': '%.2f%%' % value})
             value = self.purchase_tax_rate
             ref_taxs = obj_tax_temp.search([('type_tax_use', '=', 'purchase'), ('chart_template_id', 'in', all_parents)], order="sequence, id desc", limit=1)
-            ref_taxs.write({'amount': value, 'name': _('Purchase Tax %.2f%%') % value})
+            ref_taxs.write({'amount': value, 'name': _('Tax %.2f%%') % value, 'description': '%.2f%%' % value})
         return True
 
     @api.multi
@@ -687,6 +691,11 @@ class WizardMultiChartsAccounts(models.TransientModel):
         all the provided information to create the accounts, the banks, the journals, the taxes, the
         accounting properties... accordingly for the chosen company.
         '''
+        if len(self.env['account.account'].search([('company_id', '=', self.company_id.id)])) > 0:
+            # We are in a case where we already have some accounts existing, meaning that user has probably
+            # created its own accounts and does not need a coa, so skip installation of coa.
+            _logger.info('Could not install chart of account since some accounts already exists for the company (%s)', (self.company_id.id,))
+            return {}
         if not self.env.user._is_admin():
             raise AccessError(_("Only administrators can change the settings"))
         ir_values_obj = self.env['ir.values']
@@ -750,6 +759,7 @@ class WizardMultiChartsAccounts(models.TransientModel):
                 'type': acc.account_type,
                 'company_id': company.id,
                 'currency_id': acc.currency_id.id,
+                'sequence': 10
             })
 
 
