@@ -3,14 +3,25 @@
 # * hr
 # 
 # Translators:
+# Bonny Useful <bonny.useful@gmail.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# Wahyu Setiawan <wahyusetiaaa@gmail.com>, 2017
+# William Surya Permana <zarambie_game@yahoo.com>, 2017
+# Ngalim Siregar <ngalim.siregar@gmail.com>, 2017
+# Deddy Ddr <deddy.ddr@gmail.com>, 2017
+# Muhammad Herdiansyah <herdiansyah@openmailbox.org>, 2017
+# oon arfiandwi (OonID) <oon.arfiandwi@gmail.com>, 2017
+# Muhammad Syarif <mhdsyarif.ms@gmail.com>, 2017
+# Febrasari Almania <febrasari.almania@gmail.com>, 2017
+# Gusti Rini <gustirini@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-18 08:11+0000\n"
-"PO-Revision-Date: 2015-10-22 02:39+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Indonesian (http://www.transifex.com/odoo/odoo-9/language/id/)\n"
+"POT-Creation-Date: 2017-10-02 11:26+0000\n"
+"PO-Revision-Date: 2017-10-02 11:26+0000\n"
+"Last-Translator: Gusti Rini <gustirini@gmail.com>, 2017\n"
+"Language-Team: Indonesian (https://www.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -18,10 +29,10 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: hr
-#: code:addons/hr/hr.py:119
+#: code:addons/hr/models/hr.py:75
 #, python-format
 msgid "%s (copy)"
-msgstr "%s (copy)"
+msgstr "%s (salinan)"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -32,7 +43,7 @@ msgstr "%s (copy)"
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "<i>Work in a fun atmosphere</i>"
-msgstr ""
+msgstr "<i>Bekerja dalam suasana yang menyenangkan</i>"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -43,14 +54,14 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "<i>You are passionate</i>"
-msgstr ""
+msgstr "<i>Anda penuh semangat</i>"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "<i>You autonomously and quickly learn</i>"
-msgstr ""
+msgstr "<i>Anda belajar dengan cepat dan mandiri</i>"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -58,7 +69,7 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "<i>You easily manage them</i>"
-msgstr ""
+msgstr "<i>Anda mengelola mereka dengan mudah</i>"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.hr_kanban_view_employees
@@ -66,21 +77,23 @@ msgid ""
 "<span class=\"o_unfollow\">Unfollow</span>\n"
 "                                    <span class=\"o_following\">Following</span>"
 msgstr ""
+"<span class=\"o_unfollow\">Batal Mengikuti</span> <span "
+"class=\"o_following\">Mengikuti</span>"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.hr_department_view_kanban
-msgid "<span>Reports</span>"
-msgstr ""
+msgid "<span>Reporting</span>"
+msgstr "<span>Pelaporan</span>"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.hr_department_view_kanban
 msgid "<span>To Approve</span>"
-msgstr ""
+msgstr "<span>Untuk menyetujui</span>"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.hr_department_view_kanban
 msgid "<span>To Do</span>"
-msgstr ""
+msgstr "<span>Untuk melakukan</span>"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -96,6 +109,11 @@ msgid ""
 "training. If you are passionate, motivate and flexible apply for this job, "
 "you will certainly join the best company ever."
 msgstr ""
+"Pekerjaan penuh waktu, dengan paket menarik gaji dalam sebuah tim kecil "
+"orang pintar. Anda akan mulai kontrak dengan pelatihan penuh teknis dan "
+"fungsional. Jika Anda bergairah, memotivasi dan fleksibel menerapkan untuk "
+"pekerjaan ini, Anda pasti akan bergabung dengan perusahaan yang terbaik yang"
+" pernah."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -106,16 +124,10 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "A good job in a young and dynamic team"
-msgstr ""
+msgstr "Pekerjaan bagus dalam tim yang muda dan dinamis"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_needaction
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_needaction
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_needaction
-msgid "Action Needed"
-msgstr ""
-
-#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_department_active
 #: model:ir.model.fields,field_description:hr.field_hr_employee_active
 msgid "Active"
 msgstr "Aktif"
@@ -123,9 +135,10 @@ msgstr "Aktif"
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Analyse needs, write specification documents and quotation"
-msgstr ""
+msgstr "Menganalisis kebutuhan, menulis dokumen spesifikasi dan kutipan"
 
 #. module: hr
+#: model:ir.ui.view,arch_db:hr.view_department_filter
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
 msgid "Archived"
 msgstr "Diarsipkan"
@@ -143,6 +156,10 @@ msgid ""
 "source project in a friendly and cooperative atmosphere sounds like fun to "
 "you, read on..."
 msgstr ""
+"Karena pertumbuhan kami terus-menerus, kami sekarang sedang mencari orang "
+"untuk memperkuat tim kami dari antusias pejabat teknis. Jadi jika bekerja "
+"pada sebuah proyek open source dalam suasana yang ramah dan koperasi "
+"terdengar seperti menyenangkan untuk Anda, Baca terus..."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -155,6 +172,10 @@ msgid ""
 "our team of enthusiastic developers. So if working on an open source project"
 " in a friendly and cooperative atmosphere sounds like fun to you, read on..."
 msgstr ""
+"Karena pertumbuhan kami terus-menerus, kami sekarang sedang mencari orang "
+"untuk memperkuat tim pengembang antusias. Jadi jika bekerja pada sebuah "
+"proyek open source dalam suasana yang ramah dan koperasi terdengar seperti "
+"menyenangkan untuk Anda, Baca terus..."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_trainee
@@ -163,6 +184,10 @@ msgid ""
 "our team of enthusiastic trainees. So if working on an open source project "
 "in a friendly and cooperative atmosphere sounds like fun to you, read on..."
 msgstr ""
+"Karena pertumbuhan kami terus-menerus, kami sekarang sedang mencari orang "
+"untuk memperkuat tim kami dari antusias peserta. Jadi jika bekerja pada "
+"sebuah proyek open source dalam suasana yang ramah dan koperasi terdengar "
+"seperti menyenangkan untuk Anda, Baca terus..."
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
@@ -172,12 +197,12 @@ msgstr "Lahir"
 #. module: hr
 #: model:hr.job,name:hr.job_ceo
 msgid "Chief Executive Officer"
-msgstr ""
+msgstr "Direktur Utama"
 
 #. module: hr
 #: model:hr.job,name:hr.job_cto
 msgid "Chief Technical Officer"
-msgstr ""
+msgstr "Chief Technical Officer"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_child_ids
@@ -187,33 +212,23 @@ msgstr "Departemen Anak"
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Citizenship & Other Information"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_city
-msgid "City"
-msgstr "Kota"
+msgstr "Kewarganegaraan & informasi lainnya"
 
 #. module: hr
 #: model:ir.actions.act_window,help:hr.act_employee_from_department
 #: model:ir.actions.act_window,help:hr.open_view_employee_list_my
 msgid "Click to add a new employee."
-msgstr ""
+msgstr "Klik untuk menambahkan karyawan baru."
 
 #. module: hr
 #: model:ir.actions.act_window,help:hr.open_module_tree_department
 msgid "Click to create a department."
-msgstr ""
-
-#. module: hr
-#: model:ir.actions.act_window,help:hr.view_department_form_installer
-msgid "Click to define a new department."
-msgstr ""
+msgstr "Klik untuk menciptakan Departemen."
 
 #. module: hr
 #: model:ir.actions.act_window,help:hr.action_hr_job
 msgid "Click to define a new job position."
-msgstr ""
+msgstr "Klik untuk menentukan posisi pekerjaan baru."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -224,7 +239,7 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Close to the perfection ..."
-msgstr ""
+msgstr "Dekat kesempurnaan..."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_coach_id
@@ -233,16 +248,11 @@ msgid "Coach"
 msgstr "Pelatih"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_code
-msgid "Code"
-msgstr "Kode"
-
-#. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_color
 #: model:ir.model.fields,field_description:hr.field_hr_employee_category_color
 #: model:ir.model.fields,field_description:hr.field_hr_employee_color
 msgid "Color Index"
-msgstr "urutan warna"
+msgstr "Indeks Warna"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_department_tree
@@ -251,7 +261,6 @@ msgstr "Perusahaan"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_company_id
-#: model:ir.model.fields,field_description:hr.field_hr_employee_company_id
 #: model:ir.model.fields,field_description:hr.field_hr_job_company_id
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
 #: model:ir.ui.view,arch_db:hr.view_job_filter
@@ -259,31 +268,46 @@ msgid "Company"
 msgstr "Perusahaan"
 
 #. module: hr
+#: model:ir.model.fields,field_description:hr.field_res_config_settings_resource_calendar_id
+msgid "Company Working Hours"
+msgstr "Jam Kerja Perusahaan"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_department_complete_name
+msgid "Complete Name"
+msgstr "Nama Lengkap"
+
+#. module: hr
 #: model:ir.ui.menu,name:hr.menu_human_resources_configuration
 msgid "Configuration"
-msgstr "Pengaturan"
+msgstr "Konfigurasi"
+
+#. module: hr
+#: model:ir.actions.act_window,name:hr.hr_config_settings_action
+msgid "Configure HR"
+msgstr ""
 
 #. module: hr
 #: model:hr.job,name:hr.job_consultant
 msgid "Consultant"
-msgstr ""
+msgstr "Konsultan"
+
+#. module: hr
+#: model:ir.model,name:hr.model_res_partner
+msgid "Contact"
+msgstr "Kontak"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Contact Information"
-msgstr "Informasi Kontak"
+msgstr "Kontak Informasi"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Contributions to open source projects"
-msgstr ""
-
-#. module: hr
-#: model:ir.actions.act_window,name:hr.view_department_form_installer
-msgid "Create Your Departments"
-msgstr "Buat Departemen Ansa"
+msgstr "Kontribusi untuk proyek-proyek sumber terbuka"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_create_uid
@@ -304,7 +328,7 @@ msgstr "Dibuat pada"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_job_no_of_employee
 msgid "Current Number of Employees"
-msgstr ""
+msgstr "Jumlah Karyawan"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_birthday
@@ -312,28 +336,16 @@ msgid "Date of Birth"
 msgstr "Tanggal Lahir"
 
 #. module: hr
-#: model:ir.model.fields,help:hr.field_hr_department_message_last_post
-#: model:ir.model.fields,help:hr.field_hr_employee_message_last_post
-#: model:ir.model.fields,help:hr.field_hr_job_message_last_post
-msgid "Date of the last message posted on the record."
-msgstr ""
-
-#. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Define a clear communication strategy"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,help:hr.field_hr_employee_calendar_id
-msgid "Define the schedule of resource"
-msgstr ""
+msgstr "Mendefinisikan strategi komunikasi yang jelas"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Deliver generic Odoo functional training sessions"
-msgstr ""
+msgstr "Memberikan Odoo generik yang fungsional pelatihan"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_department_id
@@ -370,9 +382,9 @@ msgid "Divorced"
 msgstr "Cerai"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_time_efficiency
-msgid "Efficiency Factor"
-msgstr ""
+#: model:ir.model,name:hr.model_mail_alias
+msgid "Email Aliases"
+msgstr "Email alias"
 
 #. module: hr
 #: model:ir.model,name:hr.model_hr_employee
@@ -388,14 +400,14 @@ msgstr "Kategori Karyawan"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_category_name
 msgid "Employee Tag"
-msgstr ""
+msgstr "Karyawan(s) baru yang diharapkan"
 
 #. module: hr
 #: model:ir.actions.act_window,name:hr.open_view_categ_form
 #: model:ir.ui.menu,name:hr.menu_view_employee_category_form
 #: model:ir.ui.view,arch_db:hr.view_employee_category_form
 msgid "Employee Tags"
-msgstr ""
+msgstr "Karyawan Tags"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee_bank_account_id
@@ -405,7 +417,7 @@ msgstr "Rekening bank gaji pegawai"
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Employee's Name"
-msgstr ""
+msgstr "Nama karyawan"
 
 #. module: hr
 #: model:ir.actions.act_window,name:hr.act_employee_from_department
@@ -430,35 +442,44 @@ msgstr "Struktur Karyawan"
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_category_list
 msgid "Employees Tags"
+msgstr "Tags karyawan"
+
+#. module: hr
+#: model:ir.model.fields,help:hr.field_hr_employee_address_home_id
+msgid ""
+"Enter here the private address of the employee, not the one linked to your "
+"company."
 msgstr ""
 
 #. module: hr
-#: code:addons/hr/hr.py:299 constraint:hr.department:0
+#: code:addons/hr/models/hr.py:303
 #, python-format
 msgid "Error! You cannot create recursive departments."
-msgstr ""
+msgstr "Kesalahan! Anda tidak dapat membuat Departemen rekursif."
 
 #. module: hr
-#: code:addons/hr/hr.py:269 constraint:hr.employee:0
+#: code:addons/hr/models/hr.py:184
 #, python-format
 msgid "Error! You cannot create recursive hierarchy of Employee(s)."
-msgstr ""
+msgstr "Kesalahan! Anda tidak dapat membuat hierarki rekursif Karyawan(s)."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_job_no_of_recruitment
 msgid "Expected New Employees"
-msgstr ""
+msgstr "Karyawan baru yang diharapkan"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_job_expected_employees
 msgid ""
 "Expected number of employees for this job position after new recruitment."
 msgstr ""
+"Diharapkan jumlah Karyawan untuk posisi pekerjaan ini setelah baru "
+"perekrutan."
 
 #. module: hr
 #: model:hr.job,name:hr.job_developer
 msgid "Experienced Developer"
-msgstr ""
+msgstr "Pengembang berpengalaman"
 
 #. module: hr
 #: selection:hr.employee,gender:0
@@ -473,29 +494,12 @@ msgstr "Ikuti"
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Follow and check the development part"
-msgstr ""
+msgstr "Ikuti dan memeriksa bagian pengembangan"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_follower_ids
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_follower_ids
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_follower_ids
 #: model:ir.ui.view,arch_db:hr.hr_kanban_view_employees
 msgid "Followers"
 msgstr "Pengikut"
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_channel_ids
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_channel_ids
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_channel_ids
-msgid "Followers (Channels)"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_partner_ids
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_partner_ids
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_partner_ids
-msgid "Followers (Partners)"
-msgstr ""
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_gender
@@ -505,88 +509,83 @@ msgstr "Jenis kelamin"
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid "Good knowledge of HTML and Javascript"
-msgstr ""
+msgstr "Baik pengetahuan tentang HTML dan Javascript"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Good knowledge of object oriented programming"
-msgstr ""
+msgstr "Baik pengetahuan tentang pemrograman berorientasi objek"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Good knowledge of the latest web technologies"
-msgstr ""
+msgstr "Baik pengetahuan tentang teknologi web terbaru"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Good knowledge of the programming language"
-msgstr ""
+msgstr "Baik pengetahuan tentang bahasa pemrograman"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Good knowledge of web design"
-msgstr ""
+msgstr "Baik pengetahuan tentang desain web"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Good language skills in another language"
-msgstr ""
+msgstr "Keterampilan bahasa yang baik dalam bahasa lain"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
 #: model:ir.ui.view,arch_db:hr.view_job_filter
 msgid "Group By"
-msgstr "Dikelompokan berdasarkan .."
+msgstr "Dikelompokkan berdasarkan"
 
 #. module: hr
 #: model:ir.model,name:hr.model_hr_department
 msgid "HR Department"
-msgstr ""
+msgstr "Departemen HR"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "HR Settings"
-msgstr ""
+msgstr "HR Settings"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Help with the configuration of the software"
-msgstr ""
+msgstr "Membantu dengan konfigurasi perangkat lunak"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_hrm
 msgid "Hire a team of great Human Resources people"
-msgstr ""
+msgstr "Penyewaan sebuah tim besar orang sumber daya manusia"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 msgid "Hire a team of great executive people"
-msgstr ""
+msgstr "Penyewaan sebuah tim besar eksekutif orang"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Hire a team of great marketing people"
-msgstr ""
+msgstr "Penyewaan sebuah tim dari orang-orang pemasaran yang besar"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_job_no_of_hired_employee
 msgid "Hired Employees"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_address_home_id
-msgid "Home Address"
-msgstr "Alamat Rumah"
+msgstr "Karyawan yang disarankan"
 
 #. module: hr
 #: model:ir.ui.menu,name:hr.menu_hr_main
@@ -596,7 +595,7 @@ msgstr "Sumber Daya Manusia"
 #. module: hr
 #: model:hr.job,name:hr.job_hrm
 msgid "Human Resources Manager"
-msgstr ""
+msgstr "Manajer sumber daya manusia"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_id
@@ -612,40 +611,20 @@ msgid "Identification No"
 msgstr "No. Identitas"
 
 #. module: hr
-#: model:ir.model.fields,help:hr.field_hr_department_message_unread
-#: model:ir.model.fields,help:hr.field_hr_employee_message_unread
-#: model:ir.model.fields,help:hr.field_hr_job_message_unread
-msgid "If checked new messages require your attention."
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,help:hr.field_hr_department_message_needaction
-#: model:ir.model.fields,help:hr.field_hr_employee_message_needaction
-#: model:ir.model.fields,help:hr.field_hr_job_message_needaction
-msgid "If checked, new messages require your attention."
-msgstr ""
-
-#. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee_active
 msgid ""
 "If the active field is set to False, it will allow you to hide the resource "
 "record without removing it."
 msgstr ""
-
-#. module: hr
-#: model:ir.ui.view,arch_db:hr.hr_kanban_view_employees
-#: model:ir.ui.view,arch_db:hr.view_department_filter
-#: model:ir.ui.view,arch_db:hr.view_employee_filter
-#: model:ir.ui.view,arch_db:hr.view_job_filter
-msgid "Important Messages"
-msgstr ""
+"Jika bidang aktif diatur ke False, itu akan memungkinkan Anda untuk "
+"menyembunyikan catatan sumber daya tanpa menghapusnya."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Improve our communication to customers"
-msgstr ""
+msgstr "Meningkatkan komunikasi kami kepada pelanggan"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_job_filter
@@ -662,21 +641,14 @@ msgstr "Dalam Perekrutan"
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Increase opportunities"
-msgstr ""
+msgstr "Meningkatkan kesempatan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Increase the visibility of the product"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_is_follower
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_is_follower
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_is_follower
-msgid "Is Follower"
-msgstr ""
+msgstr "Meningkatkan visibilitas produk"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
@@ -692,24 +664,14 @@ msgid "Job Description"
 msgstr "Deskripsi Pekerjaan"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_job_name
-msgid "Job Name"
-msgstr "Nama Tugas"
-
-#. module: hr
 #: model:ir.model,name:hr.model_hr_job
+#: model:ir.model.fields,field_description:hr.field_hr_employee_job_id
+#: model:ir.model.fields,field_description:hr.field_hr_job_name
 msgid "Job Position"
 msgstr "Posisi"
 
 #. module: hr
-#: model:ir.ui.view,arch_db:hr.view_hr_job_form
-msgid "Job Position Name"
-msgstr ""
-
-#. module: hr
 #: model:ir.actions.act_window,name:hr.action_hr_job
-#: model:ir.ui.menu,name:hr.menu_hr_job_position
-#: model:ir.ui.menu,name:hr.menu_hr_job_position_config
 msgid "Job Positions"
 msgstr "Posisi Pekerjaan"
 
@@ -721,11 +683,8 @@ msgid ""
 "                position and follow the evolution according to what you planned\n"
 "                for the future."
 msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_job_id
-msgid "Job Title"
-msgstr "Jabatan"
+"Posisi pekerjaan yang digunakan untuk mendefinisikan pekerjaan dan kebutuhan mereka.\n"
+"                Anda dapat melacak dari jumlah karyawan Anda per posisi pekerjaan dan mengikuti evolusi sesuai dengan apa yang Anda rencanakan untuk masa depan."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_jobs_ids
@@ -734,19 +693,12 @@ msgid "Jobs"
 msgstr "Pekerjaan"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_last_post
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_last_post
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_last_post
-msgid "Last Message Date"
-msgstr "Tanggal pesan terakhir"
-
-#. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department___last_update
 #: model:ir.model.fields,field_description:hr.field_hr_employee___last_update
 #: model:ir.model.fields,field_description:hr.field_hr_employee_category___last_update
 #: model:ir.model.fields,field_description:hr.field_hr_job___last_update
 msgid "Last Modified on"
-msgstr "Terakhir Dimodifikasi pada"
+msgstr "Terakhir diubah pada"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_write_uid
@@ -754,44 +706,35 @@ msgstr "Terakhir Dimodifikasi pada"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_write_uid
 #: model:ir.model.fields,field_description:hr.field_hr_job_write_uid
 msgid "Last Updated by"
-msgstr "Diperbaharui oleh"
+msgstr "Terakhir diperbarui oleh"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_write_date
 #: model:ir.model.fields,field_description:hr.field_hr_employee_category_write_date
 #: model:ir.model.fields,field_description:hr.field_hr_employee_write_date
+#: model:ir.model.fields,field_description:hr.field_hr_job_write_date
 msgid "Last Updated on"
-msgstr "Diperbaharui pada"
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_last_login
-msgid "Latest Connection"
-msgstr ""
+msgstr "Terakhir diperbarui pada"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_hr_job_form
 msgid "Launch Recruitment"
-msgstr ""
+msgstr "Berhenti perekrutan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Launch new marketing campaigns and offers"
-msgstr ""
+msgstr "Meluncurkan kampanye pemasaran baru dan menawarkan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_hrm
 msgid "Launch new products, Human Resources campaigns and offers"
-msgstr ""
+msgstr "Peluncuran produk baru, sumber daya manusia kampanye dan Penawaran"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 msgid "Launch new products, marketing campaigns and offers"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_login
-msgid "Login"
-msgstr "Log masuk"
+msgstr "Meluncurkan produk baru, pemasaran kampanye dan Penawaran"
 
 #. module: hr
 #: selection:hr.employee,gender:0
@@ -802,6 +745,7 @@ msgstr "Laki-laki"
 #: model:ir.model.fields,field_description:hr.field_hr_department_manager_id
 #: model:ir.model.fields,field_description:hr.field_hr_employee_parent_id
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
+#: model:res.groups,name:hr.group_hr_manager
 msgid "Manager"
 msgstr "Manajer"
 
@@ -813,24 +757,24 @@ msgstr "Status Pernikahan"
 #. module: hr
 #: model:hr.job,name:hr.job_marketing
 msgid "Marketing and Community Manager"
-msgstr ""
+msgstr "Pemasaran dan manajer komunitas"
 
 #. module: hr
 #: selection:hr.employee,marital:0
-msgid "Married"
-msgstr "Menikah"
+msgid "Married (or similar)"
+msgstr ""
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Master or engineer in computer science"
-msgstr ""
+msgstr "Master atau insinyur dalam ilmu komputer"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_image_medium
 msgid "Medium-sized photo"
-msgstr ""
+msgstr "Foto berukuran sedang"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee_image_medium
@@ -839,6 +783,9 @@ msgid ""
 "128x128px image, with aspect ratio preserved. Use this field in form views "
 "or some kanban views."
 msgstr ""
+"Menengah foto dari Karyawan. Itu adalah secara otomatis diubah ukurannya "
+"sebagai gambar 128x128px, dengan rasio aspek yang diawetkan. Gunakan bidang "
+"ini dalam bentuk pemandangan atau beberapa kanban."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_member_ids
@@ -846,24 +793,9 @@ msgid "Members"
 msgstr "Anggota"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_ids
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_ids
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_ids
 #: model:ir.ui.view,arch_db:hr.hr_kanban_view_employees
 msgid "Messages"
 msgstr "Pesan"
-
-#. module: hr
-#: model:ir.model.fields,help:hr.field_hr_department_message_ids
-#: model:ir.model.fields,help:hr.field_hr_employee_message_ids
-#: model:ir.model.fields,help:hr.field_hr_job_message_ids
-msgid "Messages and communication history"
-msgstr ""
-
-#. module: hr
-#: model:ir.ui.view,arch_db:hr.hr_department_view_kanban
-msgid "More <i class=\"fa fa-caret-down\"/>"
-msgstr ""
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -874,19 +806,17 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Must have ..."
-msgstr ""
+msgstr "Harus memiliki..."
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_complete_name
 #: model:ir.model.fields,field_description:hr.field_hr_employee_name
-#: model:ir.model.fields,field_description:hr.field_hr_employee_name_related
 msgid "Name"
 msgstr "Nama"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_country_id
 msgid "Nationality (Country)"
-msgstr ""
+msgstr "Kewarganegaraan (negara)"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -897,7 +827,12 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Nice to have"
-msgstr ""
+msgstr "Baik untuk memiliki"
+
+#. module: hr
+#: selection:hr.job,state:0
+msgid "Not Recruiting"
+msgstr "Tidak Merekrut"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_note
@@ -910,64 +845,45 @@ msgid "Notes"
 msgstr "Catatan"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_needaction_counter
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_needaction_counter
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_needaction_counter
-msgid "Number of Actions"
-msgstr ""
-
-#. module: hr
 #: model:ir.model.fields,help:hr.field_hr_job_no_of_employee
 msgid "Number of employees currently occupying this job position."
-msgstr ""
+msgstr "Jumlah Karyawan saat ini menduduki posisi pekerjaan ini."
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_job_no_of_hired_employee
 msgid ""
 "Number of hired employees for this job position during recruitment phase."
 msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,help:hr.field_hr_department_message_needaction_counter
-#: model:ir.model.fields,help:hr.field_hr_employee_message_needaction_counter
-#: model:ir.model.fields,help:hr.field_hr_job_message_needaction_counter
-msgid "Number of messages which requires an action"
-msgstr ""
+"Jumlah Karyawan yang dipekerjakan untuk posisi pekerjaan ini selama fase "
+"perekrutan."
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_job_no_of_recruitment
 msgid "Number of new employees you expect to recruit."
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,help:hr.field_hr_department_message_unread_counter
-#: model:ir.model.fields,help:hr.field_hr_employee_message_unread_counter
-#: model:ir.model.fields,help:hr.field_hr_job_message_unread_counter
-msgid "Number of unread messages"
-msgstr ""
+msgstr "Jumlah Karyawan baru yang Anda mengharapkan untuk merekrut."
 
 #. module: hr
 #: model:ir.actions.act_window,help:hr.open_module_tree_department
 msgid ""
 "Odoo's department structure is used to manage all documents\n"
 "                related to employees by departments: expenses, timesheets,\n"
-"                leaves and holidays, recruitments, etc."
+"                leaves, recruitments, etc."
 msgstr ""
 
 #. module: hr
-#: model:ir.actions.client,name:hr.action_client_hr_menu
-msgid "Open HR Menu"
-msgstr ""
+#: model:res.groups,name:hr.group_hr_user
+msgid "Officer"
+msgstr "Petugas"
 
 #. module: hr
 #: selection:hr.employee,gender:0
 msgid "Other"
-msgstr ""
+msgstr "Lainnya"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Other Information ..."
-msgstr ""
+msgstr "Info Lain"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -978,7 +894,7 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Our staff at work"
-msgstr ""
+msgstr "Staf kami bekerja"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_parent_id
@@ -988,17 +904,12 @@ msgstr "Departemen Induk"
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid "Passion for the Internet and its culture"
-msgstr ""
+msgstr "Gairah untuk Internet dan budaya"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_passport_id
 msgid "Passport No"
 msgstr "Nomor Passport"
-
-#. module: hr
-#: model:ir.ui.view,arch_db:hr.view_employee_form
-msgid "Personal Information"
-msgstr "Informasi Pribadi"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_image
@@ -1014,7 +925,7 @@ msgstr "Foto"
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Pictures of smart and enthusiastic people"
-msgstr ""
+msgstr "Gambar dari orang yang cerdas dan antusias"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
@@ -1026,67 +937,67 @@ msgstr "Posisi"
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Preferably 1 year of experience"
+msgstr "Sebaiknya pengalaman 1 tahun"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_employee_address_home_id
+msgid "Private Address"
 msgstr ""
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
-msgid "Public Information"
+msgid "Private Information"
+msgstr ""
+
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
+msgid "Prout prout prout"
 msgstr ""
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Quantify and negotiate the resources required"
-msgstr ""
+msgstr "Mengukur dan menegosiasikan sumber daya yang diperlukan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid "Quick and autonomous learner"
-msgstr ""
+msgstr "Cepat dan otonomi pelajar"
 
 #. module: hr
-#: selection:hr.job,state:0
-msgid "Recruitment Closed"
-msgstr ""
+#: model:ir.ui.view,arch_db:hr.view_hr_job_form
+msgid "Recruitment"
+msgstr "Perekrutan"
 
 #. module: hr
 #: selection:hr.job,state:0
 msgid "Recruitment in Progress"
-msgstr ""
+msgstr "Berhenti perekrutan"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Related User"
-msgstr ""
+msgstr "Relasi Pengguna"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_res_users_employee_ids
 msgid "Related employees"
-msgstr ""
+msgstr "Relasi karyawan"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee_user_id
 msgid "Related user name for the resource to manage its access."
-msgstr ""
+msgstr "Terkait nama pengguna untuk sumber daya untuk mengelola aksesnya."
 
 #. module: hr
 #: model:ir.ui.menu,name:hr.menu_hr_reporting_timesheet
-msgid "Reports"
-msgstr ""
+msgid "Reporting"
+msgstr "pelaporan."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_job_requirements
 msgid "Requirements"
 msgstr "Persyaratan"
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_resource_id
-msgid "Resource"
-msgstr "Sumber Daya"
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_resource_type
-msgid "Resource Type"
-msgstr ""
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -1097,7 +1008,7 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Responsibilities"
-msgstr ""
+msgstr "Tanggung Jawab"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_sinid
@@ -1114,6 +1025,13 @@ msgstr "Nomor Jamkesmas"
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Scale our events organization all around the world"
+msgstr "Skala organisasi acara kami di seluruh dunia"
+
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
+msgid ""
+"Set default calendar used to compute time allocation for leaves, timesheets,"
+" ..."
 msgstr ""
 
 #. module: hr
@@ -1121,11 +1039,29 @@ msgstr ""
 msgid ""
 "Set whether the recruitment process is open or closed for this job position."
 msgstr ""
+"Menetapkan apakah proses rekrutmen terbuka atau tertutup untuk posisi "
+"pekerjaan ini."
 
 #. module: hr
+#: model:ir.ui.menu,name:hr.hr_menu_configuration
 #: model:ir.ui.view,arch_db:hr.hr_department_view_kanban
 msgid "Settings"
-msgstr "Konfigurasi"
+msgstr "Pengaturan"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_res_config_settings_module_hr_org_chart
+msgid "Show Organizational Chart"
+msgstr "Tampilkan Struktur Organisasi"
+
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
+msgid "Show organizational chart on employee form"
+msgstr ""
+
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
+msgid "Show organizational chart on employee form."
+msgstr ""
 
 #. module: hr
 #: selection:hr.employee,marital:0
@@ -1141,7 +1077,7 @@ msgstr "Single"
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "Skills"
-msgstr ""
+msgstr "Kemampuan"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_image_small
@@ -1155,6 +1091,9 @@ msgid ""
 "image, with aspect ratio preserved. Use this field anywhere a small image is"
 " required."
 msgstr ""
+"Foto berukuran kecil dari Karyawan. Itu adalah secara otomatis diubah "
+"ukurannya sebagai gambar 64x64px, dengan rasio aspek yang diawetkan. Gunakan"
+" field ini di mana saja gambar kecil yang diperlukan."
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee_sinid
@@ -1176,12 +1115,12 @@ msgstr "Status"
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_hr_job_form
 msgid "Stop Recruitment"
-msgstr ""
+msgstr "Berhenti perekrutan"
 
 #. module: hr
 #: model:ir.actions.act_window,name:hr.hr_employee_action_subordinate_hierachy
 msgid "Subordinate Hierarchy"
-msgstr ""
+msgstr "Subordinat hirarki"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_child_ids
@@ -1191,36 +1130,32 @@ msgstr "Bawahan"
 #. module: hr
 #: sql_constraint:hr.employee.category:0
 msgid "Tag name already exists !"
-msgstr ""
+msgstr "Nama tag sudah ada!"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_category_ids
 msgid "Tags"
-msgstr ""
+msgstr "Tag"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Take part in the consulting services"
-msgstr ""
+msgstr "Mengambil bagian dalam jasa konsultan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid "Team spirit and good communication"
+msgstr "Semangat tim dan komunikasi yang baik"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_employee_is_address_home_a_company
+msgid "The employee adress has a company linked"
 msgstr ""
 
 #. module: hr
 #: sql_constraint:hr.job:0
 msgid "The name of the job position must be unique per department in company!"
-msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,help:hr.field_hr_employee_time_efficiency
-msgid ""
-"This field depict the efficiency of the resource to complete tasks. e.g  "
-"resource put alone on a phase of 5 days with 5 tasks assigned to him, will "
-"show a load of 100% for this phase by default, but if we put a efficiency of"
-" 200%, then his load will only be 50%."
-msgstr ""
+msgstr "Nama Lowongan Kerja harus unik per departemen di perusahaan!"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee_image
@@ -1228,40 +1163,39 @@ msgid ""
 "This field holds the image used as photo for the employee, limited to "
 "1024x1024px."
 msgstr ""
+"Bidang ini memegang gambar yang digunakan sebagai foto untuk Karyawan, "
+"terbatas pada 1024x1024px."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_job_expected_employees
 msgid "Total Forecasted Employees"
-msgstr ""
+msgstr "Total diperkirakan Karyawan"
 
 #. module: hr
 #: model:hr.job,name:hr.job_trainee
 msgid "Trainee"
-msgstr ""
+msgstr "Peserta pelatihan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Transform our product into a suite of well positioned business Apps"
-msgstr ""
+msgstr "Mengubah produk kami ke suite memiliki posisi Bisnis Apps"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_unread
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_unread
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_unread
+#: model:ir.ui.view,arch_db:hr.hr_kanban_view_employees
+#: model:ir.ui.view,arch_db:hr.view_department_filter
+#: model:ir.ui.view,arch_db:hr.view_employee_filter
+#: model:ir.ui.view,arch_db:hr.view_job_filter
 msgid "Unread Messages"
-msgstr "Pesan Belum Dibaca"
+msgstr "Pesan yang belum dibaca"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_department_message_unread_counter
-#: model:ir.model.fields,field_description:hr.field_hr_employee_message_unread_counter
-#: model:ir.model.fields,field_description:hr.field_hr_job_message_unread_counter
-msgid "Unread Messages Counter"
+#: model:ir.ui.view,arch_db:hr.view_employee_form
+msgid ""
+"Use here the home address of the employee.\n"
+"                                            This private address is used in the expense report reimbursement document.\n"
+"                                            It should be different from the work address."
 msgstr ""
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_job_write_date
-msgid "Update Date"
-msgstr "Pembaharuan Tanggal"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_user_id
@@ -1274,6 +1208,21 @@ msgid "Users"
 msgstr "Pengguna"
 
 #. module: hr
+#: model:ir.ui.view,arch_db:hr.hr_job_view_kanban
+msgid "Vacancies :"
+msgstr ""
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_employee_visa_expire
+msgid "Visa Expire Date"
+msgstr "Visa berakhir tanggal"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_employee_visa_no
+msgid "Visa No"
+msgstr "Visa No"
+
+#. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid ""
 "We are looking for a motivated and results-driven Functional Consultant! You"
@@ -1283,6 +1232,12 @@ msgid ""
 " give him the best service. You report to the head of consulting service and"
 " will be coached by a senior consultant."
 msgstr ""
+"Kami sedang mencari konsultan fungsional termotivasi dan didorong hasil! "
+"Anda akan mengambil bagian dalam jasa konsultasi yang kami sediakan untuk "
+"kami mitra dan pelanggan, di sisi fungsional. Pekerjaan Anda mulai dari "
+"kutipan pelanggan untuk pengiriman ke pelanggan. Anda mendengarkan pelanggan"
+" dan mencoba untuk memberikan pelayanan yang terbaik. Anda melaporkan kepada"
+" kepala konsultasi layanan dan akan dilatih oleh konsultan senior."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_hrm
@@ -1292,6 +1247,10 @@ msgid ""
 "and ..... not afraid to start new things, a lot of new things and scale "
 "them."
 msgstr ""
+"Kami mencari passionated manajer sumber daya manusia untuk membantu kami "
+"membuat produk yang orang-orang suka menggunakan. Kami membutuhkan seseorang"
+" yang ambisius, passionated, dan... tidak takut untuk memulai hal-hal baru, "
+"banyak hal-hal baru dan skala mereka."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -1300,6 +1259,10 @@ msgid ""
 "people love to use. We need someone who is ambitious, passionated, and ....."
 " not afraid to start new things, a lot of new things and scale them."
 msgstr ""
+"Kami sedang mencari seorang manajer eksekutif passionated untuk membantu "
+"kami membuat produk yang orang-orang suka menggunakan. Kami membutuhkan "
+"seseorang yang ambisius, passionated, dan... tidak takut untuk memulai hal-"
+"hal baru, banyak hal-hal baru dan skala mereka."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_marketing
@@ -1308,6 +1271,10 @@ msgid ""
 "people love to use. We need someone who is ambitious, passionated, and ....."
 " not afraid to start new things, a lot of new things and scale them."
 msgstr ""
+"Kami sedang mencari seorang marketer passionated manajer untuk membantu kami"
+" membuat produk yang orang-orang suka menggunakan. Kami membutuhkan "
+"seseorang yang ambisius, passionated, dan... tidak takut untuk memulai hal-"
+"hal baru, banyak hal-hal baru dan skala mereka."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -1318,7 +1285,7 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "What we offer"
-msgstr ""
+msgstr "Apa yang kami tawarkan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -1329,7 +1296,7 @@ msgstr ""
 #: model:hr.job,website_description:hr.job_marketing
 #: model:hr.job,website_description:hr.job_trainee
 msgid "What you will do ..."
-msgstr ""
+msgstr "Apa yang akan Anda lakukan..."
 
 #. module: hr
 #: selection:hr.employee,marital:0
@@ -1339,7 +1306,7 @@ msgstr "Duda"
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "Will report to the Head of Professional Services"
-msgstr ""
+msgstr "Akan melaporkan kepada kepala layanan profesional"
 
 #. module: hr
 #: model:ir.actions.act_window,help:hr.act_employee_from_department
@@ -1349,6 +1316,8 @@ msgid ""
 "                can easily find all the information you need for each person;\n"
 "                contact data, job position, availability, etc."
 msgstr ""
+"Dengan hanya sekilas pada layar karyawan Odoo, Anda dapat dengan mudah menemukan semua informasi yang Anda butuhkan untuk setiap orang;\n"
+"                data kontak, lowongan kerja, ketersediaan, dll."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -1363,6 +1332,15 @@ msgid ""
 "source, full featured and it’s online offer is 3 times cheaper than "
 "traditional competitors. We have 2.000.000 users, and we're growing fast."
 msgstr ""
+"Dengan produk kami, yang merupakan suite 3000 aplikasi bisnis. Itu adalah "
+"sepenuhnya open source, penuh fitur dan Penawaran online 3 kali lebih murah "
+"daripada pesaing tradisional. Kami memiliki 2.000.000 pengguna, dan kami "
+"sedang berkembang cepat."
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_employee_address_id
+msgid "Work Address"
+msgstr ""
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_work_email
@@ -1370,9 +1348,14 @@ msgid "Work Email"
 msgstr "Email Kantor"
 
 #. module: hr
+#: model:ir.ui.view,arch_db:hr.view_employee_form
+msgid "Work Information"
+msgstr ""
+
+#. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_work_location
 msgid "Work Location"
-msgstr ""
+msgstr "Lokasi kerja"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_mobile_phone
@@ -1380,75 +1363,81 @@ msgid "Work Mobile"
 msgstr "Nomor HP"
 
 #. module: hr
+#: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
+msgid "Work Organization"
+msgstr ""
+
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.view_employee_form
+msgid "Work Permit"
+msgstr "Ijin Kerja"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_employee_permit_no
+msgid "Work Permit No"
+msgstr "Ijin Kerja"
+
+#. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_work_phone
 msgid "Work Phone"
 msgstr "Telepon Kantor"
 
 #. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_address_id
-msgid "Working Address"
-msgstr "Alamat Kerja"
-
-#. module: hr
-#: model:ir.model.fields,field_description:hr.field_hr_employee_calendar_id
-msgid "Working Time"
-msgstr "Hari Kerja"
-
-#. module: hr
 #: model:hr.job,website_description:hr.job_marketing
 msgid "Write attractive content"
-msgstr ""
+msgstr "Menulis konten yang menarik"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_hrm
 msgid "Write attractive content and build up Human Resources materials"
 msgstr ""
+"Menulis konten yang menarik dan membangun bahan-bahan sumber daya manusia"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 msgid "Write attractive content and build up executive materials"
-msgstr ""
+msgstr "Menulis konten yang menarik dan membangun bahan Eksekutif"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You are a quick and autonomous learner"
-msgstr ""
+msgstr "Anda adalah seorang pembelajar yang cepat dan otonomi"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You are an excellent communicator and negotiator"
-msgstr ""
+msgstr "Anda adalah komunikator hebat dan negosiator"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "You are approachable, honest and fun team player"
-msgstr ""
+msgstr "Anda adalah pemain tim didekati, jujur dan menyenangkan"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You are available immediately"
-msgstr ""
+msgstr "Anda dapat segera"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "You are creative"
-msgstr ""
+msgstr "Anda kreatif"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You are ready to travel in US"
-msgstr ""
+msgstr "Anda siap untuk melakukan perjalanan di AS"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "You are ready to work in a dynamic company"
-msgstr ""
+msgstr "Anda siap untuk bekerja di perusahaan dinamis"
 
 #. module: hr
 #: model:ir.actions.act_window,help:hr.action_hr_job
@@ -1457,63 +1446,74 @@ msgid ""
 "                the recruitment process to evaluate the applicants for this job\n"
 "                position."
 msgstr ""
+"Anda dapat melampirkan sebuah survei ke posisi pekerjaan. Ini akan digunakan"
+" dalam proses perekrutan untuk mengevaluasi pelamar untuk posisi pekerjaan "
+"ini."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You have 2 or 3 years of experience"
-msgstr ""
+msgstr "Anda memiliki 2 atau 3 tahun pengalaman"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You have a Master degree in Business Management"
-msgstr ""
+msgstr "Anda telah menguasai bidang manajemen bisnis"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 #: model:hr.job,website_description:hr.job_marketing
 msgid "You have an affinity with the IT world"
-msgstr ""
+msgstr "Anda memiliki kesamaan dengan dunia IT"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
 #: model:hr.job,website_description:hr.job_hrm
 #: model:hr.job,website_description:hr.job_marketing
 msgid "You have an affinity with the product"
-msgstr ""
+msgstr "Anda memiliki kesamaan dengan produk"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You have good knowledge in accounting"
-msgstr ""
+msgstr "Anda memiliki pengetahuan yang baik dalam akuntansi"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You speak a third language"
-msgstr ""
+msgstr "Anda berbicara bahasa ketiga"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_consultant
 msgid "You speak fluently French and English"
-msgstr ""
+msgstr "Anda berbicara dengan fasih Perancis dan Inggris"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_trainee
 msgid ""
-"You will be responsible for developing and improving applications, such as "
-"the You will work autonomously as well as                     coordinate and"
-" supervise small distributed development teams for specific projects. You "
-"will become a technical                 expert of the product."
+"You will be responsible for developing and improving applications. You will "
+"work autonomously as well as                     coordinate and supervise "
+"small distributed development teams for specific projects. You will become a"
+" technical                 expert of the product."
 msgstr ""
+"Anda akan bertanggung jawab untuk mengembangkan dan meningkatkan aplikasi. "
+"Anda akan bekerja secara otonom seperti mengkoordinasi dan mengawasi tim "
+"kecil pengembangan terdistribusi untuk proyek-proyek tertentu. Anda akan "
+"menjadi seorang ahli teknis dari produk."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid ""
-"You will be responsible for developing and improving applications, such as "
-"the You will work autonomously as well as coordinate and supervise small "
-"distributed development teams for specific projects. You will become a "
-"technical expert of the product."
+"You will be responsible for developing and improving applications. You will "
+"work autonomously as well as coordinate and supervise small distributed "
+"development teams for specific projects. You will become a technical expert "
+"of the product."
 msgstr ""
+"Anda akan bertanggung jawab untuk mengembangkan dan meningkatkan aplikasi. "
+"Anda akan bekerja secara otonom seperti mengkoordinasi dan mengawasi tim "
+"kecil pengembangan terdistribusi untuk proyek-proyek tertentu. Anda akan "
+"menjadi seorang ahli teknis dari produk."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_ceo
@@ -1525,58 +1525,70 @@ msgid ""
 "distributed development teams for specific projects. You will become a "
 "techinical expert of the product."
 msgstr ""
+"Anda akan bertanggung jawab untuk mengembangkan dan meningkatkan komunikasi "
+"produk. Anda akan bekerja secara otonom seperti koordinat dan mengawasi tim "
+"pengembangan didistribusikan kecil untuk proyek-proyek tertentu. Anda akan "
+"menjadi techinical ahli produk."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "You will become a technical expert of the product."
-msgstr ""
+msgstr "Anda akan menjadi seorang ahli teknis produk."
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid "You will initially be coached by senior developers"
-msgstr ""
+msgstr "Anda awalnya akan dilatih oleh pengembang senior"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 msgid "You will initially be coached by senior technical officer"
-msgstr ""
+msgstr "Anda awalnya akan dilatih oleh senior officer teknis"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_trainee
 msgid "You will initially be coached by senior trainees"
-msgstr ""
+msgstr "Anda awalnya akan dilatih oleh senior peserta"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 #: model:hr.job,website_description:hr.job_developer
 #: model:hr.job,website_description:hr.job_trainee
 msgid "You will report to the head of R&amp;D"
-msgstr ""
+msgstr "Anda akan melaporkan kepada kepala R &amp; D"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_developer
 msgid "You will work closely with all developers"
-msgstr ""
+msgstr "Anda akan bekerja sama dengan semua pengembang"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_cto
 msgid "You will work closely with all technical officer"
-msgstr ""
+msgstr "Anda akan bekerja sama dengan semua perwira teknis"
 
 #. module: hr
 #: model:hr.job,website_description:hr.job_trainee
 msgid "You will work closely with all trainees"
-msgstr ""
+msgstr "Anda akan bekerja sama dengan semua peserta pelatihan"
 
 #. module: hr
-#: model:ir.actions.act_window,help:hr.view_department_form_installer
+#: model:mail.template,subject:hr.mail_template_data_unknown_employee_email_address
+msgid "Your document has not been created"
+msgstr "Dokumen Anda belum dibuat"
+
+#. module: hr
+#: model:mail.template,body_html:hr.mail_template_data_unknown_employee_email_address
 msgid ""
-"Your departments structure is used to manage all documents\n"
-"                related to employees by departments: expenses and timesheets,\n"
-"                leaves and holidays, recruitments, etc."
+"Your document has not been created because your email address is not "
+"recognized. Please send emails with the email address recorded on your "
+"employee information, or contact your HR manager."
 msgstr ""
+"Dokumen Anda belum dibuat dikarenakan alamat surel tidak dikenali. Silahkan "
+"mengirim surel dengan alamat surel yang terdaftar pada informasi kepegawaian"
+" Anda, atau hubungi Manajer HR Anda."
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_department_form
@@ -1587,3 +1599,32 @@ msgstr "Departemen"
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "e.g. Part Time"
 msgstr "misal: Paruh Waktu"
+
+#. module: hr
+#: model:ir.ui.view,arch_db:hr.view_hr_job_form
+msgid "e.g. Sales Manager"
+msgstr "mis. Manajer Sales"
+
+#. module: hr
+#: model:ir.model,name:hr.model_mail_alias_mixin
+msgid "mail.alias.mixin"
+msgstr "mail.alias.mixin"
+
+#. module: hr
+#: model:ir.model,name:hr.model_res_config_settings
+msgid "res.config.settings"
+msgstr "res.config.settings"
+
+#. module: hr
+#: model:res.groups,comment:hr.group_hr_user
+msgid "the user will be able to approve document created by employees."
+msgstr "pengguna akan dapat menyetujui dokumen yang dibuat oleh karyawan."
+
+#. module: hr
+#: model:res.groups,comment:hr.group_hr_manager
+msgid ""
+"the user will have an access to the human resources configuration as well as"
+" statistic reports."
+msgstr ""
+"pengguna akan memiliki akses ke konfigurasi sumber daya manusia serta "
+"laporan statistik."

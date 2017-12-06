@@ -3,14 +3,25 @@
 # * account_test
 # 
 # Translators:
+# Gab_Odoo <gab@odoo.com>, 2017
+# Ermin Trevisan <trevi@twanda.com>, 2017
+# darenkster <inactive+darenkster@transifex.com>, 2017
+# Wolfgang Taferner <wolfgang.transifex@service.wt-io-it.at>, 2017
+# Tina Rittmüller <tr@ife.de>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# Niki Waibel <niki.waibel@gmail.com>, 2017
+# Thorsten Vocks <thorsten.vocks@openbig.org>, 2017
+# Fabian Liesch <fabian.liesch@gmail.com>, 2017
+# Henry Mineehen <info@mineehen.de>, 2017
+# Renzo Meister <info@jamotion.ch>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-07 14:40+0000\n"
-"PO-Revision-Date: 2015-10-19 13:09+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: German (http://www.transifex.com/odoo/odoo-9/language/de/)\n"
+"POT-Creation-Date: 2017-09-20 09:53+0000\n"
+"PO-Revision-Date: 2017-09-20 09:53+0000\n"
+"Last-Translator: Renzo Meister <info@jamotion.ch>, 2017\n"
+"Language-Team: German (https://www.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -23,15 +34,17 @@ msgid ""
 "<br/>\n"
 "                        <strong>Description:</strong>"
 msgstr ""
+"<br/>\n"
+"<strong>Beschreibung:</strong>"
 
 #. module: account_test
 #: model:ir.ui.view,arch_db:account_test.report_accounttest
 msgid "<strong>Name:</strong>"
-msgstr ""
+msgstr "<strong>Name:</strong>"
 
 #. module: account_test
 #: model:ir.actions.act_window,name:account_test.action_accounting_assert
-#: model:ir.actions.report.xml,name:account_test.account_assert_test_report
+#: model:ir.actions.report,name:account_test.account_assert_test_report
 #: model:ir.ui.menu,name:account_test.menu_action_license
 msgid "Accounting Tests"
 msgstr "Plausibilitätsprüfungen der Buchhaltung"
@@ -49,14 +62,18 @@ msgstr "Aktiv"
 #. module: account_test
 #: model:accounting.assert.test,desc:account_test.account_test_03
 msgid "Check if movement lines are balanced and have the same date and period"
-msgstr "Überprüfung, ob der Buchungssaldo ausgeglichen ist und ob Datum und Periode übereinstimmen."
+msgstr ""
+"Überprüfung, ob der Buchungssaldo ausgeglichen ist und ob Datum und Periode "
+"übereinstimmen."
 
 #. module: account_test
 #: model:accounting.assert.test,desc:account_test.account_test_07
 msgid ""
 "Check on bank statement that the Closing Balance = Starting Balance + sum of"
 " statement lines"
-msgstr "Überprüfung, ob der Endsaldo im Bankauszug =  Startsaldo + Saldo der laufenden Buchungen"
+msgstr ""
+"Überprüfung, ob der Endsaldo im Bankauszug =  Startsaldo + Saldo der "
+"laufenden Buchungen"
 
 #. module: account_test
 #: model:accounting.assert.test,desc:account_test.account_test_06
@@ -68,14 +85,18 @@ msgstr "Überprüfung, ob bezahlte Rechnungen nicht im Status \"Offen\" verbleib
 msgid ""
 "Check that reconciled account moves, that define Payable and Receivable "
 "accounts, are belonging to reconciled invoices"
-msgstr "Überprüfung, ob Ausgleichsbuchungen, die neue Kreditoren und Debitoren erstellen, zu offenen Rechnungen gehören."
+msgstr ""
+"Überprüfung, ob Ausgleichsbuchungen, die neue Kreditoren und Debitoren "
+"erstellen, zu offenen Rechnungen gehören."
 
 #. module: account_test
 #: model:accounting.assert.test,desc:account_test.account_test_05
 msgid ""
 "Check that reconciled invoice for Sales/Purchases has reconciled entries for"
 " Payable and Receivable Accounts"
-msgstr "Überprüfung, ob ein direkter Rechnungsausgleich im Verkauf/Einkauf zu übereinstimmenden Buchungen auf den Kreditoren- und Debitorenkonten führt."
+msgstr ""
+"Überprüfung, ob ein direkter Rechnungsausgleich im Verkauf/Einkauf zu "
+"übereinstimmenden Buchungen auf den Kreditoren- und Debitorenkonten führt."
 
 #. module: account_test
 #: model:accounting.assert.test,desc:account_test.account_test_01
@@ -85,7 +106,7 @@ msgstr "Überprüfe den Saldo: Summe im Soll = Summe im Haben"
 #. module: account_test
 #: model:ir.actions.act_window,help:account_test.action_accounting_assert
 msgid "Click to create Accounting Test."
-msgstr ""
+msgstr "Klicken, um Plausibilität der Buchhaltung zu testen"
 
 #. module: account_test
 #: model:ir.ui.view,arch_db:account_test.account_assert_form
@@ -115,17 +136,37 @@ msgid ""
 "          '''\n"
 "    cr.execute(sql)\n"
 "    result = cr.dictfetchall()"
-msgstr "Code sollte immer eine Variable namens 'Ergebnis' mit dem Ergebnis Ihres Tests erstellen. Das kann eine Liste oder\nein Wörterbuch sein. Wenn 'Ergebnis' eine leere Liste ist, war der Test erfolgreich. Ansonsten wird\nversucht zu übersetzen und zu drucken, was in 'Ergebnis' steht.\n\nWenn das Ergebnis Ihres Tests ein Wörterbuch ist, können Sie eine Variable namens 'Spalte_Bestellung' erstellen um auszuwählen\nin welcher Reihenfolge Sie die Inhalte von 'Ergebnis\" drucken wollen.\n\nWenn Sie sie benötigen, können Sie auch die folgenden Variablen in Ihrem Code verwenden:\n    *cr: cursor to the database\n    *uid: ID of the current user\n\nIn jeder Hinsicht muss der Code gültige Python-Anweisungen mit der richtigen Vertiefung haben (wenn nötig).\n\nBeispiel: \n    sql='''SELECT id, name, ref, date\n             FROM account_move_line \n             WHERE account_id IN (SELECT id FROM account_account WHERE type='view')\n          '''\n    cr.execute(sql)\n    result=cr.dictfetchall()"
+msgstr ""
+"Code sollte immer eine Variable namens 'result' mit dem Ergebnis Ihres Tests erstellen. Das kann eine Liste oder\n"
+"ein Wörterbuch sein. Wenn 'result' eine leere Liste ist, war der Test erfolgreich. Ansonsten wird\n"
+"versucht zu übersetzen und zu drucken, was in 'result' steht.\n"
+"\n"
+"Wenn das Ergebnis Ihres Tests ein Wörterbuch ist, können Sie eine Variable namens 'column_order' erstellen, um auszuwählen\n"
+"in welcher Reihenfolge Sie die Inhalte von 'result' drucken wollen.\n"
+"\n"
+"Wenn Sie sie benötigen, können Sie auch die folgenden Variablen in Ihrem Code verwenden:\n"
+"    *cr: cursor to the database\n"
+"    *uid: ID of the current user\n"
+"\n"
+"In jeder Hinsicht muss der Code gültige Python-Anweisungen mit der richtigen Vertiefung haben (wenn nötig).\n"
+"\n"
+"Beispiel: \n"
+"    sql='''SELECT id, name, ref, date\n"
+"             FROM account_move_line \n"
+"             WHERE account_id IN (SELECT id FROM account_account WHERE type='view')\n"
+"          '''\n"
+"    cr.execute(sql)\n"
+"    result=cr.dictfetchall()"
 
 #. module: account_test
 #: model:ir.model.fields,field_description:account_test.field_accounting_assert_test_create_uid
 msgid "Created by"
-msgstr "Angelegt von"
+msgstr "Erstellt von"
 
 #. module: account_test
 #: model:ir.model.fields,field_description:account_test.field_accounting_assert_test_create_date
 msgid "Created on"
-msgstr "Angelegt am"
+msgstr "Erstellt am"
 
 #. module: account_test
 #: model:ir.ui.view,arch_db:account_test.account_assert_form
@@ -136,7 +177,7 @@ msgstr "Beschreibung"
 #: model:ir.model.fields,field_description:account_test.field_accounting_assert_test_display_name
 #: model:ir.model.fields,field_description:account_test.field_report_account_test_report_accounttest_display_name
 msgid "Display Name"
-msgstr "Angezeigter Name"
+msgstr "Anzeigename"
 
 #. module: account_test
 #: model:ir.ui.view,arch_db:account_test.account_assert_form
@@ -178,7 +219,7 @@ msgstr "Python Code"
 #. module: account_test
 #: model:ir.model.fields,field_description:account_test.field_accounting_assert_test_sequence
 msgid "Sequence"
-msgstr "Reihenfolge"
+msgstr "Nummernfolge"
 
 #. module: account_test
 #: model:accounting.assert.test,name:account_test.account_test_01
@@ -209,7 +250,7 @@ msgstr "Test 6 : Rechnungsstatus"
 #. module: account_test
 #: model:accounting.assert.test,name:account_test.account_test_07
 msgid "Test 7 : Closing balance on bank statements"
-msgstr ""
+msgstr "Test 7: Abschlußsaldo im Bankkontoauszug"
 
 #. module: account_test
 #: model:ir.model.fields,field_description:account_test.field_accounting_assert_test_desc
@@ -228,7 +269,7 @@ msgid "Tests"
 msgstr "Tests"
 
 #. module: account_test
-#: code:addons/account_test/report/account_test_report.py:49
+#: code:addons/account_test/report/report_account_test.py:52
 #, python-format
 msgid "The test was passed successfully"
 msgstr "Die Prüfung war erfolgreich"
@@ -236,9 +277,9 @@ msgstr "Die Prüfung war erfolgreich"
 #. module: account_test
 #: model:ir.model,name:account_test.model_accounting_assert_test
 msgid "accounting.assert.test"
-msgstr ""
+msgstr "accounting.assert.test"
 
 #. module: account_test
 #: model:ir.model,name:account_test.model_report_account_test_report_accounttest
 msgid "report.account_test.report_accounttest"
-msgstr ""
+msgstr "report.account_test.report_accounttest"

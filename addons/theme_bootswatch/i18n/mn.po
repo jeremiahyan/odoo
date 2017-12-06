@@ -2,15 +2,13 @@
 # This file contains the translation of the following modules:
 # * theme_bootswatch
 # 
-# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 9.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-21 14:56+0000\n"
-"PO-Revision-Date: 2015-09-08 09:12+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Mongolian (http://www.transifex.com/odoo/odoo-9/language/mn/)\n"
+"PO-Revision-Date: 2015-08-21 14:56+0000\n"
+"Language-Team: Mongolian (https://www.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -20,7 +18,7 @@ msgstr ""
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize
 msgid "Amelia"
-msgstr "Амели"
+msgstr ""
 
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize
@@ -45,22 +43,22 @@ msgstr ""
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize
 msgid "Default Theme"
-msgstr "Анхны арьс"
+msgstr ""
 
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize
 msgid "Flatly"
-msgstr "Хавтгай"
+msgstr ""
 
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize
 msgid "Journal"
-msgstr "Журнал"
+msgstr ""
 
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize
 msgid "Readable"
-msgstr "Уншигдахуйц"
+msgstr ""
 
 #. module: theme_bootswatch
 #: model:ir.ui.view,arch_db:theme_bootswatch.theme_customize

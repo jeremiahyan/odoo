@@ -3,14 +3,33 @@
 # * product
 # 
 # Translators:
+# Jeffery CHEN <jeffery9@gmail.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# Ted Wang <feiyuwang2012@gmail.com>, 2017
+# zpq001 <zpq001@live.com>, 2017
+# liAnGjiA <liangjia@qq.com>, 2017
+# Gary Wei <Gary.wei@elico-corp.com>, 2017
+# zhining wu <wzn63@21cn.com>, 2017
+# Talway <9010446@qq.com>, 2017
+# fausthuang <faust_huang@hotmail.com>, 2017
+# Yuan Xulei <hi@yxl.name>, 2017
+# 苏州远鼎 <tiexinliu@126.com>, 2017
+# Si Ling Lau <happy8645@hotmail.com>, 2017
+# waveyeung <waveyeung@qq.com>, 2017
+# liyes <bodetools@gmail.com>, 2017
+# glovebx <ruinning@163.com>, 2017
+# Maie <m@maie.name>, 2017
+# THL <wt39181819@gmail.com>, 2017
+# Yaorong Li <55yaorong.li@gmail.com>, 2017
+# xiaobin wu <bd5dml@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 10:26+0000\n"
-"PO-Revision-Date: 2015-10-22 07:23+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/odoo/odoo-9/language/zh_CN/)\n"
+"POT-Creation-Date: 2017-10-02 11:26+0000\n"
+"PO-Revision-Date: 2017-10-02 11:26+0000\n"
+"Last-Translator: xiaobin wu <bd5dml@gmail.com>, 2017\n"
+"Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -20,28 +39,33 @@ msgstr ""
 #. module: product
 #: selection:product.pricelist.item,applied_on:0
 msgid " Product Category"
-msgstr ""
+msgstr "产品类别"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_product_variant_count
 #: model:ir.model.fields,field_description:product.field_product_template_product_variant_count
-msgid "# of Product Variants"
-msgstr "个产品变型"
+msgid "# Product Variants"
+msgstr "# 产品变体"
 
 #. module: product
-#: code:addons/product/pricelist.py:288
+#: model:ir.model.fields,field_description:product.field_product_category_product_count
+msgid "# Products"
+msgstr "# 产品"
+
+#. module: product
+#: code:addons/product/models/product_pricelist.py:446
 #, python-format
 msgid "%s %% discount"
-msgstr ""
+msgstr "%s %% 折扣"
 
 #. module: product
-#: code:addons/product/pricelist.py:290
+#: code:addons/product/models/product_pricelist.py:448
 #, python-format
 msgid "%s %% discount and %s surcharge"
-msgstr ""
+msgstr "%s %% 折扣 及 %s 附加费"
 
 #. module: product
-#: code:addons/product/product.py:710 code:addons/product/product.py:1134
+#: code:addons/product/models/product_template.py:324
 #, python-format
 msgid "%s (copy)"
 msgstr "%s (副本)"
@@ -56,30 +80,16 @@ msgstr "16 GB"
 #: model:product.template,description_sale:product.product_product_3_product_template
 msgid ""
 "17\" LCD Monitor\n"
-"Processor AMD 8-Core\n"
-"512MB RAM\n"
-"HDD SH-1"
-msgstr "17”LCD 显示器\nAMD8核处理器\n512m 内存\n硬盘 SH-1"
+"Processor AMD 8-Core"
+msgstr ""
 
 #. module: product
 #: model:product.product,description:product.product_product_25
 #: model:product.template,description:product.product_product_25_product_template
 msgid ""
-"17\" Monitor\n"
-"4GB RAM\n"
-"Standard-1294P Processor\n"
-"QWERTY keyboard"
-msgstr "17“显示器\n4GB内存\n标准1294P处理器\nQWERTY键盘"
-
-#. module: product
-#: model:product.product,description:product.product_product_26
-#: model:product.template,description:product.product_product_26_product_template
-msgid ""
-"17\" Monitor\n"
-"6GB RAM\n"
-"Hi-Speed 234Q Processor\n"
-"QWERTY keyboard"
-msgstr "17寸显示器\n6GB 内存\n高速处理器 234Q \n\nQWERTY 键盘"
+"17\" Monitor, 4GB RAM\n"
+"Standard-1294P Processor"
+msgstr ""
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_5
@@ -97,12 +107,11 @@ msgid ""
 "                Intel Iris Pro graphics\n"
 "            "
 msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_52
-#: model:product.template,name:product.product_product_52_product_template
-msgid "30m RJ45 wire"
-msgstr ""
+"2.7GHz的四核Intel Corei5\n"
+"可睿频加速到3.2GHz\n"
+"8GB(2*4GB) 内存\n"
+"1TB硬盘\n"
+"英特尔Iris 显卡"
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_2
@@ -122,89 +131,87 @@ msgid ""
 "7.9‑inch (diagonal) LED-backlit, 128Gb\n"
 "Dual-core A5 with quad-core graphics\n"
 "FaceTime HD Camera, 1.2 MP Photos"
-msgstr "7.9‑英寸 (斜角) LED-背光屏, 128Gb\n双核 A5 集成 Quad-core 显卡\nFaceTime HD 高清摄像头, 1.2 MP 照片"
+msgstr ""
+"7.9‑英寸 (斜角) LED-背光屏, 128Gb\n"
+"双核 A5 集成 Quad-core 显卡\n"
+"FaceTime HD 高清摄像头, 1.2 MP 照片"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "75 percent less reflection."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_51
-#: model:product.template,name:product.product_product_51_product_template
-msgid "8-port Switch"
-msgstr ""
+msgstr "减少75% 的反映"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid ""
-"<span attrs=\"{'invisible':[('base', 'not in', ('list_price','standard_price'))]}\">Public Price  -  </span>\n"
+"<span attrs=\"{'invisible':[('base', '!=', 'list_price')]}\">Public Price  -  </span>\n"
+"                            <span attrs=\"{'invisible':[('base', '!=', 'standard_price')]}\">Cost  -  </span>\n"
 "                            <span attrs=\"{'invisible':[('base', '!=', 'pricelist')]}\">Other Pricelist  -  </span>"
 msgstr ""
+"<span attrs=\"{'invisible':[('base', '!=', 'list_price')]}\">公开价  -  </span>\n"
+"                            <span attrs=\"{'invisible':[('base', '!=', 'standard_price')]}\">成本 -  </span>\n"
+"                            <span attrs=\"{'invisible':[('base', '!=', 'pricelist')]}\">其他价格表  -  </span>"
+
+#. module: product
+#: model:ir.ui.view,arch_db:product.product_category_form_view
+msgid "<span class=\"o_stat_text\"> Products</span>"
+msgstr "<span class=\"o_stat_text\"> 产品</span>"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "<span>kg</span>"
+msgstr "<span>kg</span>"
+
+#. module: product
+#: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+msgid "<span>m³</span>"
 msgstr ""
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.report_pricelist
 msgid "<strong>Currency</strong>:<br/>"
-msgstr ""
+msgstr "<strong>货币</strong>:<br/>"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.report_pricelist
 msgid "<strong>Description</strong>"
-msgstr "<strong>描述</strong>"
+msgstr "<strong>说明</strong>"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.report_pricelist
 msgid "<strong>Price List Name</strong>:<br/>"
-msgstr ""
+msgstr "<strong>价格表名称</strong>:<br/>"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.report_pricelist
 msgid "<strong>Print date</strong>:<br/>"
-msgstr ""
+msgstr "<strong>打印日期</strong>:<br/>"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_only_form_view
 msgid ""
 "<strong>Warning</strong>: adding or deleting attributes\n"
-"                            will delete and recreate existing variants and lead\n"
-"                            to the loss of their possible customizations."
+"                        will delete and recreate existing variants and lead\n"
+"                        to the loss of their possible customizations."
 msgstr ""
+"<strong>警告</strong>：添加或删除属性将删除\n"
+"并重新创建现有变体，\n"
+"并导致其可能的自定义的丢失。"
 
 #. module: product
-#: code:addons/product/product.py:977 sql_constraint:product.product:0
-#, python-format
+#: sql_constraint:product.product:0
 msgid "A barcode can only be assigned to one product !"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_category_type
-msgid ""
-"A category of the view type is a virtual category that can be used as the "
-"parent of another category to create a hierarchical structure."
-msgstr "视图类型的分类是一个可视分类，用来做其它分类的上级，以此建立一个分层结构。"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product_type
-#: model:ir.model.fields,help:product.field_product_template_type
-msgid ""
-"A consumable is a product for which you don't manage stock, a service is a "
-"non-material product provided by a company or an individual."
-msgstr ""
+msgstr "一个条码只能分配给一个产品！"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_description_sale
 #: model:ir.model.fields,help:product.field_product_template_description_sale
 msgid ""
 "A description of the Product that you want to communicate to your customers."
-" This description will be copied to every Sale Order, Delivery Order and "
-"Customer Invoice/Refund"
-msgstr "一个传达给客户的、关于该产品的描述。这个描述将会拷贝到每一个销售单，交货单和客户发票/退款单。"
+" This description will be copied to every Sales Order, Delivery Order and "
+"Customer Invoice/Credit Note"
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_description_purchase
@@ -212,14 +219,14 @@ msgstr "一个传达给客户的、关于该产品的描述。这个描述将会
 msgid ""
 "A description of the Product that you want to communicate to your vendors. "
 "This description will be copied to every Purchase Order, Receipt and Vendor "
-"Bill/Refund."
+"Bill/Credit Note."
 msgstr ""
 
 #. module: product
 #: model:product.product,website_description:product.product_product_9
 #: model:product.template,website_description:product.product_product_9_product_template
 msgid "A great Keyboard. Cordless."
-msgstr ""
+msgstr "一个很好的键盘。无线的。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_description
@@ -227,19 +234,29 @@ msgstr ""
 msgid ""
 "A precise description of the Product, used only for internal information "
 "purposes."
-msgstr "精确的产品描述，仅用于内部备注。"
+msgstr "产品的精确说明，仅用于内部备注。"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_pricelist_action2
 msgid ""
 "A price list contains rules to be evaluated in order to compute\n"
-"                the sales price of the products."
+"                the sale price of the products."
 msgstr ""
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "A screen worthy of iPad."
+msgstr "一个iPad的装配屏幕"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product_type
+#: model:ir.model.fields,help:product.field_product_template_type
+msgid ""
+"A stockable product is a product for which you manage stock. The \"Inventory\" app has to be installed.\n"
+"A consumable product, on the other hand, is a product for which stock is not managed.\n"
+"A service is a non-material product you provide.\n"
+"A digital content is a non-material product you sell online. The files attached to the products are the one that are sold on the e-commerce such as e-books, music, pictures,... The \"Digital Product\" module has to be installed."
 msgstr ""
 
 #. module: product
@@ -252,28 +269,26 @@ msgid ""
 "                                    The 2.5-inch Multi-Touch display is nearly twice as big as the display on the previous iPod nano,\n"
 "                                    so you can see more of the music, photos, and videos you love."
 msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_needaction
-#: model:ir.model.fields,field_description:product.field_product_template_message_needaction
-msgid "Action Needed"
-msgstr "所需行动"
+"是目前最薄的iPod，仅5.4mm厚度\n"
+"2.5英寸Multi-Touch显示屏几乎是以前的IPod nano两倍大.\n"
+"所以你可以看到更多的音乐，照片和你喜欢的视频。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_active
 #: model:ir.model.fields,field_description:product.field_product_product_active
 #: model:ir.model.fields,field_description:product.field_product_template_active
 #: model:ir.model.fields,field_description:product.field_product_uom_active
+#: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 msgid "Active"
 msgstr "有效"
 
 #. module: product
 #: model:product.category,name:product.product_category_all
 msgid "All"
-msgstr "全选"
+msgstr "全部"
 
 #. module: product
-#: code:addons/product/pricelist.py:283
+#: code:addons/product/models/product_pricelist.py:441
 #, python-format
 msgid "All Products"
 msgstr "所有产品"
@@ -281,13 +296,14 @@ msgstr "所有产品"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "All general settings about this product are managed on"
-msgstr ""
+msgstr "所有关于此产品的的通用设置管理都基于"
 
 #. module: product
-#: model:product.product,description:product.product_product_37
-#: model:product.template,description:product.product_product_37_product_template
-msgid "All in one hi-speed printer with fax and scanner."
-msgstr "高速打印、传真、扫描一体机"
+#: model:ir.model.fields,help:product.field_res_config_settings_group_sale_pricelist
+msgid ""
+"Allows to manage different prices based on rules per category of customers.\n"
+"                Example: 10% for retailers, promotion of 5 EUR on this product, etc."
+msgstr "允许为不同类别的客户，按规则管理不同的价格。例如：为零售商提供10%折扣，这个产品优惠5欧元等。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
@@ -295,7 +311,7 @@ msgstr "高速打印、传真、扫描一体机"
 msgid ""
 "And at the Apple Online Store, you can configure your iMac with an even more"
 " powerful Intel Core i7 processor, up to 3.5GHz."
-msgstr ""
+msgstr "以及在Apple的线上商店，你能以更强大的Intel Core i7处理器配置你的iMac，最高可达3.5GHz。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_4
@@ -307,7 +323,7 @@ msgstr ""
 #: model:product.template,website_description:product.product_product_4c_product_template
 #: model:product.template,website_description:product.product_product_4d_product_template
 msgid "And because it’s so easy to use, it’s easy to love."
-msgstr ""
+msgstr "因为是那么容易使用，容易喜欢它。"
 
 #. module: product
 #: model:product.product,name:product.product_product_7
@@ -322,6 +338,7 @@ msgid "Apple Wireless Keyboard"
 msgstr "苹果无线键盘"
 
 #. module: product
+#: model:ir.ui.view,arch_db:product.product_normal_form_view
 #: model:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Applicable On"
 msgstr "可应用于"
@@ -329,30 +346,31 @@ msgstr "可应用于"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_applied_on
 msgid "Apply On"
-msgstr ""
+msgstr "应用于"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_view_search
+#: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Archived"
-msgstr "存档"
-
-#. module: product
-#: model:product.product,name:product.product_assembly
-#: model:product.template,name:product.product_assembly_product_template
-msgid "Assembly Service Cost"
-msgstr "组装服务成本"
+msgstr "归档"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_sequence
 msgid "Assigns the priority to the list of product vendor."
-msgstr ""
+msgstr "将优先权分配给产品供应商列表。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_line_attribute_id
 #: model:ir.model.fields,field_description:product.field_product_attribute_value_attribute_id
 msgid "Attribute"
 msgstr "属性"
+
+#. module: product
+#: model:ir.ui.view,arch_db:product.product_attribute_line_form
+#: model:ir.ui.view,arch_db:product.product_attribute_view_form
+msgid "Attribute Name"
+msgstr "属性名称"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value_price_extra
@@ -367,14 +385,13 @@ msgstr "属性价格"
 #. module: product
 #: model:ir.actions.act_window,name:product.variants_action
 #: model:ir.model.fields,field_description:product.field_product_attribute_line_value_ids
-#: model:ir.ui.menu,name:product.menu_variants_action
+#: model:ir.ui.view,arch_db:product.product_attribute_view_form
 msgid "Attribute Values"
 msgstr "属性值"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.attribute_action
 #: model:ir.model.fields,field_description:product.field_product_product_attribute_value_ids
-#: model:ir.ui.menu,name:product.menu_attribute_action
 #: model:ir.ui.view,arch_db:product.product_attribute_value_view_tree
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
@@ -382,36 +399,52 @@ msgid "Attributes"
 msgstr "属性"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_product_variant
+msgid "Attributes and Variants"
+msgstr ""
+
+#. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Auxiliary input for portable devices"
-msgstr ""
+msgstr "便携式设备辅助输入"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid ""
 "Auxiliary port lets you connect other audio sources, like an MP3 player"
-msgstr ""
+msgstr "让你可以连接其他音频源，如MP3播放器的AUX辅助端口"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_packaging_barcode
 #: model:ir.model.fields,field_description:product.field_product_product_barcode
 #: model:ir.model.fields,field_description:product.field_product_template_barcode
 msgid "Barcode"
 msgstr "条码"
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_packaging_barcode
+msgid "Barcode used for packaging identification."
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_base
 msgid ""
-"Base price for computation. \n"
-" Public Price: The base price will be the Sale/public Price. \n"
-" Cost Price : The base price will be the cost price. \n"
-" Other Pricelist : Computation of the base price based on another Pricelist."
+"Base price for computation.\n"
+"Public Price: The base price will be the Sale/public Price.\n"
+"Cost Price : The base price will be the cost price.\n"
+"Other Pricelist : Computation of the base price based on another Pricelist."
 msgstr ""
+"基本价格的计算。\n"
+"公共价格：基本价格将是销售/公共价格。\n"
+"成本价格：基本价格将是成本价格。\n"
+"其他价格表：基于另一个价格表计算基本价格。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_list_price
 #: model:ir.model.fields,help:product.field_product_template_list_price
+#: model:ir.model.fields,help:product.field_product_template_lst_price
 msgid ""
 "Base price to compute the customer price. Sometimes called the catalog "
 "price."
@@ -423,27 +456,33 @@ msgid "Based on"
 msgstr "基于"
 
 #. module: product
-#: model:product.product,name:product.product_product_57
-#: model:product.template,name:product.product_product_57_product_template
+#: model:product.product,name:product.consu_delivery_03
+#: model:product.template,name:product.consu_delivery_03_product_template
 msgid "Basic Computer"
-msgstr ""
+msgstr "基础计算机"
+
+#. module: product
+#: model:product.product,name:product.membership_2
+#: model:product.template,name:product.membership_2_product_template
+msgid "Basic Membership"
+msgstr "基础会籍"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Beautiful 7.9‑inch display."
-msgstr ""
+msgstr "漂亮的7.9英寸显示。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Beautiful widescreen display."
-msgstr ""
+msgstr "漂亮的宽屏幕显示。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_image
 msgid "Big-sized image"
-msgstr "大尺寸图片"
+msgstr "大尺寸图像"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_uom_factor_inv
@@ -461,22 +500,10 @@ msgid "Black"
 msgstr "黑色"
 
 #. module: product
-#: model:product.product,name:product.product_product_35
-#: model:product.template,name:product.product_product_35_product_template
-msgid "Blank CD"
-msgstr "空白CD"
-
-#. module: product
-#: model:product.product,name:product.product_product_36
-#: model:product.template,name:product.product_product_36_product_template
-msgid "Blank DVD-RW"
-msgstr "空白 DVD-RW"
-
-#. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Bluetooth connectivity"
-msgstr ""
+msgstr "蓝牙连接"
 
 #. module: product
 #: model:product.product,name:product.product_product_5b
@@ -488,7 +515,7 @@ msgstr "玻色迷你蓝牙音箱"
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Bose Mini Bluetooth Speaker."
-msgstr ""
+msgstr "Bose 迷你蓝牙音箱。"
 
 #. module: product
 #: model:product.product,description_sale:product.product_product_5b
@@ -500,7 +527,7 @@ msgstr "玻色最小的便携蓝牙音箱"
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Brilliance onscreen. And behind it."
-msgstr ""
+msgstr "卓越的屏幕。就在里面。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -512,13 +539,8 @@ msgid ""
 "                                    The smooth anodized aluminum design makes iPod nano feel as good as it sounds.\n"
 "                                    And iPod nano wouldn’t be iPod nano without gorgeous, hard-to-choose-from color."
 msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_uom_active
-msgid ""
-"By unchecking the active field you can disable a unit of measure without "
-"deleting it."
-msgstr "如果您取消选定“可用”字段的话可以隐藏此计量单位而不删除它。"
+"按钮让你快速播放，暂停，换歌，或调整音量. 光滑的铝阳极氧化膜的设计使得iPod nano的感觉象他的音乐那么好. 如果没有华丽的，多样的颜色，iPod"
+" nano就不是iPod nano了."
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.view_product_price_list
@@ -526,17 +548,24 @@ msgid "Calculate Product Price per Unit Based on Pricelist Version."
 msgstr "基于价格表版本计算产品单位价格"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product_purchase_ok
+#: model:ir.model.fields,field_description:product.field_product_template_purchase_ok
+#: model:ir.ui.view,arch_db:product.product_template_search_view
+msgid "Can be Purchased"
+msgstr "可用于采购"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_rental
 #: model:ir.model.fields,field_description:product.field_product_template_rental
 msgid "Can be Rent"
-msgstr "可出租"
+msgstr "可用于出租"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_sale_ok
 #: model:ir.model.fields,field_description:product.field_product_template_sale_ok
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Can be Sold"
-msgstr "可销售"
+msgstr "可用于销售"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.view_product_price_list
@@ -544,33 +573,33 @@ msgid "Cancel"
 msgstr "取消"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category_type
-#: model:ir.ui.view,arch_db:product.product_category_form_view
-msgid "Category Type"
-msgstr "类别类型"
+#: model:ir.model.fields,field_description:product.field_product_uom_category_id
+#: model:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Category"
+msgstr "类别"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_category_form_view
 msgid "Category name"
-msgstr ""
+msgstr "类别名称"
 
 #. module: product
-#: code:addons/product/pricelist.py:277
+#: code:addons/product/models/product_pricelist.py:435
 #, python-format
 msgid "Category: %s"
-msgstr ""
+msgstr "类别：%s"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Characteristics"
-msgstr ""
+msgstr "特点"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Charges iPod/iPhone"
-msgstr ""
+msgstr "iPod/iPhone费用"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
@@ -578,46 +607,57 @@ msgstr ""
 msgid ""
 "Charging cradle recharges the battery and serves as a convenient\n"
 "                                    home base for your speaker, and it lets you play while it charges."
-msgstr ""
+msgstr "充电座充电电池，并提供一个方便的方式，让你可以在更换时任然可以通话或使用。"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_attribute_create_variant
+msgid "Check this if you want to create multiple variants for this attribute."
+msgstr "如果要为此属性创建多个变体，请选中此项。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_child_id
 msgid "Child Categories"
-msgstr "子类别"
+msgstr "下级类别"
+
+#. module: product
+#: model:product.product,name:product.product_product_11c
+#: model:product.template,name:product.product_product_11c_product_template
+msgid "Cleaning"
+msgstr ""
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_uom_categ_form_action
 msgid "Click to add a new unit of measure category."
-msgstr ""
+msgstr "单击添加计量单位类别。"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_uom_form_action
 msgid "Click to add a new unit of measure."
-msgstr ""
+msgstr "点击添加计量单位"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_pricelist_action2
 msgid "Click to create a pricelist."
-msgstr ""
+msgstr "点击创建价格表"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_normal_action
 #: model:ir.actions.act_window,help:product.product_normal_action_sell
 #: model:ir.actions.act_window,help:product.product_template_action
-#: model:ir.actions.act_window,help:product.product_template_action_product
+#: model:ir.actions.act_window,help:product.product_template_action_all
 #: model:ir.actions.act_window,help:product.product_variant_action
 msgid "Click to define a new product."
-msgstr "单击去定义一个新产品."
+msgstr "单击去定义新产品."
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Codes"
-msgstr ""
+msgstr "代码"
 
 #. module: product
 #: model:product.attribute,name:product.product_attribute_2
 msgid "Color"
-msgstr "色彩"
+msgstr "颜色"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_color
@@ -638,8 +678,26 @@ msgid ""
 "iOS7\n"
 "            "
 msgstr ""
+"颜色：白\n"
+"容量：16GB\n"
+"连接：Wifi\n"
+"漂亮的 7.9 英寸显示屏\n"
+"多达 375,000 个应用\n"
+"超快的无线连接\n"
+"iOS7"
 
 #. module: product
+#: model:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid "Common Product Catalog"
+msgstr ""
+
+#. module: product
+#: model:ir.model,name:product.model_res_company
+msgid "Companies"
+msgstr "公司"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_price_history_company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_company_id
 #: model:ir.model.fields,field_description:product.field_product_product_company_id
@@ -649,14 +707,15 @@ msgid "Company"
 msgstr "公司"
 
 #. module: product
-#: model:product.public.category,name:product.Components
-msgid "Components"
-msgstr "组件"
+#: model:ir.model.fields,field_description:product.field_product_category_complete_name
+msgid "Complete Name"
+msgstr "完整名称"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item_compute_price
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Compute Price"
-msgstr ""
+msgstr "计算价格"
 
 #. module: product
 #: model:product.product,name:product.product_product_16
@@ -668,17 +727,19 @@ msgstr "机箱"
 #: model:product.product,name:product.product_product_3
 #: model:product.template,name:product.product_product_3_product_template
 msgid "Computer SC234"
-msgstr ""
+msgstr "电脑 SC234"
 
 #. module: product
-#: model:product.public.category,name:product.Computer_all_in_one
-msgid "Computer all-in-one"
-msgstr "一体机"
+#: code:addons/product/models/product_template.py:50
+#: selection:product.template,type:0
+#, python-format
+msgid "Consumable"
+msgstr "可消耗"
 
 #. module: product
-#: model:product.public.category,name:product.sub_computers
-msgid "Computers"
-msgstr "电脑"
+#: model:ir.model,name:product.model_res_partner
+msgid "Contact"
+msgstr "联系人"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_category_id
@@ -688,7 +749,7 @@ msgid ""
 msgstr "计量单位转换只能在同一个类型之间进行。转换基于比例"
 
 #. module: product
-#: code:addons/product/product.py:119
+#: code:addons/product/models/product_uom.py:98
 #, python-format
 msgid ""
 "Conversion from Product UoM %s to Default UoM %s is not possible as they "
@@ -701,20 +762,44 @@ msgstr "产品单位 %s 与默认单位 %s 无法转换，二者属于不同的�
 #: model:ir.model.fields,field_description:product.field_product_template_standard_price
 #: selection:product.pricelist.item,base:0
 msgid "Cost"
-msgstr "成本"
+msgstr "费用"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_standard_price
 msgid ""
-"Cost of the product template used for standard stock valuation in accounting"
-" and used as a base price on purchase orders. Expressed in the default unit "
-"of measure of the product."
+"Cost used for stock valuation in standard price and as a first price to set "
+"in average/fifo. Also used as a base price for pricelists. Expressed in the "
+"default unit of measure of the product."
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_template_standard_price
-msgid "Cost of the product, in the default unit of measure of the product."
+msgid ""
+"Cost used for stock valuation in standard price and as a first price to set "
+"in average/fifo. Also used as a base price for pricelists. Expressed in the "
+"default unit of measure of the product. "
 msgstr ""
+
+#. module: product
+#: model:product.product,name:product.service_delivery
+#: model:product.template,name:product.service_delivery_product_template
+msgid "Cost-plus Contract"
+msgstr "成本加成合同"
+
+#. module: product
+#: model:ir.model,name:product.model_res_country_group
+msgid "Country Group"
+msgstr "国家组"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_pricelist_country_group_ids
+msgid "Country Groups"
+msgstr "国家分组"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_attribute_create_variant
+msgid "Create Variant"
+msgstr "创建变体"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_create_uid
@@ -733,7 +818,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_uom_categ_create_uid
 #: model:ir.model.fields,field_description:product.field_product_uom_create_uid
 msgid "Created by"
-msgstr "创建于"
+msgstr "创建人"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_create_date
@@ -752,7 +837,7 @@ msgstr "创建于"
 #: model:ir.model.fields,field_description:product.field_product_uom_categ_create_date
 #: model:ir.model.fields,field_description:product.field_product_uom_create_date
 msgid "Created on"
-msgstr "创建于"
+msgstr "创建时间"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
@@ -763,9 +848,9 @@ msgid ""
 " about iMac from the inside out. The result is an advanced, elegant all-in-"
 "one computer that’s as much a work of art as it is state of the art."
 msgstr ""
+"创造这样一个惊人的超薄设计了技术创新的一些同样令人惊叹的壮举。我们提炼，重新想象，或重新设计，一切的iMac从内到外。其结果是一种先进的，优雅的所有功能于一身的计算机的尽可能多的艺术作品，因为它是最先进的。"
 
 #. module: product
-#: model:ir.model,name:product.model_res_currency
 #: model:ir.model.fields,field_description:product.field_product_pricelist_currency_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_currency_id
 #: model:ir.model.fields,field_description:product.field_product_product_currency_id
@@ -778,7 +863,7 @@ msgstr "货币"
 #: model:product.product,name:product.product_product_5
 #: model:product.template,name:product.product_product_5_product_template
 msgid "Custom Computer (kit)"
-msgstr ""
+msgstr "自定义电脑(套件)"
 
 #. module: product
 #: model:product.product,description:product.product_product_27
@@ -790,29 +875,23 @@ msgstr "基于客户要求定制便携式计算机。"
 #: model:product.product,description:product.product_product_5
 #: model:product.template,description:product.product_product_5_product_template
 msgid "Custom computer shipped in kit."
-msgstr ""
+msgstr "自定义电脑附带的套件"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_partner_ref
-msgid "Customer ref"
-msgstr "客户参考"
+msgid "Customer Ref"
+msgstr "客户单号"
 
 #. module: product
-#: model:product.product,name:product.product_product_46
-#: model:product.template,name:product.product_product_46_product_template
+#: model:product.product,name:product.product_delivery_02
+#: model:product.template,name:product.product_delivery_02_product_template
 msgid "Datacard"
 msgstr "数据卡"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_price_history_datetime
 msgid "Date"
-msgstr "日期"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product_message_last_post
-#: model:ir.model.fields,help:product.field_product_template_message_last_post
-msgid "Date of the last message posted on the record."
-msgstr "发布到记录上的最后消息的日期"
+msgstr "日期   "
 
 #. module: product
 #: model:product.uom,name:product.product_uom_day
@@ -820,10 +899,16 @@ msgid "Day(s)"
 msgstr "天"
 
 #. module: product
+#: code:addons/product/models/res_company.py:59
+#, python-format
+msgid "Default %(currency)s pricelist for %(company)s"
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,help:product.field_product_product_uom_id
 #: model:ir.model.fields,help:product.field_product_template_uom_id
 msgid "Default Unit of Measure used for all stock operation."
-msgstr "所有库存操作的默认计量单位"
+msgstr "所有库存作业的默认计量单位"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_uom_po_id
@@ -836,13 +921,7 @@ msgstr "采购单默认使用的计量单位。必须与默认计量单位位于
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_delay
 msgid "Delivery Lead Time"
-msgstr "交货提前时间"
-
-#. module: product
-#: model:product.product,name:product.product_product_49
-#: model:product.template,name:product.product_product_49_product_template
-msgid "Dell Inspiron Laptop without OS"
-msgstr ""
+msgstr "交货前置时间"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_description
@@ -852,12 +931,7 @@ msgstr "说明"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Description for Quotations"
-msgstr "报价单说明"
-
-#. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Description for Vendors"
+msgid "Description for Customers"
 msgstr ""
 
 #. module: product
@@ -866,30 +940,13 @@ msgstr ""
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "Design. The thinnest iPod ever."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_55
-#: model:product.template,name:product.product_product_55_product_template
-msgid "Desktop Computer Table"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_56
-#: model:product.template,name:product.product_product_56_product_template
-msgid "Desktop Lamp"
-msgstr ""
+msgstr "有史以来设计的最薄的iPod"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_attribute_sequence
 #: model:ir.model.fields,help:product.field_product_attribute_value_sequence
 msgid "Determine the display order"
 msgstr "决定显示顺序"
-
-#. module: product
-#: model:product.public.category,name:product.devices
-msgid "Devices"
-msgstr "设备"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_display_name
@@ -917,11 +974,11 @@ msgid "Dozen(s)"
 msgstr "打"
 
 #. module: product
-#: model:product.product,description_sale:product.product_product_57
-#: model:product.template,description_sale:product.product_product_57_product_template
+#: model:product.product,description_sale:product.consu_delivery_03
+#: model:product.template,description_sale:product.consu_delivery_03_product_template
 msgid ""
-"Dvorak keyboard \n"
-"            left-handed mouse"
+"Dvorak keyboard\n"
+"left-handed mouse"
 msgstr ""
 
 #. module: product
@@ -930,78 +987,71 @@ msgid ""
 "Each rule include a set of applicability criteria (date range,\n"
 "                product category...) and a computation that easily helps to achieve\n"
 "                any kind of pricing."
-msgstr ""
+msgstr "每个规则包括：一套适用标准(日期范围，产品类别......)和计算，可以轻松地帮助实现任何一种定价。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Efficient, high-quality audio"
-msgstr ""
+msgstr "高质量的音频"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_date_end
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_date_end
 msgid "End Date"
-msgstr "终止日期"
+msgstr "结束日期"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_date_end
 msgid "End date for this vendor price"
-msgstr ""
-
-#. module: product
-#: selection:product.template,state:0
-msgid "End of Lifecycle"
-msgstr "生命周期结束"
+msgstr "此供应商价格的结束日期"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_date_end
 msgid "Ending valid for the pricelist item validation"
-msgstr ""
+msgstr "终结有效的价格表项验证"
 
 #. module: product
-#: model:product.product,name:product.product_product_54
-#: model:product.template,name:product.product_product_54_product_template
-msgid "Ergonomic Mouse"
-msgstr ""
-
-#. module: product
-#: constraint:product.category:0
+#: code:addons/product/models/product.py:53
+#, python-format
 msgid "Error ! You cannot create recursive categories."
-msgstr "错误！您不能创建循环的类别。"
+msgstr "错误！你不能创建循环类别。"
 
 #. module: product
-#: constraint:product.pricelist.item:0
+#: code:addons/product/models/product_attribute.py:101
+#, python-format
+msgid "Error ! You cannot use this attribute with the following value."
+msgstr "错误！您不能将此属性与以下值配合使用。"
+
+#. module: product
+#: code:addons/product/models/product.py:283
+#, python-format
+msgid ""
+"Error! It is not allowed to choose more than one value for a given "
+"attribute."
+msgstr "错误！不允许为给定属性选择多个值。"
+
+#. module: product
+#: code:addons/product/models/product_pricelist.py:427
+#, python-format
 msgid "Error! The minimum margin should be lower than the maximum margin."
-msgstr "错误！最小利润要小于最大利润"
+msgstr "错误！最小毛利要小于最大毛利"
 
 #. module: product
-#: constraint:product.pricelist.item:0
+#: code:addons/product/models/product_pricelist.py:421
+#, python-format
 msgid ""
 "Error! You cannot assign the Main Pricelist as Other Pricelist in PriceList "
 "Item!"
-msgstr "错误！你不能在价格表项目里指派这个主价格表作为其它价格表"
+msgstr "错误！不能在价格表项目里指派这个主价格表作为其它价格表"
 
 #. module: product
-#: constraint:res.currency:0
-msgid ""
-"Error! You cannot define a rounding factor for the company's main currency "
-"that is smaller than the decimal precision of 'Account'."
-msgstr "错误！公司本位币的舍入系数不能定义得小于”科目“的小数位数"
-
-#. module: product
-#: constraint:decimal.precision:0
-msgid ""
-"Error! You cannot define the decimal precision of 'Account' as greater than "
-"the rounding factor of the company's main currency"
-msgstr "错误！你不能定义 科目的小数位数大于 公司本位币的舍入系统。"
-
-#. module: product
-#: constraint:product.template:0
+#: code:addons/product/models/product_template.py:274
+#, python-format
 msgid ""
 "Error: The default Unit of Measure and the purchase Unit of Measure must be "
 "in the same category."
-msgstr "错误：默认的计量单位和采购计量单位必须是相同的类别"
+msgstr "错误：默认计量单位和采购计量单位必须是相同的类别"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
@@ -1012,6 +1062,8 @@ msgid ""
 "                                    But what really makes it stand out is its size. At 7.9 inches,\n"
 "                                    it’s perfectly sized to deliver an experience every bit as big as iPad."
 msgstr ""
+"所有你喜欢的iPad - 在屏幕，快速的颜色是生动的文字清晰显示在iPad上的迷你显示器.不过，真正令它脱颖而出的是它的大小。 "
+"7.9英寸，这是完全尺寸提供一个体验的每一位一样大的iPad。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_4
@@ -1029,6 +1081,8 @@ msgid ""
 "                                    battery life* — is everything you’ll love about\n"
 "                                    iPad mini, too. And you can hold it in one hand."
 msgstr ""
+"你喜欢iPad的一切 - 在漂亮的屏幕，快速流畅的性能，视频对话和内置摄像头，大量有趣的应用程序，10小时的电池续航力* - "
+"就是一切，你一定会喜欢iPad mini了。你可以仅用一只手拿着它.."
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
@@ -1039,30 +1093,32 @@ msgid ""
 "                                        thousands of amazing apps, 10-hour battery life* — is everything\n"
 "                                        you’ll love about iPad mini, too. And you can hold it in one hand."
 msgstr ""
+"你喜欢iPad的一切 - 在漂亮的屏幕，快速流畅的性能，视频对话和内置摄像头，大量有趣的应用程序，10小时的电池续航力* - "
+"就是一切，你一定会喜欢iPad mini了。你可以仅用一只手拿着它.."
 
 #. module: product
 #: model:product.product,description:product.product_product_2
 #: model:product.template,description:product.product_product_2_product_template
 msgid "Example of product to invoice based on delivery."
-msgstr ""
+msgstr "示例产品，基于交货开票。"
 
 #. module: product
-#: model:product.product,description:product.product_product_0
-#: model:product.template,description:product.product_product_0_product_template
+#: model:product.product,description:product.service_order_01
+#: model:product.template,description:product.service_order_01_product_template
 msgid "Example of product to invoice on order."
-msgstr ""
+msgstr "示例产品，基于订单开票"
 
 #. module: product
-#: model:product.product,description:product.product_product_1b
-#: model:product.template,description:product.product_product_1b_product_template
+#: model:product.product,description:product.service_cost_01
+#: model:product.template,description:product.service_cost_01_product_template
 msgid "Example of products to invoice based on cost."
-msgstr ""
+msgstr "示例产品，基于费用开票"
 
 #. module: product
 #: model:product.product,description:product.product_product_1
 #: model:product.template,description:product.product_product_1_product_template
 msgid "Example of products to invoice based on delivery."
-msgstr ""
+msgstr "示例产品，基于交货开票。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_name
@@ -1071,32 +1127,21 @@ msgid "Explicit rule name for this pricelist line."
 msgstr "价格表明细的详细规则名称"
 
 #. module: product
-#: model:product.product,name:product.product_product_1b
-#: model:product.template,name:product.product_product_1b_product_template
+#: model:product.product,name:product.service_cost_01
+#: model:product.template,name:product.service_cost_01_product_template
 msgid "External Audit"
-msgstr ""
-
-#. module: product
-#: model:product.public.category,name:product.External_Hard_Drive
-msgid "External Hard Drive"
-msgstr "外接硬盘"
-
-#. module: product
-#: model:product.product,name:product.product_product_28
-#: model:product.template,name:product.product_product_28_product_template
-msgid "External Hard disk"
-msgstr "外置硬盘"
+msgstr "外部审计"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Fast connections.The world over."
-msgstr ""
+msgstr "快速连接世界"
 
 #. module: product
 #: selection:product.pricelist.item,compute_price:0
 msgid "Fix Price"
-msgstr ""
+msgstr "固定价格"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_fixed_price
@@ -1104,29 +1149,11 @@ msgid "Fixed Price"
 msgstr "固定价格"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_follower_ids
-#: model:ir.model.fields,field_description:product.field_product_template_message_follower_ids
-msgid "Followers"
-msgstr "关注者"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_channel_ids
-#: model:ir.model.fields,field_description:product.field_product_template_message_channel_ids
-msgid "Followers (Channels)"
-msgstr "关注者(频道)"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_partner_ids
-#: model:ir.model.fields,field_description:product.field_product_template_message_partner_ids
-msgid "Followers (Partners)"
-msgstr "关注者（合作伙伴）"
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_min_quantity
 msgid ""
 "For the rule to apply, bought/sold quantity must be greater than or equal to the minimum quantity specified in this field.\n"
 "Expressed in the default unit of measure of the product."
-msgstr ""
+msgstr "对于规则提出申请，购买进/卖出量必须大于或等于本字段在衡量产品的默认单位表达规定的最低数量。"
 
 #. module: product
 #: selection:product.pricelist.item,compute_price:0
@@ -1145,29 +1172,25 @@ msgid ""
 "Weight: 10.2 grams\n"
 "            "
 msgstr ""
+"频率：5Hz至21kHz阻抗：23ohms灵敏度109 "
+"dB声压级/mW驱动程序：armature电缆长度的双向平衡：1065mm重量：10.2grams"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Friendly to the environment."
-msgstr ""
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_44
-#: model:product.template,description_sale:product.product_product_44_product_template
-msgid "Full featured image editing software."
-msgstr "全功能图像编辑软件"
+msgstr "环保"
 
 #. module: product
 #: model:product.product,name:product.product_product_1
 #: model:product.template,name:product.product_product_1_product_template
 msgid "GAP Analysis Service"
-msgstr ""
+msgstr "差异分析服务"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "General Information"
-msgstr "通用信息"
+msgstr "一般信息"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -1175,34 +1198,19 @@ msgstr "通用信息"
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "Genius. Your own personal DJ."
-msgstr ""
+msgstr "天哪.你自己变成了DJ"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_packaging_ids
 #: model:ir.model.fields,help:product.field_product_template_packaging_ids
-msgid ""
-"Gives the different ways to package the same product. This has no impact on "
-"the picking order and is mainly used if you use the EDI module."
-msgstr "指定同一产品的多种包装方式。此处与分拣单并不冲突且主要用于 EDI 模块。"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist_item_sequence
-msgid ""
-"Gives the order in which the pricelist items will be checked. The evaluation"
-" gives highest priority to lowest sequence and stops as soon as a matching "
-"item is found."
-msgstr "价格表检测的顺序。越小的序号将有越高的优先级进行条件匹配。"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_category_sequence
-msgid "Gives the sequence order when displaying a list of product categories."
-msgstr "显示产品列表的顺序号"
+msgid "Gives the different ways to package the same product."
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_sequence
 #: model:ir.model.fields,help:product.field_product_template_sequence
 msgid "Gives the sequence order when displaying a product list"
-msgstr ""
+msgstr "显示产品列表时，给出序列号"
 
 #. module: product
 #: selection:product.pricelist.item,applied_on:0
@@ -1210,10 +1218,16 @@ msgid "Global"
 msgstr "全局"
 
 #. module: product
-#: model:product.product,name:product.product_product_44
-#: model:product.template,name:product.product_product_44_product_template
-msgid "GrapWorks Software"
-msgstr "GrapWorks 软件"
+#: code:addons/product/models/product_template.py:30
+#, python-format
+msgid "Go to Internal Categories"
+msgstr "进入内部分类"
+
+#. module: product
+#: model:product.product,name:product.membership_0
+#: model:product.template,name:product.membership_0_product_template
+msgid "Gold Membership"
+msgstr "金牌会籍"
 
 #. module: product
 #: model:product.product,name:product.product_product_24
@@ -1222,10 +1236,9 @@ msgid "Graphics Card"
 msgstr "显卡"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_weight
-#: model:ir.model.fields,field_description:product.field_product_template_weight
-msgid "Gross Weight"
-msgstr "毛重"
+#: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
+msgid "Group By"
+msgstr "分组"
 
 #. module: product
 #: model:product.product,name:product.product_product_17
@@ -1234,60 +1247,18 @@ msgid "HDD SH-1"
 msgstr "硬盘 SH-1"
 
 #. module: product
-#: model:product.product,name:product.product_product_18
-#: model:product.template,name:product.product_product_18_product_template
-msgid "HDD SH-2 (mto)"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_19
-#: model:product.template,name:product.product_product_19_product_template
-msgid "HDD on Demand"
-msgstr "HDD on Demand"
-
-#. module: product
-#: model:product.product,description:product.product_product_32
-#: model:product.template,description:product.product_product_32_product_template
-msgid ""
-"Hands free headset for laptop PC with in-line microphone and headphone plug."
-msgstr "用于带有内置麦克风和耳机插孔的便携计算机的免提耳机。"
-
-#. module: product
 #: model:product.product,website_description:product.product_product_11
 #: model:product.product,website_description:product.product_product_11b
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "Have Genius call the tunes."
-msgstr ""
-
-#. module: product
-#: model:product.public.category,name:product.Headset
-msgid "Headset"
-msgstr "耳机"
-
-#. module: product
-#: model:product.product,name:product.product_product_33
-#: model:product.template,name:product.product_product_33_product_template
-msgid "Headset USB"
-msgstr "USB 耳机"
-
-#. module: product
-#: model:product.product,description:product.product_product_33
-#: model:product.template,description:product.product_product_33_product_template
-msgid "Headset for laptop PC with USB connector."
-msgstr "用户笔记本电脑的USB 连接的耳机"
-
-#. module: product
-#: model:product.product,name:product.product_product_32
-#: model:product.template,name:product.product_product_32_product_template
-msgid "Headset standard"
-msgstr "标准耳机"
+msgstr "自己调制音量"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
 #: model:product.template,website_description:product.product_product_7_product_template
 msgid "Hear, hear."
-msgstr ""
+msgstr "听，听"
 
 #. module: product
 #: model:product.product,description_sale:product.product_product_11
@@ -1299,13 +1270,13 @@ msgid ""
 "Width:  39.6 mm\n"
 "Depth:  5.4 mm\n"
 "Weight: 31 grams"
-msgstr ""
+msgstr "高: 76.5 mm 宽: 39.6 mm 厚: 5.4 mm 重: 31 grams"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Highly rated designs."
-msgstr ""
+msgstr "高评价的设计"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_hour
@@ -1321,20 +1292,21 @@ msgid ""
 "moving it right up against the cover glass. So you see your photos, games, "
 "movies, and everything else in vivid, lifelike detail."
 msgstr ""
+"我们如何使已经绚丽宽屏显示效果更为出色？通过使75％的反射性弱的。并且通过重新架构的LCD和移动它正对着玻璃盖。所以，你看到你的照片，游戏，电影，生动，逼真的细节一切。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_factor_inv
 msgid ""
-"How many times this Unit of Measure is bigger than the reference Unit of Measure in this category:\n"
-"1 * (this unit) = ratio * (reference unit)"
-msgstr "本计量单位大于参考计量单位 的倍数。\n1*（本单位）=比率*（参考单位）"
+"How many times this Unit of Measure is bigger than the reference Unit of "
+"Measure in this category: 1 * (this unit) = ratio * (reference unit)"
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_factor
 msgid ""
-"How much bigger or smaller this unit is compared to the reference Unit of Measure for this category:\n"
-"1 * (reference unit) = ratio * (this unit)"
-msgstr "本计量单位和参考计量单位相比，大或者小的倍数。\n1*（参考单位=比率*（本单位）"
+"How much bigger or smaller this unit is compared to the reference Unit of "
+"Measure for this category: 1 * (reference unit) = ratio * (this unit)"
+msgstr "本类别计量单位和参考计量单位相比，大或者小的倍数。1 * (参考单位)=比率 * (本单位)"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -1342,7 +1314,7 @@ msgstr "本计量单位和参考计量单位相比，大或者小的倍数。\n1
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "How to get your groove on."
-msgstr ""
+msgstr "如何得到你的槽。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_id
@@ -1365,28 +1337,22 @@ msgid "ID"
 msgstr "ID"
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_product_message_unread
-#: model:ir.model.fields,help:product.field_product_template_message_unread
-msgid "If checked new messages require your attention."
-msgstr "查看是否有需要留意的新信息。"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product_message_needaction
-#: model:ir.model.fields,help:product.field_product_template_message_needaction
-msgid "If checked, new messages require your attention."
-msgstr "确认后, 会出现新消息."
-
-#. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "If it's made for iPad, it's made for iPad mini."
+msgstr "如果它为iPad，为iPad mini。"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_supplierinfo_product_id
+msgid ""
+"If not set, the vendor price will apply to all variants of this products."
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_active
 msgid ""
 "If unchecked, it will allow you to hide the pricelist without removing it."
-msgstr "如果不选中，允许你隐藏价格表而无需删除"
+msgstr "如果不选中，允许您隐藏价格表而无需删除"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_active
@@ -1406,43 +1372,32 @@ msgid ""
 "Image of the product variant (Big-sized image of product template if false)."
 " It is automatically resized as a 1024x1024px image, with aspect ratio "
 "preserved."
-msgstr "产品图片规格(如果为False,采用大尺寸图片模板）. 它保持图片的宽高比,并自动调整图片大小为1024 x 1024px."
+msgstr "产品变体的图像(如果为False,采用大尺寸图像模板). 它保持图像的宽高比,并自动调整图像大小为1024 x 1024px."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_image_medium
 msgid ""
 "Image of the product variant (Medium-sized image of product template if "
 "false)."
-msgstr "产品图片规格(如果为Flase,采用普通尺寸图片模板)"
+msgstr "产品变体的图像(如果为Flase,采用产品模板的中尺寸图像)"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_image_small
 msgid ""
 "Image of the product variant (Small-sized image of product template if "
 "false)."
-msgstr "产品图片规格(如果为Flase,采用小尺寸图片模板)"
-
-#. module: product
-#: selection:product.template,state:0
-msgid "In Development"
-msgstr "开发中"
+msgstr "产品变体的图像(如果为Flase,采用产品模板的小尺寸图像)"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Individually calibrated for true-to-life color."
-msgstr ""
+msgstr "单独校准逼真的色彩。"
 
 #. module: product
 #: model:ir.model,name:product.model_product_supplierinfo
 msgid "Information about a product vendor"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_38
-#: model:product.template,name:product.product_product_38_product_template
-msgid "Ink Cartridge"
-msgstr "墨盒"
+msgstr "有关产品的供应商信息。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
@@ -1451,7 +1406,7 @@ msgid ""
 "Inside each earpiece is a stainless steel mesh cap that protects the precision acoustic\n"
 "                                    components from dust and debris. You can remove the caps for cleaning or replace\n"
 "                                    them with an extra set that’s included in the box."
-msgstr ""
+msgstr "在每个耳机是一个不锈钢网罩，能够防止灰尘和碎屑的精密组件。你可以取下盖子清洗或用一组额外的随机配件在框中替换他们"
 
 #. module: product
 #: model:product.category,name:product.product_category_2
@@ -1461,55 +1416,37 @@ msgstr "内部"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_categ_id
 #: model:ir.model.fields,field_description:product.field_product_template_categ_id
-#: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Internal Category"
-msgstr "内部分类"
+msgstr "内部类别"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_code
 #: model:ir.model.fields,field_description:product.field_product_product_default_code
 #: model:ir.model.fields,field_description:product.field_product_template_default_code
 msgid "Internal Reference"
-msgstr "位置"
+msgstr "内部参照"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_barcode
+#: model:ir.model.fields,help:product.field_product_template_barcode
 msgid "International Article Number used for product identification."
 msgstr "国际物品编码用于产品标识"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Inventory"
-msgstr "存货"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_is_follower
-#: model:ir.model.fields,field_description:product.field_product_template_message_is_follower
-msgid "Is Follower"
-msgstr "是否关注者"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_is_product_variant
-#: model:ir.model.fields,field_description:product.field_product_template_is_product_variant
-msgid "Is a product variant"
-msgstr ""
+msgstr "库存"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
 #: model:product.template,website_description:product.product_product_7_product_template
 msgid "Keep it clean."
-msgstr ""
+msgstr "保持干净"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Key Features"
-msgstr ""
-
-#. module: product
-#: model:product.public.category,name:product.Keyboard_Mouse
-msgid "Keyboard / Mouse"
-msgstr "键盘、鼠标"
+msgstr "关键特性"
 
 #. module: product
 #: model:product.product,name:product.product_product_27
@@ -1522,23 +1459,6 @@ msgstr "定制便携计算机"
 #: model:product.template,name:product.product_product_25_product_template
 msgid "Laptop E5023"
 msgstr "便携式电脑 E5023"
-
-#. module: product
-#: model:product.product,name:product.product_product_26
-#: model:product.template,name:product.product_product_26_product_template
-msgid "Laptop S3450"
-msgstr "便携计算机 S3450"
-
-#. module: product
-#: model:product.public.category,name:product.laptops
-msgid "Laptops"
-msgstr "笔记本电脑"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_last_post
-#: model:ir.model.fields,field_description:product.field_product_template_message_last_post
-msgid "Last Message Date"
-msgstr "最后消息日期"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute___last_update
@@ -1558,7 +1478,7 @@ msgstr "最后消息日期"
 #: model:ir.model.fields,field_description:product.field_product_uom_categ___last_update
 #: model:ir.model.fields,field_description:product.field_report_product_report_pricelist___last_update
 msgid "Last Modified on"
-msgstr "最后修改日"
+msgstr "最后修改时间"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_line_write_uid
@@ -1577,7 +1497,7 @@ msgstr "最后修改日"
 #: model:ir.model.fields,field_description:product.field_product_uom_categ_write_uid
 #: model:ir.model.fields,field_description:product.field_product_uom_write_uid
 msgid "Last Updated by"
-msgstr "最后更新"
+msgstr "最后更新者"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_line_write_date
@@ -1596,7 +1516,7 @@ msgstr "最后更新"
 #: model:ir.model.fields,field_description:product.field_product_uom_categ_write_date
 #: model:ir.model.fields,field_description:product.field_product_uom_write_date
 msgid "Last Updated on"
-msgstr "最后更新"
+msgstr "最后更新时间"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_delay
@@ -1604,7 +1524,7 @@ msgid ""
 "Lead time in days between the confirmation of the purchase order and the "
 "receipt of the products in your warehouse. Used by the scheduler for "
 "automatic computation of the purchase order planning."
-msgstr "提前期是订单确认到仓库收到货物天数,使用于采购单自动计算规划调度"
+msgstr "提前时间是订单确认到仓库收到货物天数,使用于采购单自动计算规划调度"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_parent_left
@@ -1619,13 +1539,7 @@ msgstr "长度或距离"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_attribute_line_ids
 msgid "Lines"
-msgstr "行"
-
-#. module: product
-#: model:product.product,name:product.product_product_50
-#: model:product.template,name:product.product_product_50_product_template
-msgid "Linutop"
-msgstr ""
+msgstr "明细行"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_litre
@@ -1633,16 +1547,10 @@ msgid "Liter(s)"
 msgstr "升"
 
 #. module: product
-#: model:product.product,name:product.product_product_58
-#: model:product.template,name:product.product_product_58_product_template
+#: model:product.product,name:product.consu_delivery_02
+#: model:product.template,name:product.consu_delivery_02_product_template
 msgid "Little server"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_packaging_ids
-#: model:ir.model.fields,field_description:product.field_product_template_packaging_ids
-msgid "Logistical Units"
-msgstr "逻辑单位"
+msgstr "小服务器"
 
 #. module: product
 #: model:res.groups,name:product.group_uom
@@ -1652,7 +1560,7 @@ msgstr "管理多个计量单位"
 #. module: product
 #: model:res.groups,name:product.group_pricelist_item
 msgid "Manage Pricelist Items"
-msgstr ""
+msgstr "管理价格表项"
 
 #. module: product
 #: model:res.groups,name:product.group_stock_packaging
@@ -1660,36 +1568,25 @@ msgid "Manage Product Packaging"
 msgstr "管理产品包装"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_base_config_settings_group_product_variant
 #: model:res.groups,name:product.group_product_variant
 msgid "Manage Product Variants"
-msgstr ""
-
-#. module: product
-#: model:res.groups,name:product.group_mrp_properties
-msgid "Manage Properties of Product"
-msgstr "管理产品的属性"
-
-#. module: product
-#: model:res.groups,name:product.group_uos
-msgid "Manage Secondary Unit of Measure"
-msgstr "管理第二个计量单位"
+msgstr "管理产品变体"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Max. Margin"
-msgstr "最大利润"
+msgstr "最大毛利"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_price_max_margin
 msgid "Max. Price Margin"
-msgstr "最大的价格上浮金额"
+msgstr "最大价格毛利"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_image_medium
 #: model:ir.model.fields,field_description:product.field_product_template_image_medium
 msgid "Medium-sized image"
-msgstr "中等尺寸图片"
+msgstr "中等尺寸图像"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_template_image_medium
@@ -1697,7 +1594,7 @@ msgid ""
 "Medium-sized image of the product. It is automatically resized as a "
 "128x128px image, with aspect ratio preserved, only when the image exceeds "
 "one of those sizes. Use this field in form views or some kanban views."
-msgstr "产品的中等尺寸的图片。保持纵横比例，图像超出尺寸后，自动缩放为128x128px ，这字段通常用于看板视图。"
+msgstr "产品的中等尺寸的图像。保持纵横比例，图像超出尺寸后，自动缩放为128x128px ，这字段通常用于看板视图。"
 
 #. module: product
 #: model:product.attribute,name:product.product_attribute_1
@@ -1705,26 +1602,14 @@ msgid "Memory"
 msgstr "内存"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_ids
-#: model:ir.model.fields,field_description:product.field_product_template_message_ids
-msgid "Messages"
-msgstr "消息"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product_message_ids
-#: model:ir.model.fields,help:product.field_product_template_message_ids
-msgid "Messages and communication history"
-msgstr "消息和通信历史"
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Min. Margin"
-msgstr "最小上浮金额"
+msgstr "最小毛利"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_price_min_margin
 msgid "Min. Price Margin"
-msgstr "最小上浮金额"
+msgstr "最小价格毛利"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_min_quantity
@@ -1740,19 +1625,13 @@ msgstr "最少数量"
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "More energy efficient."
-msgstr ""
+msgstr "更节能"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "More features."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_21
-#: model:product.template,name:product.product_product_21_product_template
-msgid "Motherboard A20Z7"
-msgstr "主板 A20Z7"
+msgstr "更多的功能。"
 
 #. module: product
 #: model:product.product,name:product.product_product_20
@@ -1773,22 +1652,15 @@ msgid "Mouse, Wireless"
 msgstr "无线鼠标"
 
 #. module: product
-#: model:product.product,name:product.product_product_31
-#: model:product.template,name:product.product_product_31_product_template
-msgid "Multimedia Speakers"
-msgstr "多媒体喇叭"
-
-#. module: product
 #: model:product.product,website_description:product.product_product_11
 #: model:product.product,website_description:product.product_product_11b
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "Music. It's what beats inside."
-msgstr ""
+msgstr "音乐。这就是里面的节拍。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_name
-#: model:ir.model.fields,field_description:product.field_product_category_complete_name
 #: model:ir.model.fields,field_description:product.field_product_category_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_name
 #: model:ir.model.fields,field_description:product.field_product_product_name
@@ -1798,67 +1670,14 @@ msgid "Name"
 msgstr "名称"
 
 #. module: product
-#: model:product.public.category,name:product.network
-msgid "Network"
-msgstr "网络"
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "New Price ="
 msgstr "新价格 ="
 
 #. module: product
-#: selection:product.category,type:0 selection:product.template,state:0
-msgid "Normal"
-msgstr "一般"
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Notes"
-msgstr "便签"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_needaction_counter
-#: model:ir.model.fields,field_description:product.field_product_template_message_needaction_counter
-msgid "Number of Actions"
-msgstr "动作的序列号"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product_message_needaction_counter
-#: model:ir.model.fields,help:product.field_product_template_message_needaction_counter
-msgid "Number of messages which requires an action"
-msgstr "需要动作的消息编号"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product_message_unread_counter
-#: model:ir.model.fields,help:product.field_product_template_message_unread_counter
-msgid "Number of unread messages"
-msgstr "未读的消息数量"
-
-#. module: product
-#: selection:product.template,state:0
-msgid "Obsolete"
-msgstr "作废"
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_42
-#: model:product.template,description_sale:product.product_product_42_product_template
-msgid ""
-"Office Editing Software with word processing, spreadsheets, presentations, "
-"graphics, and databases..."
-msgstr "办公室编辑软件，字处理、电子表格、演示文稿、图片处理和数据库"
-
-#. module: product
-#: model:product.product,name:product.product_product_42
-#: model:product.template,name:product.product_product_42_product_template
-msgid "Office Suite"
-msgstr "办公套件"
-
-#. module: product
-#: model:product.product,description:product.product_product_19
-#: model:product.template,description:product.product_product_19_product_template
-msgid "On demand hard-disk having capacity based on requirement."
-msgstr "基于需求的硬盘容量要求"
+msgstr "备注"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
@@ -1875,67 +1694,45 @@ msgstr "其他价格表"
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Over 375,000 apps."
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_product_packaging
-#: model:ir.ui.view,arch_db:product.product_packaging_form_view
-#: model:ir.ui.view,arch_db:product.product_packaging_tree_view
-#: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Packaging"
-msgstr "包装形式"
+msgstr "超过375000的应用程序。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging_name
-msgid "Packaging Type"
-msgstr ""
+msgid "Package Type"
+msgstr "包裹类型"
 
 #. module: product
-#: model:ir.actions.act_window,name:product.action_packaging_view
-msgid "Packagings"
-msgstr ""
+#: model:ir.model,name:product.model_product_packaging
+#: model:ir.ui.view,arch_db:product.product_template_form_view
+#: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+msgid "Packaging"
+msgstr "包装"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_parent_id
 msgid "Parent Category"
-msgstr "父级分类"
+msgstr "上级类别"
 
 #. module: product
-#: model:ir.model,name:product.model_res_partner
-msgid "Partner"
-msgstr "业务伙伴"
-
-#. module: product
-#: model:product.public.category,name:product.Pen_Drive
-msgid "Pen Drive"
-msgstr "更改笔"
-
-#. module: product
-#: model:product.product,name:product.product_product_29
-#: model:product.template,name:product.product_product_29_product_template
-msgid "Pen drive, SP-2"
-msgstr "随身存储器, SP-2"
-
-#. module: product
-#: model:product.product,name:product.product_product_30
-#: model:product.template,name:product.product_product_30_product_template
-msgid "Pen drive, SP-4"
-msgstr "随身存储器, SP-4"
+#: model:product.product,name:product.product_product_5c
+#: model:product.template,name:product.product_product_5c_product_template
+msgid "Parts Replacement"
+msgstr ""
 
 #. module: product
 #: selection:product.pricelist.item,compute_price:0
 msgid "Percentage (discount)"
-msgstr ""
+msgstr "百分比 ( 折扣 )"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_percent_price
 msgid "Percentage Price"
-msgstr ""
+msgstr "百分比价格"
 
 #. module: product
 #: model:product.category,name:product.product_category_5
 msgid "Physical"
-msgstr ""
+msgstr "物理"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -1943,13 +1740,13 @@ msgstr ""
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "Playlists. The perfect mix for every mood."
-msgstr ""
+msgstr "播放列表。完美的组合为每一种心情。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Plays where you play"
-msgstr ""
+msgstr "哪里都可以玩"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
@@ -1959,18 +1756,21 @@ msgid ""
 " yet. Every model in the lineup comes standard with a quad-core Intel Core "
 "i5 processor, starting at 2.7GHz and topping out at 3.4GHz."
 msgstr ""
+"搭载第四代英特尔酷睿处理器，这iMac电脑又是最快的。在阵容中的所有型号都标配四核Intel Core "
+"i5处理器，开始为2.7GHz，峰值超过3.4GHz。"
 
 #. module: product
-#: model:product.product,name:product.product_product_0
-#: model:product.template,name:product.product_product_0_product_template
+#: model:product.product,name:product.service_order_01
+#: model:product.template,name:product.service_order_01_product_template
 msgid "Prepaid Consulting"
-msgstr ""
+msgstr "预付咨询"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_price
 #: model:ir.model.fields,field_description:product.field_product_product_price
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_price
 #: model:ir.model.fields,field_description:product.field_product_template_price
+#: model:ir.ui.view,arch_db:product.product_normal_form_view
 #: model:ir.ui.view,arch_db:product.product_pricelist_view
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
 #: model:ir.ui.view,arch_db:product.product_template_form_view
@@ -1997,7 +1797,7 @@ msgstr "额外价格"
 msgid ""
 "Price Extra: Extra price for the variant with this attribute value on sale "
 "price. eg. 200 price extra, 1000 + 200 = 1200."
-msgstr "价格附加:销售价格随着附加价格进行变化,如:原销售价格是1000,额外收费是200,当前售价是1200 = 1000 + 200."
+msgstr "价格附加: 变体的销售价格随着附加价格进行变化,如:原销售价格是1000,额外收费是200,当前售价是1200 = 1000 + 200."
 
 #. module: product
 #: model:ir.actions.act_window,name:product.action_product_price_list
@@ -2016,7 +1816,7 @@ msgstr "价格舍入"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_price_surcharge
 msgid "Price Surcharge"
-msgstr "价格额外费用"
+msgstr "价格附加费用"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_kanban_view
@@ -2030,7 +1830,7 @@ msgid "PriceList"
 msgstr "价格表"
 
 #. module: product
-#: model:ir.actions.report.xml,name:product.action_report_pricelist
+#: model:ir.actions.report,name:product.action_report_pricelist
 #: model:ir.model,name:product.model_product_pricelist
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_pricelist_id
 #: model:ir.model.fields,field_description:product.field_product_product_pricelist_id
@@ -2040,20 +1840,26 @@ msgid "Pricelist"
 msgstr "价格表"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product_pricelist_item_ids
+msgid "Pricelist Item"
+msgstr "价格表明细"
+
+#. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_applied_on
 msgid "Pricelist Item applicable on selected option"
-msgstr ""
+msgstr "适用于选定的选项价格表项目"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_ids
 #: model:ir.model.fields,field_description:product.field_product_product_item_ids
 #: model:ir.model.fields,field_description:product.field_product_template_item_ids
+#: model:ir.ui.view,arch_db:product.product_normal_form_view
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
 #: model:ir.ui.view,arch_db:product.product_pricelist_view
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Pricelist Items"
-msgstr ""
+msgstr "价格表项目"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_name
@@ -2063,19 +1869,18 @@ msgstr "价格表名称"
 #. module: product
 #: model:ir.model,name:product.model_product_pricelist_item
 msgid "Pricelist item"
-msgstr "价格表明细"
+msgstr "价格表项目"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_pricelist_action2
-#: model:ir.ui.menu,name:product.menu_product_pricelist_action2
-#: model:ir.ui.menu,name:product.menu_product_pricelist_main
+#: model:ir.model.fields,field_description:product.field_res_country_group_pricelist_ids
 msgid "Pricelists"
 msgstr "价格表"
 
 #. module: product
 #: model:res.groups,name:product.group_product_pricelist
 msgid "Pricelists On Product"
-msgstr ""
+msgstr "价格表基于产品"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.view_partner_property_form
@@ -2094,36 +1899,21 @@ msgid "Print"
 msgstr "打印"
 
 #. module: product
-#: model:product.public.category,name:product.printer
-msgid "Printer"
-msgstr "打印机"
-
-#. module: product
-#: model:product.product,name:product.product_product_37
-#: model:product.template,name:product.product_product_37_product_template
-msgid "Printer, All-in-one"
-msgstr "打印机一体机"
-
-#. module: product
-#: model:product.product,name:product.product_product_23
-#: model:product.template,name:product.product_product_23_product_template
-msgid "Processor AMD 8-Core"
-msgstr "AMD 8核处理器"
-
-#. module: product
 #: model:product.product,name:product.product_product_22
 #: model:product.template,name:product.product_product_22_product_template
 msgid "Processor Core i5 2.70 Ghz"
 msgstr "酷睿i5 处理器 2.70 Ghz"
 
 #. module: product
-#: model:ir.actions.act_window,name:product.product_normal_action
 #: model:ir.model,name:product.model_product_product
-#: model:ir.model.fields,field_description:product.field_product_packaging_product_tmpl_id
+#: model:ir.model.fields,field_description:product.field_product_packaging_product_id
 #: model:ir.model.fields,field_description:product.field_product_price_history_product_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_product_id
+#: model:ir.model.fields,field_description:product.field_product_product_product_variant_id
+#: model:ir.model.fields,field_description:product.field_product_template_product_variant_id
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
+#: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 #: model:ir.ui.view,arch_db:product.product_template_search_view
@@ -2135,6 +1925,7 @@ msgstr "产品"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute
+#: model:ir.ui.view,arch_db:product.product_attribute_view_form
 msgid "Product Attribute"
 msgstr "产品属性"
 
@@ -2144,6 +1935,11 @@ msgid "Product Attribute Value"
 msgstr "产品属性值"
 
 #. module: product
+#: model:ir.ui.view,arch_db:product.product_attribute_line_form
+msgid "Product Attribute and Values"
+msgstr "产品属性以及值"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_attribute_line_ids
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line_ids
 msgid "Product Attributes"
@@ -2151,7 +1947,6 @@ msgstr "产品属性"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_category_action_form
-#: model:ir.ui.menu,name:product.menu_product_category_action_form
 #: model:ir.ui.view,arch_db:product.product_category_list_view
 #: model:ir.ui.view,arch_db:product.product_category_search_view
 msgid "Product Categories"
@@ -2164,16 +1959,24 @@ msgid "Product Category"
 msgstr "产品类别"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_product_manager
-#: model:ir.model.fields,field_description:product.field_product_template_product_manager
-msgid "Product Manager"
-msgstr "产品经理"
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Product Name"
 msgstr "产品名称"
+
+#. module: product
+#: model:ir.actions.act_window,name:product.action_packaging_view
+#: model:ir.model.fields,field_description:product.field_product_product_packaging_ids
+#: model:ir.model.fields,field_description:product.field_product_template_packaging_ids
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_stock_packaging
+#: model:ir.ui.view,arch_db:product.product_packaging_tree_view
+msgid "Product Packages"
+msgstr ""
+
+#. module: product
+#: model:ir.ui.view,arch_db:product.product_packaging_form_view
+msgid "Product Packaging"
+msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_product_template
@@ -2195,7 +1998,12 @@ msgstr "产品类型"
 #. module: product
 #: model:ir.model,name:product.model_product_uom
 msgid "Product Unit of Measure"
-msgstr "计量单位"
+msgstr "单位"
+
+#. module: product
+#: model:ir.model,name:product.model_product_uom_categ
+msgid "Product UoM Categories"
+msgstr "产品计量单位 类别"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_product_id
@@ -2203,34 +2011,28 @@ msgstr "计量单位"
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 #: selection:product.pricelist.item,applied_on:0
 msgid "Product Variant"
-msgstr "产品系列"
+msgstr "产品变体"
 
 #. module: product
+#: model:ir.actions.act_window,name:product.product_normal_action
 #: model:ir.actions.act_window,name:product.product_normal_action_sell
 #: model:ir.actions.act_window,name:product.product_variant_action
-#: model:ir.ui.menu,name:product.menu_products
 #: model:ir.ui.view,arch_db:product.product_product_tree_view
 msgid "Product Variants"
-msgstr "系列产品"
-
-#. module: product
-#: model:ir.model,name:product.model_product_uom_categ
-msgid "Product uom categ"
-msgstr "产品计量单位类别"
+msgstr "产品变体"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_template_action
-#: model:ir.actions.act_window,name:product.product_template_action_product
+#: model:ir.actions.act_window,name:product.product_template_action_all
 #: model:ir.model.fields,field_description:product.field_product_product_product_variant_ids
 #: model:ir.model.fields,field_description:product.field_product_template_product_variant_ids
-#: model:ir.ui.menu,name:product.menu_product_template_action
-#: model:ir.ui.menu,name:product.prod_config_main
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Products"
 msgstr "产品"
 
 #. module: product
-#: model:ir.actions.report.xml,name:product.report_product_label
+#: model:ir.actions.report,name:product.report_product_label
+#: model:ir.actions.report,name:product.report_product_template_label
 msgid "Products Labels"
 msgstr "产品标签"
 
@@ -2248,15 +2050,10 @@ msgstr "产品价格表"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_view_search
 msgid "Products Price Search"
-msgstr "产品的价格搜索"
+msgstr "产品价格搜索"
 
 #. module: product
-#: model:ir.ui.view,arch_db:product.product_template_search_view
-msgid "Products your store in the inventory"
-msgstr ""
-
-#. module: product
-#: code:addons/product/product.py:817
+#: code:addons/product/models/product.py:448
 #, python-format
 msgid "Products: "
 msgstr "产品： "
@@ -2266,11 +2063,6 @@ msgstr "产品： "
 #: selection:product.pricelist.item,base:0
 msgid "Public Price"
 msgstr "公开价格"
-
-#. module: product
-#: model:product.pricelist,name:product.list0
-msgid "Public Pricelist"
-msgstr "公共价格表"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_description_purchase
@@ -2285,14 +2077,9 @@ msgid "Purchase Unit of Measure"
 msgstr "采购计量单位"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo_qty
-msgid "Quantity"
-msgstr "数量"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging_qty
-msgid "Quantity by Package"
-msgstr "包装数量"
+msgid "Quantity per Package"
+msgstr "每包裹的数量"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_price_list_qty1
@@ -2320,18 +2107,6 @@ msgid "Quantity-5"
 msgstr "数量-5"
 
 #. module: product
-#: model:product.product,name:product.product_product_14
-#: model:product.template,name:product.product_product_14_product_template
-msgid "RAM SR2 (kit)"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_15
-#: model:product.template,name:product.product_product_15_product_template
-msgid "RAM SR3"
-msgstr "内存Sr3"
-
-#. module: product
 #: model:product.product,name:product.product_product_13
 #: model:product.template,name:product.product_product_13_product_template
 msgid "RAM SR5"
@@ -2343,6 +2118,11 @@ msgid "Ratio"
 msgstr "比例"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product_code
+msgid "Reference"
+msgstr "参照"
+
+#. module: product
 #: selection:product.uom,uom_type:0
 msgid "Reference Unit of Measure for this category"
 msgstr "这个类别的参考计量单位"
@@ -2351,7 +2131,13 @@ msgstr "这个类别的参考计量单位"
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Remote control for power, volume, track seek"
-msgstr ""
+msgstr "电源遥控器，音量，寻道"
+
+#. module: product
+#: model:product.product,name:product.product_product_6c
+#: model:product.template,name:product.product_product_6c_product_template
+msgid "Repair"
+msgstr "维修"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_parent_right
@@ -2367,6 +2153,7 @@ msgid ""
 "                                    you can imagine. And with automatic updates,\n"
 "                                    you're always getting the best experience possible."
 msgstr ""
+"从一开始，为iPad制作应用程序也与iPad的合作mini.他们可以让做你做几乎你可以想像到的任何事，全屏幕应用程序。并具有自动更新，你总是得到最好的体验。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_4
@@ -2382,7 +2169,7 @@ msgid ""
 "                                    iPad. It’s simple yet powerful. Thin and light yet\n"
 "                                    full-featured. It can do just about everything and\n"
 "                                    be just about anything."
-msgstr ""
+msgstr "从一开始，iPad拥有很多优点。这是简单但功能强大。轻薄ye功能全面。它几乎可以做一切可以做的事"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
@@ -2393,7 +2180,7 @@ msgid ""
 "                                   featured. It can do just about everything and be just\n"
 "                                   about anything.And because it’s so easy to use, it’s\n"
 "                                   easy to love."
-msgstr ""
+msgstr "从一开始，iPad 就有很多优点。很简单但功能强大。轻薄又功能全。它可以做到这一切，并且它是如此简单易用，让人喜欢。"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -2406,31 +2193,19 @@ msgid "Rounding Precision"
 msgstr "舍入精度"
 
 #. module: product
-#: model:product.product,name:product.product_product_45
-#: model:product.template,name:product.product_product_45_product_template
-msgid "Router R430"
-msgstr "路由器R430"
-
-#. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Sale Conditions"
-msgstr "销售条件"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_description_sale
 #: model:ir.model.fields,field_description:product.field_product_template_description_sale
 msgid "Sale Description"
 msgstr "销售说明"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_list_price
 #: model:ir.model.fields,field_description:product.field_product_product_lst_price
-#: model:ir.model.fields,field_description:product.field_product_template_list_price
 msgid "Sale Price"
-msgstr "标价"
+msgstr "销售价格"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_res_partner_property_product_pricelist
+#: model:ir.model.fields,field_description:product.field_res_users_property_product_pricelist
 msgid "Sale Pricelist"
 msgstr "销售价格表"
 
@@ -2443,6 +2218,12 @@ msgstr "可销售"
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Sales"
 msgstr "销售"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product_list_price
+#: model:ir.model.fields,field_description:product.field_product_template_list_price
+msgid "Sales Price"
+msgstr ""
 
 #. module: product
 #: model:res.groups,name:product.group_sale_pricelist
@@ -2462,11 +2243,8 @@ msgid ""
 "                                        and sync the ones you like to iPod nano. Then tap Genius Mixes and\n"
 "                                        rediscover songs you haven’t heard in a while — or find music you forgot you even had."
 msgstr ""
-
-#. module: product
-#: model:product.public.category,name:product.Screen
-msgid "Screen"
-msgstr "画面"
+"说你听到一首歌，你的爱和你想呆在⏎心情。只是天才。发现其他歌曲iPod-nano去杰出的一起让一个天才的播放列表。更多的歌曲组合你不会想到自己"
+"，创造天才混合在iTunes和同步那些你喜欢iPod-nano。然后点击天才料和重新发现的歌曲你好久没听到或发现音乐你忘了你曾经。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_categ_id
@@ -2477,26 +2255,30 @@ msgstr "为当前产品选择一个类别"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_sequence
 #: model:ir.model.fields,field_description:product.field_product_attribute_value_sequence
-#: model:ir.model.fields,field_description:product.field_product_category_sequence
 #: model:ir.model.fields,field_description:product.field_product_packaging_sequence
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item_sequence
+#: model:ir.model.fields,field_description:product.field_product_pricelist_sequence
 #: model:ir.model.fields,field_description:product.field_product_product_sequence
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_sequence
 #: model:ir.model.fields,field_description:product.field_product_template_sequence
 msgid "Sequence"
-msgstr "序号"
+msgstr "序列"
 
 #. module: product
-#: model:product.product,name:product.product_product_59
-#: model:product.public.category,name:product.server
-#: model:product.template,name:product.product_product_59_product_template
+#: model:product.product,name:product.consu_delivery_01
+#: model:product.template,name:product.consu_delivery_01_product_template
 msgid "Server"
 msgstr "服务器"
 
 #. module: product
+#: code:addons/product/models/product_template.py:51
+#: selection:product.template,type:0
+#, python-format
+msgid "Service"
+msgstr "服务"
+
+#. module: product
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 #: model:product.category,name:product.product_category_3
-#: model:product.public.category,name:product.services
 msgid "Services"
 msgstr "服务"
 
@@ -2506,32 +2288,53 @@ msgid ""
 "Sets the price so that it is a multiple of this value.\n"
 "Rounding is applied after the discount and before the surcharge.\n"
 "To have prices that end in 9.99, set rounding 10, surcharge -0.01"
-msgstr "设定价格,因为它是一个多元价格, 四舍五入后打折或加入附加费. \n以价格9.99为例四舍五入为10附加费为-0.001."
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_base_config_settings_company_share_product
-msgid "Share product to all companies"
 msgstr ""
+"设定价格，这样它是此数值的倍数。\n"
+"舍入应用在打折后、附加费用之前。 \n"
+"要将价格设置为9.99结尾，设置舍入为10，附加费用为-0.001。"
 
 #. module: product
-#: model:ir.model.fields,help:product.field_base_config_settings_company_share_product
+#: model:ir.model.fields,field_description:product.field_res_config_settings_company_share_product
+msgid "Share product to all companies"
+msgstr "所有公司共享产品"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_res_config_settings_company_share_product
 msgid ""
 "Share your product to all companies defined in your instance.\n"
 " * Checked : Product are visible for every company, even if a company is defined on the partner.\n"
 " * Unchecked : Each company can see only its product (product where company is defined). Product not related to a company are visible for all companies."
 msgstr ""
+"在你实例中把产品定义为公司间分享\n"
+"选择：产品队每个公司可见，即便是某个公司只针对某一个业务伙伴不选择：每个公司只能看到自己的产品（定义产品的公司）。但是没有关联到某一公司的产品对全部的公司都是可见的"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_product_pricelist
+msgid "Show pricelists On Products"
+msgstr "显示产品的价目表"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_pricelist_item
+msgid "Show pricelists to customers"
+msgstr "给客户显示价目表"
+
+#. module: product
+#: model:product.product,name:product.membership_1
+#: model:product.template,name:product.membership_1_product_template
+msgid "Silver Membership"
+msgstr "银牌会籍"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Sleek, compact design"
-msgstr ""
+msgstr "圆滑，紧凑的设计"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_image_small
 #: model:ir.model.fields,field_description:product.field_product_template_image_small
 msgid "Small-sized image"
-msgstr "小尺寸图片"
+msgstr "小尺寸图像"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_template_image_small
@@ -2539,7 +2342,7 @@ msgid ""
 "Small-sized image of the product. It is automatically resized as a 64x64px "
 "image, with aspect ratio preserved. Use this field anywhere a small image is"
 " required."
-msgstr "产品的小尺寸图片。保持纵横比，自动缩放为64x64px。用于任何需要小图片的场合"
+msgstr "产品的小尺寸图像。保持纵横比，自动缩放为64x64px。用于任何需要小图像的场合"
 
 #. module: product
 #: selection:product.uom,uom_type:0
@@ -2552,25 +2355,19 @@ msgstr "小于参考计量单位"
 msgid ""
 "Soft covers are available separately in blue, green or orange. Pick a color "
 "to match your style."
-msgstr ""
+msgstr "软盖有蓝色，绿色，或者橙色。你可以选你喜欢的颜色"
 
 #. module: product
 #: model:product.category,name:product.product_category_4
-#: model:product.public.category,name:product.Software
 msgid "Software"
 msgstr "软件"
-
-#. module: product
-#: model:product.public.category,name:product.Speakers
-msgid "Speakers"
-msgstr "演讲人"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_categ_id
 msgid ""
 "Specify a product category if this rule only applies to products belonging "
 "to this category or its children categories. Keep empty otherwise."
-msgstr "指定一个产品分类 ，规则只被应用在与这个分类以及它的子类一致的产品上。其它情况留空"
+msgstr "指定一个产品类别 ，规则只被应用在与这个类别以及它的下级类一致的产品上。其它情况留空"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_product_id
@@ -2584,7 +2381,7 @@ msgstr "如果规则只适用一个产品，就指定一个产品，否则留空
 msgid ""
 "Specify a template if this rule only applies to one product template. Keep "
 "empty otherwise."
-msgstr "如果这条规则只能用于一个产品模版，则指定一个模版。否则留空。"
+msgstr "如果这条规则只能用于一个产品模板，则指定一个模板。否则留空。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_sale_ok
@@ -2602,12 +2399,12 @@ msgstr "指定固定金额来添加或减去(如果负)，用作折扣来计算�
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_price_max_margin
 msgid "Specify the maximum amount of margin over the base price."
-msgstr "指定基于基准价格的最大利润"
+msgstr "指定基于基准价格的最大毛利"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_price_min_margin
 msgid "Specify the minimum amount of margin over the base price."
-msgstr "指定基于基准价格的最大利润"
+msgstr "指定基于基准价格的最大毛利"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_date_start
@@ -2618,33 +2415,27 @@ msgstr "开始日期"
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_date_start
 msgid "Start date for this vendor price"
-msgstr ""
+msgstr "此供应商价格的开始日期"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_date_start
 msgid "Starting date for the pricelist item validation"
-msgstr ""
+msgstr "价格表项验证开始日期"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_state
-#: model:ir.model.fields,field_description:product.field_product_template_state
-msgid "Status"
-msgstr "状态"
-
-#. module: product
-#: model:ir.actions.act_window,name:product.product_supplierinfo_type_action
-msgid "Supplier Pricelist"
-msgstr "供应商价格表"
+#: selection:product.template,type:0
+msgid "Stockable Product"
+msgstr "可库存产品"
 
 #. module: product
 #: model:product.product,name:product.product_product_2
 #: model:product.template,name:product.product_product_2_product_template
 msgid "Support Contract (on timesheet)"
-msgstr ""
+msgstr "支持合同 ( 基于工时表)"
 
 #. module: product
-#: model:product.product,name:product.product_product_47
-#: model:product.template,name:product.product_product_47_product_template
+#: model:product.product,name:product.product_delivery_01
+#: model:product.template,name:product.product_delivery_01_product_template
 msgid "Switch, 24 ports"
 msgstr "24 口交换机"
 
@@ -2654,7 +2445,7 @@ msgstr "24 口交换机"
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "Sync to your heart’s content."
-msgstr ""
+msgstr "同步到你的内心"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -2667,11 +2458,15 @@ msgid ""
 "                                    Flip through your music: Album art looks great on the bigger screen.\n"
 "                                    Or to keep things fresh, give iPod nano a shake and it shuffles to a different song in your music library."
 msgstr ""
+"要播放你最喜欢的歌曲。或整张专辑。或一个艺术家的一切。你甚至可以浏览风格或作曲家。翻你的音乐：在大屏幕上，专辑艺术看起来很棒。为了保持新鲜，给iPod-"
+"nano摇一摇，它将在你的音乐库里的另一首歌。"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_name_template
-msgid "Template Name"
-msgstr "模板名称"
+#: model:ir.model.fields,help:product.field_product_product_pricelist_id
+#: model:ir.model.fields,help:product.field_product_template_pricelist_id
+msgid ""
+"Technical field. Used for searching on pricelists, not stored in database."
+msgstr "技术字段。用于在价格表搜索，未存储在数据库中。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
@@ -2684,6 +2479,7 @@ msgid ""
 "                                    Also included are a convenient carrying case for the ear tips and a cable-control case\n"
 "                                    for the headphones themselves."
 msgstr ""
+"耳戴式耳机中的苹果，在大幅度的“下”，提供了一种真实的身临其境的体验减少外部噪音。柔软的硅胶耳塞，它舒适地在你的耳朵里，创造一个密封，使你的音乐从你的环境中分离。三个不同大小的耳朵提示，所以你可以找到一个完美的适合每个耳朵。也包括一个方便的耳朵尖和电缆控制的情况下，以方便携带的情况下，因为耳机本身。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
@@ -2694,6 +2490,10 @@ msgid ""
 "                                    full-featured. It can do just about everything and\n"
 "                                    experience music just about anywhere."
 msgstr ""
+"玻色®soundlink®Mini是玻色-最小的便携式蓝牙音箱。它的超紧凑的尺寸适合在\n"
+"你的手掌，却给了你充分的，自然的声音以无线方式从你的iPhone或iPod，ipad。抓住它，去\n"
+"功能齐全。它可以做任何事情和\n"
+"体验音乐就在任何地方。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
@@ -2705,13 +2505,14 @@ msgid ""
 "                                        provides a low center of gravity that makes it nearly\n"
 "                                        impossible to tip over."
 msgstr ""
+"soundlink®迷你音箱是足够小和轻把你的袋子塞进口袋里。它的重量仅为1.5磅它的低姿态让你把它放在任何地方提供了一个低重心，使它接近不可能给小费。"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid ""
 "The computed price is expressed in the default Unit of Measure of the "
 "product."
-msgstr "计算的价格基于产品默认的计量单位。"
+msgstr "计算的价格基于产品默认计量单位。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_rounding
@@ -2729,12 +2530,12 @@ msgstr "计量单位的转换比率不能为 0！"
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "The desktop. In its most advanced form ever"
-msgstr ""
+msgstr "桌面。永远在在其最高级形式"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_packaging_sequence
 msgid "The first in the sequence is the default one."
-msgstr ""
+msgstr "第一个序列中是默认的"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_4
@@ -2748,7 +2549,7 @@ msgstr ""
 #: model:product.template,website_description:product.product_product_4d_product_template
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "The full iPad experience."
-msgstr ""
+msgstr "完整的iPad体验。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_9
@@ -2757,7 +2558,7 @@ msgid ""
 "The incredibly thin Apple Wireless Keyboard uses Bluetooth technology,\n"
 "                                    which makes it compatible with iPad. And you’re free to type wherever\n"
 "                                    you like — with the keyboard in front of your iPad or on your lap."
-msgstr ""
+msgstr "难以置信的苹果无线键盘采用蓝牙技术，这使得它兼容ipad。而且你可以自由地在任何地方随意你喜欢在你的ipad的前面或在你的膝盖上的键盘。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_min_qty
@@ -2765,20 +2566,29 @@ msgid ""
 "The minimal quantity to purchase from this vendor, expressed in the vendor "
 "Product Unit of Measure if not any, in the default unit of measure of the "
 "product otherwise."
-msgstr ""
+msgstr "从供应商采购的最小数量的计量单位在产品的供应商信息中有维护，如果没有维护，那么计量单位就是产品中默认设置的"
 
 #. module: product
-#: code:addons/product/product.py:329
+#: model:ir.model.fields,help:product.field_product_category_product_count
+msgid ""
+"The number of products under this category (Does not consider the children "
+"categories)"
+msgstr "此类别下的产品数量 (不考虑子类别)"
+
+#. module: product
+#: code:addons/product/models/product_attribute.py:74
 #, python-format
 msgid ""
 "The operation cannot be completed:\n"
 "You are trying to delete an attribute value with a reference on a product variant."
 msgstr ""
+"该操作无法完成：\n"
+"你正试图删除一个产品变体引用的属性值"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_price
 msgid "The price to purchase a product"
-msgstr ""
+msgstr "该价格购买产品"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_normal_action
@@ -2789,6 +2599,8 @@ msgid ""
 "                process: price, notes in the quotation, accounting data,\n"
 "                procurement methods, etc."
 msgstr ""
+"产品表单中的信息可以简化销售流程:\n"
+"价格，询价单中的注释，会计信息，补货方式等等"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_template_action
@@ -2796,6 +2608,8 @@ msgid ""
 "The product form contains information to simplify the sale process: price, "
 "notes in the quotation, accounting data, procurement methods, etc."
 msgstr ""
+"产品表单中的信息可以简化销售流程:\n"
+"价格，询价单中的注释，会计信息，补货方式等等"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
@@ -2804,7 +2618,19 @@ msgid ""
 "The rechargeable lithium-ion battery delivers up to seven hours of playtime.\n"
 "                                    And at home, you can listen even longer—the charging cradle lets\n"
 "                                    you listen while it charges."
-msgstr ""
+msgstr "锂离子充电电池提供长达七小时的游戏时间。而在家里，你能听的更久了充电的摇篮让我们的你听着，而这收费。"
+
+#. module: product
+#: sql_constraint:product.uom:0
+msgid "The rounding precision must be greater than 0!"
+msgstr "舍入精度必须大于0！"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product_lst_price
+msgid ""
+"The sale price is managed from the product template. Click on the 'Variant "
+"Prices' button to set the extra attribute prices."
+msgstr "销售价格是由产品模板管理。点击“变体价格”按钮来设置附加属性的价格。"
 
 #. module: product
 #: model:product.product,description_sale:product.product_product_9
@@ -2824,11 +2650,12 @@ msgid ""
 "                                    And it remembers the most recent six devices you've used,\n"
 "                                    so reconnecting is even simpler."
 msgstr ""
+"演讲者有30英尺的距离，这样你就可以享受了没有电线的声音。它对你的智能手机，ipad®或其他蓝牙设备。它还记得你最近使用的六个设备，所以连接就更简单了。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_packaging_qty
-msgid "The total number of products you can put by pallet or box."
-msgstr "您可以放入货板或箱子的产品数量。"
+msgid "The total number of products you can have per pallet or box."
+msgstr "每个托盘或箱子可以拥有的产品总数。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_volume
@@ -2840,7 +2667,7 @@ msgstr "这体积是m3"
 #: model:ir.model.fields,help:product.field_product_product_weight
 #: model:ir.model.fields,help:product.field_product_template_weight
 msgid "The weight of the contents in Kg, not including any packaging, etc."
-msgstr ""
+msgstr "以Kg(公斤)表示内容物重量，不包含任何包装等。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_4
@@ -2852,13 +2679,13 @@ msgstr ""
 #: model:product.template,website_description:product.product_product_4c_product_template
 #: model:product.template,website_description:product.product_product_4d_product_template
 msgid "There is less of it, but no less to it."
-msgstr ""
+msgstr "有少，但没少吧。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "There's less of it, but no less to it."
-msgstr ""
+msgstr "有少，但没少吧。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -2871,6 +2698,9 @@ msgid ""
 "                                        great together. Then it creates Genius Mixes, which you can easily sync to your iPod.\n"
 "                                        It’s the perfect way to rediscover songs you haven’t listened to in forever."
 msgstr ""
+"还有一个很好的方法在IPod上混合音乐：让天才来完成它\n"
+"激活电脑上itunes的天才。它会自动找到一些听起来很美妙的音乐，\n"
+"然后它创建天才混音，你可以轻易的同步到你的ipos，这是重新发现你从来都没有听到过的音乐的完美方式"
 
 #. module: product
 #: sql_constraint:product.attribute.value:0
@@ -2880,26 +2710,21 @@ msgstr "此属性值已经存在！"
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_product_uom
 msgid "This comes from the product form."
-msgstr "此处源自该产品表单。"
+msgstr "此处源自产品表单。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_image_variant
 msgid ""
 "This field holds the image used as image for the product variant, limited to"
 " 1024x1024px."
-msgstr "该字段保存产品的图片，限制图片大小须小于 1024x1024px."
+msgstr "该字段保存产品变体的图像，限制图像大小须小于 1024x1024px."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_template_image
 msgid ""
 "This field holds the image used as image for the product, limited to "
 "1024x1024px."
-msgstr "该字段保存产品的图片，限制到  1024x1024px."
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_supplierinfo_qty
-msgid "This is a quantity which is converted into Default Unit of Measure."
-msgstr "这是转换为默认计量单位的值"
+msgstr "该字段保存产品的图像，限制到  1024x1024px."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_price_extra
@@ -2908,16 +2733,12 @@ msgstr "这是所有属性额外价格的总和"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "This note will be displayed on requests for quotation."
-msgstr ""
-
-#. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "This note will be displayed on the quotations."
+msgid "This note will show up on sales orders."
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_res_partner_property_product_pricelist
+#: model:ir.model.fields,help:product.field_res_users_property_product_pricelist
 msgid ""
 "This pricelist will be used, instead of the default one, for sales to the "
 "current partner"
@@ -2928,26 +2749,20 @@ msgstr "这价格表将会被使用,取代默认值,用之出售给当前伙伴.
 msgid ""
 "This vendor's product code will be used when printing a request for "
 "quotation. Keep empty to use the internal one."
-msgstr ""
+msgstr "打印询价单时，该供应商产品代码会被使用。保持空白就使用内部的那个。"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_product_name
 msgid ""
 "This vendor's product name will be used when printing a request for "
 "quotation. Keep empty to use the internal one."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_39
-#: model:product.template,name:product.product_product_39_product_template
-msgid "Toner Cartridge"
-msgstr "碳粉匣"
+msgstr "打印询价单时，此供应商产品名称会被使用。保持空白就使用内部的那个。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
 #: model:product.template,website_description:product.product_product_7_product_template
 msgid "Two is better than one."
-msgstr ""
+msgstr "两个比一个好。"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_uom_uom_type
@@ -2955,41 +2770,40 @@ msgid "Type"
 msgstr "类型"
 
 #. module: product
-#: model:product.product,name:product.product_product_53
-#: model:product.template,name:product.product_product_53_product_template
-msgid "TypeMatrix Dvorak Keyboard"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_48
-#: model:product.template,name:product.product_product_48_product_template
-msgid "USB Adapter"
-msgstr "USB 适配器"
-
-#. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid ""
 "USB port allows for software update to ensure ongoing Bluetooth device "
 "compatibility"
-msgstr ""
+msgstr "USB端口允许软件更新，以确保持续的蓝牙设备兼容"
+
+#. module: product
+#: model:product.pricelist,name:product.list0
+msgid "USD"
+msgstr "美元"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Ultrafast wireless."
-msgstr ""
+msgstr "超快的无线。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Ultrathin design"
-msgstr ""
+msgstr "超薄设计"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_uom_active
+msgid ""
+"Uncheck the active field to disable a unit of measure without deleting it."
+msgstr "取消选中活动字段以禁用度量单位，而不删除它。"
 
 #. module: product
 #: model:product.uom.categ,name:product.product_uom_categ_unit
 msgid "Unit"
-msgstr "单件"
+msgstr "单位"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_uom_id
@@ -3000,14 +2814,8 @@ msgstr "计量单位"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_uom_categ_form_action
-#: model:ir.ui.menu,name:product.menu_product_uom_categ_form_action
 msgid "Unit of Measure Categories"
 msgstr "计量单位类别"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_uom_category_id
-msgid "Unit of Measure Category"
-msgstr ""
 
 #. module: product
 #: model:product.uom,name:product.product_uom_unit
@@ -3016,12 +2824,11 @@ msgstr "件"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_uom_form_action
-#: model:ir.ui.menu,name:product.menu_product_uom_form_action
-#: model:ir.ui.menu,name:product.next_id_16
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_uom
 #: model:ir.ui.view,arch_db:product.product_uom_form_view
 #: model:ir.ui.view,arch_db:product.product_uom_tree_view
 msgid "Units of Measure"
-msgstr "计量单位"
+msgstr "单位"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_uom_categ_form_view
@@ -3032,16 +2839,19 @@ msgstr "计量单位类别"
 #: model:ir.actions.act_window,help:product.product_uom_categ_form_action
 msgid ""
 "Units of measure belonging to the same category can be\n"
-"                converted between each others. For example, in the category\n"
-"                <i>'Time'</i>, you will have the following units of measure:\n"
-"                Hours, Days."
+"            converted between each others. For example, in the category\n"
+"            <i>'Time'</i>, you will have the following units of measure:\n"
+"            Hours, Days."
 msgstr ""
+"属于相同类别的测量单位可以在彼此之间转换。\n"
+"例如，在类别<i>'Time'</i>中，\n"
+"您将有以下计量单位：小时，天。"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Universal iPod docking station fits most iPod/iPhone models"
-msgstr ""
+msgstr "通用iPod基座适合大多数的iPod/ iPhone机型"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
@@ -3054,23 +2864,17 @@ msgid ""
 "                                    The result: you’re immersed in the music and hear details you never knew existed.\n"
 "                                    Even when listening to an old favorite, you may feel like you’re hearing it for the first time."
 msgstr ""
+"不像许多小耳机，每一个入耳式苹果耳机包含两个高性能的驱动器－一个处理低音的低音和中音以及高频率的扬声器。这些特定的驱动能够保证整个声波频道的精确，精细的声音结果就是：你沉浸在音乐中，听到你从未听到过的细致的音乐，即使是在听你喜欢的老的音乐，你还是会感觉到就像第一次听到一样"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_unread
-#: model:ir.model.fields,field_description:product.field_product_template_message_unread
-msgid "Unread Messages"
-msgstr "未读消息"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_message_unread_counter
-#: model:ir.model.fields,field_description:product.field_product_template_message_unread_counter
-msgid "Unread Messages Counter"
-msgstr "未读消息计数器"
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_sale_pricelist
+msgid "Use pricelists to adapt your price per customers"
+msgstr "为每个客户使用价格表来适配您的价格"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 msgid "Validity"
-msgstr ""
+msgstr "验证"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value_name
@@ -3079,48 +2883,60 @@ msgstr "值"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value_ids
+#: model:ir.ui.view,arch_db:product.product_attribute_line_form
+#: model:ir.ui.view,arch_db:product.product_attribute_view_form
 msgid "Values"
 msgstr "值"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_price_extra
-msgid "Variant Extra Price"
-msgstr "规格附加价格"
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo_product_variant_count
+msgid "Variant Count"
+msgstr "变体计数"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_image_variant
 msgid "Variant Image"
-msgstr "系列图片"
+msgstr "变体图像"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Variant Information"
-msgstr ""
+msgstr "变体信息"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product_price_extra
+msgid "Variant Price Extra"
+msgstr "变体额外价格"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Variant Prices"
-msgstr "系列价格"
+msgstr "变体价格"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product_variant_seller_ids
+#: model:ir.model.fields,field_description:product.field_product_template_variant_seller_ids
+msgid "Variant Seller"
+msgstr ""
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_attribute_value_action
 #: model:ir.ui.view,arch_db:product.attribute_tree_view
 #: model:ir.ui.view,arch_db:product.variants_tree_view
 msgid "Variant Values"
-msgstr "系列值"
+msgstr "变体值"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value_product_ids
 #: model:ir.ui.view,arch_db:product.product_template_kanban_view
 #: model:ir.ui.view,arch_db:product.product_template_only_form_view
 msgid "Variants"
-msgstr "变动"
+msgstr "变体"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_seller_ids
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_name
-#: model:ir.model.fields,field_description:product.field_product_template_seller_ids
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
+#: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 msgid "Vendor"
 msgstr "供应商"
 
@@ -3128,37 +2944,38 @@ msgstr "供应商"
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
 msgid "Vendor Information"
-msgstr ""
+msgstr "供应商信息"
+
+#. module: product
+#: model:ir.actions.act_window,name:product.product_supplierinfo_type_action
+msgid "Vendor Pricelists"
+msgstr "供应商价格表"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_product_code
 msgid "Vendor Product Code"
-msgstr ""
+msgstr "供应商产品代码"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_product_name
 msgid "Vendor Product Name"
-msgstr ""
+msgstr "供应商产品名称"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_product_uom
 msgid "Vendor Unit of Measure"
-msgstr ""
+msgstr "供应商计量单位"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_name
 msgid "Vendor of this product"
-msgstr ""
+msgstr "这个产品的供应商"
 
 #. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
+#: model:ir.model.fields,field_description:product.field_product_product_seller_ids
+#: model:ir.model.fields,field_description:product.field_product_template_seller_ids
 msgid "Vendors"
 msgstr "供应商"
-
-#. module: product
-#: selection:product.category,type:0
-msgid "View"
-msgstr "视图"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_volume
@@ -3171,32 +2988,21 @@ msgstr "体积"
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Volume control on main system"
-msgstr ""
+msgstr "主系统的体积控制"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid ""
 "Wall charger can be plugged into the cradle or directly into the speaker"
-msgstr ""
+msgstr "壁式充电器可插入支架或直接进入音箱"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_warranty
-#: model:ir.model.fields,field_description:product.field_product_template_warranty
-msgid "Warranty"
-msgstr "质保"
-
-#. module: product
-#: model:product.product,name:product.product_product_34
-#: model:product.template,name:product.product_product_34_product_template
-msgid "Webcam"
-msgstr "网络摄像头"
-
-#. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
+#: model:ir.model.fields,field_description:product.field_product_product_weight
+#: model:ir.model.fields,field_description:product.field_product_template_weight
 #: model:product.uom.categ,name:product.product_uom_categ_kgm
 msgid "Weight"
-msgstr "重要性"
+msgstr "重量"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
@@ -3209,14 +3015,7 @@ msgstr "重量"
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "When one playlist isn’t enough."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_supplierinfo_product_id
-msgid ""
-"When this field is filled in, the vendor data will only apply to the "
-"variant."
-msgstr ""
+msgstr "一个播放列表是不够的。"
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_3
@@ -3235,24 +3034,12 @@ msgstr "白"
 #: model:product.template,website_description:product.product_product_4d_product_template
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Why you'll love an iPad."
-msgstr ""
+msgstr "为什么你会爱上一个iPad。"
 
 #. module: product
 #: model:product.attribute,name:product.product_attribute_3
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
-
-#. module: product
-#: model:product.product,name:product.product_product_40
-#: model:product.template,name:product.product_product_40_product_template
-msgid "Windows 7 Professional"
-msgstr "Windows 7 专业版"
-
-#. module: product
-#: model:product.product,name:product.product_product_41
-#: model:product.template,name:product.product_product_41_product_template
-msgid "Windows Home Server 2011"
-msgstr "Windows Home Server 2011"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
@@ -3264,13 +3051,8 @@ msgid ""
 "                                   lets you download content, stream video,\n"
 "                                   and browse the web at amazing speeds."
 msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_base_config_settings_group_product_variant
-msgid ""
-"Work with product variant allows you to define some variant of the same "
-"products, an ease the product management in the ecommerce for example"
-msgstr "产品型号可以让你为同一个产品定义不同的型号，例如在电商业务中是一种简单的产品管理方式"
+"先进的Wi‑Fi比之前的Ipad的网速快两倍，用它可以链接到世界上的蜂窝状网络\n"
+"iPad mini可以让我们以惊人的速度下载内容，视频和浏览网页"
 
 #. module: product
 #: model:product.uom.categ,name:product.uom_categ_wtime
@@ -3278,11 +3060,33 @@ msgid "Working Time"
 msgstr "工作时间"
 
 #. module: product
+#: code:addons/product/models/decimal_precision.py:16
+#, python-format
+msgid ""
+"You cannot define the decimal precision of 'Account' as greater than the "
+"rounding factor of the company's main currency"
+msgstr "您不能将“帐户”的小数精度定义为大于公司主要货币的舍入因子"
+
+#. module: product
+#: code:addons/product/wizard/product_price_list.py:26
+#, python-format
+msgid "You have to set a logo or a layout for your company."
+msgstr ""
+
+#. module: product
+#: code:addons/product/wizard/product_price_list.py:28
+#, python-format
+msgid "You have to set your reports's header and footer layout."
+msgstr ""
+
+#. module: product
 #: model:ir.actions.act_window,help:product.product_uom_form_action
 msgid ""
 "You must define a conversion rate between several Units of\n"
-"                Measure within the same category."
+"            Measure within the same category."
 msgstr ""
+"您必须在几个单位之间定义转换率\n"
+"在同一类别内测量。"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_normal_action
@@ -3292,13 +3096,21 @@ msgid ""
 "You must define a product for everything you sell, whether it's\n"
 "                a physical product, a consumable or a service you offer to\n"
 "                customers."
-msgstr ""
+msgstr "所有你要卖的东西都要定义为产品，不管是实体，消耗品或者你能提供给客户的服务"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_template_action
 msgid ""
 "You must define a product for everything you sell, whether it's a physical "
-"product, a consumable or a service you offer to  customers."
+"product, a consumable or a service you offer to customers."
+msgstr "您必须为销售的所有内容定义产品，无论是实体产品，消耗品还是为客户提供的服务。"
+
+#. module: product
+#: code:addons/product/models/product_template.py:29
+#, python-format
+msgid ""
+"You must define at least one product category in order to be able to create "
+"products."
 msgstr ""
 
 #. module: product
@@ -3313,17 +3125,15 @@ msgid ""
 "                                        mood strikes you. VoiceOver tells you the name of each playlist,\n"
 "                                        so it’s easy to switch between them and find the one you want without looking."
 msgstr ""
+"可能你在你的itunes上有很多播放列表。\n"
+"一个在路上，一个在健身房，同步这些播放列表到ipod，你可以混合播放任何能打动你的音乐\n"
+"VoiceOver会告诉你每个播放列表的名称，"
 
 #. module: product
-#: model:product.product,name:product.product_product_43
-#: model:product.template,name:product.product_product_43_product_template
+#: model:product.product,name:product.product_order_01
+#: model:product.template,name:product.product_order_01_product_template
 msgid "Zed+ Antivirus"
 msgstr "Zed+反病毒"
-
-#. module: product
-#: model:ir.model,name:product.model_base_config_settings
-msgid "base.config.settings"
-msgstr "base.config.settings"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_cm
@@ -3343,17 +3153,17 @@ msgstr "decimal.precision"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_category_form_view
 msgid "e.g. Lamps"
-msgstr ""
+msgstr "例如灯"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
-msgid "e.g. Odoo Enterprise Susbcription"
+msgid "e.g. Odoo Enterprise Subscription"
 msgstr ""
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "e.g. USD Retailers"
-msgstr ""
+msgstr "例如USD零售商"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_uom_form_view
@@ -3421,7 +3231,7 @@ msgid ""
 "iTunes on your Mac or PC makes it easy to load up\n"
 "                                        your iPod. Just choose the playlists, audiobooks,\n"
 "                                        podcasts, and other audio files you want, then sync."
-msgstr ""
+msgstr "在iTunes的Mac或PC可以很容易地加载你的iPod。只要选择你想要的播放列表，有声读物，播客和其它音频文件，然后进行同步。"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_inch
@@ -3446,12 +3256,7 @@ msgstr "磅"
 #. module: product
 #: model:product.uom,name:product.product_uom_mile
 msgid "mile(s)"
-msgstr "英里(s)"
-
-#. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "months"
-msgstr "月"
+msgstr "英里"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_oz
@@ -3461,22 +3266,22 @@ msgstr "盎司"
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_line
 msgid "product.attribute.line"
-msgstr ""
+msgstr "product.attribute.line"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_price
 msgid "product.attribute.price"
-msgstr ""
+msgstr "product.attribute.price"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_value
 msgid "product.attribute.value"
-msgstr ""
+msgstr "product.attribute.value"
 
 #. module: product
 #: model:ir.model,name:product.model_product_price_history
 msgid "product.price.history"
-msgstr ""
+msgstr "product.price.history"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_qt
@@ -3484,43 +3289,38 @@ msgid "qt"
 msgstr "夸脱"
 
 #. module: product
-#: model:product.product,description_sale:product.product_product_58
-#: model:product.template,description_sale:product.product_product_58_product_template
-msgid ""
-"raid 1 \n"
-"            512ECC ram"
+#: model:product.product,description_sale:product.consu_delivery_02
+#: model:product.template,description_sale:product.consu_delivery_02_product_template
+msgid "raid 1, 512ECC ram"
 msgstr ""
 
 #. module: product
-#: model:product.product,description_sale:product.product_product_59
-#: model:product.template,description_sale:product.product_product_59_product_template
-msgid ""
-"raid 10 \n"
-"            2048ECC ram"
+#: model:product.product,description_sale:product.consu_delivery_01
+#: model:product.template,description_sale:product.consu_delivery_01_product_template
+msgid "raid 10, 2048ECC ram"
 msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_report_product_report_pricelist
 msgid "report.product.report_pricelist"
-msgstr ""
+msgstr "report.product.report_pricelist"
+
+#. module: product
+#: model:ir.model,name:product.model_res_config_settings
+msgid "res.config.settings"
+msgstr "res.config.settings"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.view_partner_property_form
 msgid "the parent company"
-msgstr "父公司"
+msgstr "上级公司"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "the product template"
-msgstr ""
+msgstr "产品模板"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 msgid "to"
 msgstr "到"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_price_history_company_id
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item_compute_price
-msgid "unknown"
-msgstr "未知的"

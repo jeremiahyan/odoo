@@ -3,24 +3,20 @@
 # * note
 # 
 # Translators:
+# Quim - eccit <quim@eccit.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-18 08:10+0000\n"
-"PO-Revision-Date: 2015-10-17 16:57+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Catalan (http://www.transifex.com/odoo/odoo-9/language/ca/)\n"
+"POT-Creation-Date: 2017-10-02 11:26+0000\n"
+"PO-Revision-Date: 2017-10-02 11:26+0000\n"
+"Last-Translator: Quim - eccit <quim@eccit.com>, 2017\n"
+"Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_needaction
-msgid "Action Needed"
-msgstr ""
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_open
@@ -36,6 +32,11 @@ msgstr ""
 #. module: note
 #: model:ir.ui.view,arch_db:note.view_note_note_filter
 msgid "By sticky note Category"
+msgstr ""
+
+#. module: note
+#: model:ir.actions.act_window,help:note.note_tag_action
+msgid "Click to add a new tag."
 msgstr ""
 
 #. module: note
@@ -71,11 +72,6 @@ msgstr "Creat el"
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_date_done
 msgid "Date done"
-msgstr "Data realització"
-
-#. module: note
-#: model:ir.model.fields,help:note.field_note_note_message_last_post
-msgid "Date of the last message posted on the record."
 msgstr ""
 
 #. module: note
@@ -88,7 +84,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:note.field_note_stage_display_name
 #: model:ir.model.fields,field_description:note.field_note_tag_display_name
 msgid "Display Name"
-msgstr "Mostra Nom"
+msgstr "Mostrar Nom"
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_stage_fold
@@ -96,72 +92,47 @@ msgid "Folded by Default"
 msgstr ""
 
 #. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_follower_ids
-msgid "Followers"
-msgstr "Seguidors"
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_channel_ids
-msgid "Followers (Channels)"
-msgstr "Followers (Canals)"
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_partner_ids
-msgid "Followers (Partners)"
-msgstr ""
+#: model:ir.ui.view,arch_db:note.view_note_note_filter
+msgid "Future Activities"
+msgstr "Activitats Futures"
 
 #. module: note
 #: model:ir.ui.view,arch_db:note.view_note_note_filter
 msgid "Group By"
-msgstr "Agrupa per"
+msgstr ""
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_id
 #: model:ir.model.fields,field_description:note.field_note_stage_id
 #: model:ir.model.fields,field_description:note.field_note_tag_id
 msgid "ID"
-msgstr "ID"
-
-#. module: note
-#: model:ir.model.fields,help:note.field_note_note_message_unread
-msgid "If checked new messages require your attention."
 msgstr ""
-
-#. module: note
-#: model:ir.model.fields,help:note.field_note_note_message_needaction
-msgid "If checked, new messages require your attention."
-msgstr ""
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_is_follower
-msgid "Is Follower"
-msgstr ""
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_last_post
-msgid "Last Message Date"
-msgstr "Data Últim Missatge"
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note___last_update
 #: model:ir.model.fields,field_description:note.field_note_stage___last_update
 #: model:ir.model.fields,field_description:note.field_note_tag___last_update
 msgid "Last Modified on"
-msgstr "Darrera modificació feta el"
+msgstr ""
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_write_uid
 #: model:ir.model.fields,field_description:note.field_note_stage_write_uid
 #: model:ir.model.fields,field_description:note.field_note_tag_write_uid
 msgid "Last Updated by"
-msgstr "Actualitzat per última vegada per"
+msgstr ""
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_write_date
 #: model:ir.model.fields,field_description:note.field_note_stage_write_date
 #: model:ir.model.fields,field_description:note.field_note_tag_write_date
 msgid "Last Updated on"
-msgstr "Actualitzat per última vegada el dia"
+msgstr ""
+
+#. module: note
+#: model:ir.ui.view,arch_db:note.view_note_note_filter
+msgid "Late Activities"
+msgstr "Darreres Activitats"
 
 #. module: note
 #: model:note.stage,name:note.demo_note_stage_03
@@ -170,24 +141,13 @@ msgid "Later"
 msgstr ""
 
 #. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_ids
-msgid "Messages"
-msgstr "Missatges"
-
-#. module: note
-#: model:ir.model.fields,help:note.field_note_note_message_ids
-msgid "Messages and communication history"
-msgstr ""
+#: model:ir.ui.view,arch_db:note.view_note_note_filter
+msgid "My Activities"
+msgstr "Les meves activitats"
 
 #. module: note
 #: model:note.stage,name:note.note_stage_00
 msgid "New"
-msgstr "Nou"
-
-#. module: note
-#: code:addons/note/note.py:163
-#, python-format
-msgid "New Note"
 msgstr ""
 
 #. module: note
@@ -223,39 +183,30 @@ msgstr ""
 #: model:ir.ui.view,arch_db:note.view_note_note_filter
 #: model:note.stage,name:note.note_stage_04
 msgid "Notes"
-msgstr "Notes"
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_needaction_counter
-msgid "Number of Actions"
-msgstr ""
-
-#. module: note
-#: model:ir.model.fields,help:note.field_note_note_message_needaction_counter
-msgid "Number of messages which requires an action"
-msgstr ""
-
-#. module: note
-#: model:ir.model.fields,help:note.field_note_note_message_unread_counter
-msgid "Number of unread messages"
 msgstr ""
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_user_id
 #: model:ir.model.fields,field_description:note.field_note_stage_user_id
 msgid "Owner"
-msgstr "Propietari"
+msgstr ""
 
 #. module: note
 #: model:ir.model.fields,help:note.field_note_stage_user_id
-msgid "Owner of the note stage."
+msgid "Owner of the note stage"
 msgstr ""
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_sequence
 #: model:ir.model.fields,field_description:note.field_note_stage_sequence
 msgid "Sequence"
-msgstr "Seqüència"
+msgstr ""
+
+#. module: note
+#: model:ir.ui.view,arch_db:note.view_note_note_filter
+msgid "Show all records which has next action date is before today"
+msgstr ""
+"Mostra tots els registres en que la data de següent acció és abans d'avui"
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_stage_id
@@ -266,7 +217,7 @@ msgstr "Etapa"
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_stage_name
 msgid "Stage Name"
-msgstr "Nom de la fase"
+msgstr ""
 
 #. module: note
 #: model:ir.ui.view,arch_db:note.view_note_stage_form
@@ -278,7 +229,7 @@ msgstr ""
 #: model:ir.ui.menu,name:note.menu_notes_stage
 #: model:ir.ui.view,arch_db:note.view_note_note_tree
 msgid "Stages"
-msgstr "Fases"
+msgstr ""
 
 #. module: note
 #: model:ir.ui.view,arch_db:note.view_note_stage_tree
@@ -301,36 +252,34 @@ msgid "Tag name already exists !"
 msgstr ""
 
 #. module: note
+#: model:ir.actions.act_window,name:note.note_tag_action
 #: model:ir.model.fields,field_description:note.field_note_note_tag_ids
+#: model:ir.ui.menu,name:note.notes_tag_menu
+#: model:ir.ui.view,arch_db:note.note_tag_view_form
+#: model:ir.ui.view,arch_db:note.note_tag_view_tree
 #: model:ir.ui.view,arch_db:note.view_note_note_form
 msgid "Tags"
-msgstr "Etiquetes"
+msgstr ""
 
 #. module: note
-#: model:note.stage,name:note.demo_note_stage_04
 #: model:note.stage,name:note.note_stage_02
 msgid "This Week"
-msgstr "Aquesta setmana"
+msgstr ""
 
 #. module: note
 #: model:note.stage,name:note.demo_note_stage_01
 #: model:note.stage,name:note.note_stage_01
 msgid "Today"
-msgstr "Avui"
+msgstr ""
+
+#. module: note
+#: model:ir.ui.view,arch_db:note.view_note_note_filter
+msgid "Today Activities"
+msgstr "Activitats d'avui"
 
 #. module: note
 #: model:note.stage,name:note.demo_note_stage_02
 msgid "Tomorrow"
-msgstr ""
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_unread
-msgid "Unread Messages"
-msgstr ""
-
-#. module: note
-#: model:ir.model.fields,field_description:note.field_note_note_message_unread_counter
-msgid "Unread Messages Counter"
 msgstr ""
 
 #. module: note

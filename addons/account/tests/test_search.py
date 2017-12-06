@@ -1,11 +1,11 @@
-from openerp.addons.account.tests.account_test_users import AccountTestUsers
+from odoo.addons.account.tests.account_test_users import AccountTestUsers
 
 
 class TestSearch(AccountTestUsers):
 
     """Tests for search on name_search (account.account)
 
-    The name search on account.account is quite complexe, make sure
+    The name search on account.account is quite complex, make sure
     we have all the correct results
     """
 

@@ -3,14 +3,16 @@
 # * google_account
 # 
 # Translators:
+# Dorin Hongu <dhongu@gmail.com>, 2017
+# Cozmin Candea <office@terrabit.ro>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-07 14:40+0000\n"
-"PO-Revision-Date: 2015-09-07 18:42+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Romanian (http://www.transifex.com/odoo/odoo-9/language/ro/)\n"
+"POT-Creation-Date: 2017-09-20 09:53+0000\n"
+"PO-Revision-Date: 2017-09-20 09:53+0000\n"
+"Last-Translator: Cozmin Candea <office@terrabit.ro>, 2017\n"
+"Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -30,7 +32,7 @@ msgstr "Creat în"
 #. module: google_account
 #: model:ir.model.fields,field_description:google_account.field_google_service_display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nume afișat"
 
 #. module: google_account
 #: model:ir.model.fields,field_description:google_account.field_google_service_id
@@ -40,7 +42,7 @@ msgstr "ID"
 #. module: google_account
 #: model:ir.model.fields,field_description:google_account.field_google_service___last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Ultima modificare la"
 
 #. module: google_account
 #: model:ir.model.fields,field_description:google_account.field_google_service_write_uid
@@ -50,15 +52,51 @@ msgstr "Ultima actualizare făcută de"
 #. module: google_account
 #: model:ir.model.fields,field_description:google_account.field_google_service_write_date
 msgid "Last Updated on"
-msgstr "Ultima actualizare în"
+msgstr "Ultima actualizare pe"
 
 #. module: google_account
-#: code:addons/google_account/google_account.py:173
+#: code:addons/google_account/models/google_service.py:171
+#, python-format
+msgid "Method not supported [%s] not in [GET, POST, PUT, PATCH or DELETE]!"
+msgstr ""
+
+#. module: google_account
+#: code:addons/google_account/models/google_service.py:119
+#, python-format
+msgid ""
+"Something went wrong during your token generation. Maybe your Authorization "
+"Code is invalid"
+msgstr ""
+
+#. module: google_account
+#: code:addons/google_account/models/google_service.py:55
+#, python-format
+msgid ""
+"Something went wrong during your token generation. Maybe your Authorization "
+"Code is invalid or already expired"
+msgstr ""
+
+#. module: google_account
+#: code:addons/google_account/models/google_service.py:149
+#, python-format
+msgid ""
+"Something went wrong during your token generation. Maybe your Authorization "
+"Code is invalid or already expired [%s]"
+msgstr ""
+
+#. module: google_account
+#: code:addons/google_account/models/google_service.py:192
 #, python-format
 msgid "Something went wrong with your request to google"
 msgstr ""
 
 #. module: google_account
+#: code:addons/google_account/models/google_service.py:130
+#, python-format
+msgid "The account for the Google service '%s' is not configured"
+msgstr ""
+
+#. module: google_account
 #: model:ir.model,name:google_account.model_google_service
 msgid "google.service"
-msgstr ""
+msgstr "google.service"

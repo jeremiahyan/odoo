@@ -3,14 +3,16 @@
 # * sale_margin
 # 
 # Translators:
+# Martin Trigaux <mat@odoo.com>, 2017
+# Anatolij <an@cq.lt>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 9.0\n"
+"Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-07 14:41+0000\n"
-"PO-Revision-Date: 2015-09-08 08:02+0000\n"
-"Last-Translator: Martin Trigaux\n"
-"Language-Team: Lithuanian (http://www.transifex.com/odoo/odoo-9/language/lt/)\n"
+"POT-Creation-Date: 2017-10-02 11:26+0000\n"
+"PO-Revision-Date: 2017-10-02 11:26+0000\n"
+"Last-Translator: Anatolij <an@cq.lt>, 2017\n"
+"Language-Team: Lithuanian (https://www.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -38,8 +40,8 @@ msgstr "Marža"
 
 #. module: sale_margin
 #: model:ir.model,name:sale_margin.model_sale_order
-msgid "Sales Order"
-msgstr "Pardavimo užsakymas"
+msgid "Quotation"
+msgstr "Įkainojimas"
 
 #. module: sale_margin
 #: model:ir.model,name:sale_margin.model_sale_order_line
